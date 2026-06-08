@@ -26,18 +26,34 @@ backend/data/storage/
 logs/
 *.log
 
+.DS_Store
+
+# IDE / AI 工具（勿提交）
 .vscode/
 .idea/
 .cursor/
-.DS_Store
-
-# 内部文件（若误拷入请勿提交）
-CLAUDE.md
+.trae/
+.agent/
+.agents/
 .claude/
+.codebuddy/
+.codex/
+.continue/
+.gemini/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.windsurf/
+.hallmark/
+.github/prompts/
+skills-lock.json
+
+# 内部杂项
+CLAUDE.md
 LightMes_vs_ThinkMes功能对比与改进方案.md
 generate_song.py
 song_output.*
-skills-lock.json
 pack.sh
 pack-local-test.sh
 docs/OpenCore-版本规划.md
