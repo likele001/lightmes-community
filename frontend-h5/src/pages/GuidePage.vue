@@ -71,6 +71,15 @@ const groups = [
 
 const allItems = computed(() => groups.flatMap(g => g.items))
 
+function scrollToSection(id: string, block: ScrollLogicalPosition = 'start') {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block })
+}
+
+function onMobileTocChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value
+  if (value) scrollToSection(value)
+}
+
 function updateActive() {
   const h2s = document.querySelectorAll('.doc-content h2[id]')
   let current = ''
@@ -111,14 +120,14 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
             :key="item.id"
             :href="'#' + item.id"
             :class="{ active: activeId === item.id }"
-            @click.prevent="document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+            @click.prevent="scrollToSection(item.id)"
           >{{ item.label }}</a>
         </div>
       </aside>
 
       <!-- MOBILE TOC -->
       <div class="mobile-toc">
-        <select :value="activeId" @change="($event.target as HTMLSelectElement).value && document.getElementById(($event.target as HTMLSelectElement).value)?.scrollIntoView({ behavior: 'smooth' })">
+        <select :value="activeId" @change="onMobileTocChange">
           <option value="">跳转到章节...</option>
           <option v-for="item in allItems" :key="item.id" :value="item.id">{{ item.label }}</option>
         </select>
@@ -495,7 +504,7 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
             <span class="label">← 返回</span>
             <span class="title">LightMes 首页</span>
           </a>
-          <a href="#ch1" @click.prevent="document.getElementById('ch1')?.scrollIntoView({ behavior: 'smooth' })">
+          <a href="#ch1" @click.prevent="scrollToSection('ch1')">
             <span class="label">回到顶部</span>
             <span class="title">开始阅读</span>
           </a>

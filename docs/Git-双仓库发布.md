@@ -10,6 +10,17 @@
 
 社区是社区，Pro 是 Pro，**两个 remote、两套权限，互不混提交。**
 
+### 一键发布（推荐）
+
+开发仓改完并 push 后，一条命令同步社区版 + 专业版：
+
+```bash
+cd /www/wwwroot/lightmes
+bash scripts/release-all.sh "更新说明：例如修复报工审核"
+```
+
+详见 [Git-仓库推送指南.md](./Git-仓库推送指南.md)。
+
 ---
 
 ## 一、私有开发仓（你现在这个）

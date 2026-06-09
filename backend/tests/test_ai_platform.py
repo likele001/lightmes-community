@@ -89,6 +89,17 @@ def test_build_plan_context_empty(session: Session, tenant):
     assert build_plan_context(session, tenant.id, 999999) == {}
 
 
+def test_build_factory_context(session: Session, tenant):
+    from app.services.ai.contexts.factory import build_factory_context
+
+    ctx = build_factory_context(session, tenant.id)
+    assert "dashboard" in ctx
+    assert "orders" in ctx
+    assert "production_plans" in ctx
+    assert "material_overview" in ctx
+    assert "order_progress" in ctx
+
+
 @patch("app.services.ai.scenes.chat_completion")
 def test_plan_schedule_mock(mock_chat, session: Session, tenant, test_user):
     from app.models.user import User

@@ -71,6 +71,35 @@ def _daily_capacity(db: Session, tenant_id: int, d: date, default_cap: int = 480
     return default_cap
 
 
+def _forward_schedule_fallback(
+    db: Session,
+    tenant_id: int,
+    *,
+    workdays: list[int],
+    work_day_count: int,
+    total_mins: int,
+    note: str,
+) -> dict:
+    """无订单交期/计划结束日时，从今日起按默认工期正排。"""
+    wdc = max(1, int(work_day_count))
+    start = date.today()
+    for _ in range(400):
+        if _is_workday(db, tenant_id, start, workdays):
+            break
+        start += timedelta(days=1)
+    end = _shift_workdays(db, tenant_id, start, wdc - 1, workdays)
+    return {
+        "ok": True,
+        "solver": "fallback_forward",
+        "suggest_mode": "forward",
+        "suggest_start_date": start.isoformat(),
+        "suggest_end_date": end.isoformat(),
+        "suggest_work_days": wdc,
+        "total_minutes": total_mins,
+        "notes": [note],
+    }
+
+
 def optimize_plan_schedule(db: Session, tenant_id: int, plan_id: int) -> dict:
     """
     基于总工时与日历产能，倒排求可行 start/end。
@@ -84,13 +113,25 @@ def optimize_plan_schedule(db: Session, tenant_id: int, plan_id: int) -> dict:
         return {"ok": False, "error": "订单不存在"}
 
     due = order.due_date or plan.end_date
-    if not due:
-        return {"ok": False, "error": "缺少订单交期或计划结束日"}
 
     workdays = _get_workdays_setting(db, tenant_id)
     total_mins = _total_minutes(db, tenant_id, plan.order_id)
     if total_mins <= 0:
         total_mins = int(plan.work_days or 1) * 480
+
+    work_day_count = max(1, (total_mins + 480 - 1) // 480)
+    if plan.work_days and int(plan.work_days) > 0:
+        work_day_count = max(work_day_count, int(plan.work_days))
+
+    if not due:
+        return _forward_schedule_fallback(
+            db,
+            tenant_id,
+            workdays=workdays,
+            work_day_count=work_day_count,
+            total_mins=total_mins,
+            note="订单未设置交期，已从今日正排默认工期（可在计划中调整起止日）",
+        )
 
     default_cap = 480
     from app.crud.tenant_setting import get_setting

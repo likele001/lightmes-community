@@ -60,7 +60,7 @@ export default {
     newChat: '新对话',
     chatTitle: '对话 #{id}',
     delete: '删',
-    aiInputPlaceholder: '例如：今天待审报工多少？良率怎么样？',
+    aiInputPlaceholder: '例如：今天毛利率？待审订单？缺什么料？CRM商机跟进？采购待收货？设备保养逾期？',
     send: '发送',
     aiAlertThreshold: 'AI 预警阈值',
     pendingAuditThreshold: '待审报工阈值',

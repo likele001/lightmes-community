@@ -116,6 +116,50 @@ def list_kanban_orders(
     return items
 
 
+def get_orders_progress_map(db: Session, tenant_id: int, order_ids: list[int]) -> dict[int, dict]:
+    """批量查询订单完成数量与进度（计划列表等复用）。"""
+    if not order_ids:
+        return {}
+    task_done_sq = (
+        select(
+            Task.id.label("task_id"),
+            Task.work_order_id.label("work_order_id"),
+            func.coalesce(func.sum(Report.good_qty), 0).label("done_qty"),
+        )
+        .select_from(Task)
+        .join(Report, and_(Report.task_id == Task.id, Report.status == "qc_approved"), isouter=True)
+        .where(Task.tenant_id == tenant_id)
+        .group_by(Task.id)
+        .subquery()
+    )
+    wo_done_sq = (
+        select(
+            task_done_sq.c.work_order_id.label("work_order_id"),
+            func.min(task_done_sq.c.done_qty).label("done_qty"),
+        )
+        .group_by(task_done_sq.c.work_order_id)
+        .subquery()
+    )
+    rows = db.execute(
+        select(
+            WorkOrder.order_id.label("order_id"),
+            func.coalesce(func.sum(WorkOrder.qty), 0).label("total_qty"),
+            func.coalesce(func.sum(func.coalesce(wo_done_sq.c.done_qty, 0)), 0).label("done_qty"),
+        )
+        .select_from(WorkOrder)
+        .join(wo_done_sq, wo_done_sq.c.work_order_id == WorkOrder.id, isouter=True)
+        .where(WorkOrder.tenant_id == tenant_id, WorkOrder.order_id.in_(order_ids))
+        .group_by(WorkOrder.order_id)
+    ).all()
+    out: dict[int, dict] = {}
+    for order_id, total_qty, done_qty in rows:
+        total = int(total_qty or 0)
+        done = int(done_qty or 0)
+        progress = round(done / total, 6) if total > 0 else None
+        out[int(order_id)] = {"total_qty": total, "done_qty": done, "progress": progress}
+    return out
+
+
 def get_order_progress_summary(db: Session, tenant_id: int, order_id: int) -> dict:
     task_done_sq = (
         select(
