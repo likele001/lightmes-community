@@ -14,12 +14,14 @@ export type MessageCenterOverview = {
   channels: {
     feishu: ChannelOverview
     wecom: ChannelOverview
+    dingtalk: ChannelOverview
   }
 }
 
 export type ChannelConfig = {
   chat_id?: string
   webhook_url?: string
+  webhook_secret?: string
   enabled: boolean
 }
 
@@ -30,6 +32,7 @@ export type MessageGroup = {
   channels: {
     feishu?: ChannelConfig
     wecom?: ChannelConfig
+    dingtalk?: ChannelConfig
   }
 }
 
@@ -37,6 +40,7 @@ export type MessageRule = {
   event_code: string
   feishu_rule: Record<string, unknown>
   wecom_rule: Record<string, unknown>
+  dingtalk_rule: Record<string, unknown>
 }
 
 export type UserBinding = {
@@ -50,12 +54,14 @@ export type UserBinding = {
   feishu_bound_at: string | null
   wecom_userid: string | null
   wecom_bound_at: string | null
+  dingtalk_userid: string | null
+  dingtalk_bound_at: string | null
   bound: boolean
 }
 
 export type PushLog = {
   id: number
-  channel: 'feishu' | 'wecom'
+  channel: 'feishu' | 'wecom' | 'dingtalk'
   event_code: string
   target_kind: string
   target_ref: string
@@ -93,6 +99,13 @@ export const messageCenterApi = {
       method: 'GET',
     })
   },
+  saveGroups(items: MessageGroup[]) {
+    return http.request<{ items: MessageGroup[] }>({
+      url: '/admin/system/message-center/groups',
+      method: 'POST',
+      data: { items },
+    })
+  },
   listRules() {
     return http.request<{
       items: MessageRule[]
@@ -110,14 +123,14 @@ export const messageCenterApi = {
       params,
     })
   },
-  listPushLogs(params?: { channel?: 'feishu' | 'wecom'; event_code?: string; status?: string; offset?: number; limit?: number }) {
+  listPushLogs(params?: { channel?: 'feishu' | 'wecom' | 'dingtalk'; event_code?: string; status?: string; offset?: number; limit?: number }) {
     return http.request<{ items: PushLog[] }>({
       url: '/admin/system/message-center/push-logs',
       method: 'GET',
       params,
     })
   },
-  retryPushLog(channel: 'feishu' | 'wecom', id: number) {
+  retryPushLog(channel: 'feishu' | 'wecom' | 'dingtalk', id: number) {
     return http.request({ url: `/admin/system/${channel}/push-logs/${id}/retry`, method: 'POST' })
   },
   getAlertRecipients() {

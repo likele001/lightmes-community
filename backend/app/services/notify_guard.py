@@ -15,6 +15,7 @@ from sqlalchemy import desc, or_, select
 from sqlalchemy.orm import Session
 
 from app.crud.tenant_setting import get_setting, upsert_setting
+from app.models.dingtalk_push_log import DingtalkPushLog
 from app.models.feishu_push_log import FeishuPushLog
 from app.models.role import Role
 from app.models.user import User, user_roles
@@ -120,7 +121,14 @@ def check_consecutive_failures(db: Session, tenant_id: int, event_code: str, cha
     if _dedup_check(db, tenant_id, event_code, channel):
         return
 
-    model = FeishuPushLog if channel == "feishu" else WecomPushLog
+    model_map = {
+        "feishu": FeishuPushLog,
+        "wecom": WecomPushLog,
+        "dingtalk": DingtalkPushLog,
+    }
+    model = model_map.get(channel)
+    if not model:
+        return
     recent = db.execute(
         select(model)
         .where(model.tenant_id == tenant_id, model.event_code == event_code)

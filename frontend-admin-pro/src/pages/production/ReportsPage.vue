@@ -32,10 +32,23 @@ const statusColors: Record<string, string> = {
   rejected: 'danger',
 }
 
+function listQueryParams() {
+  const params: Record<string, unknown> = {
+    offset: query.offset,
+    limit: query.limit,
+  }
+  if (query.status) {
+    params.status = query.status
+  } else {
+    params.pending_audit = true
+  }
+  return params
+}
+
 async function load() {
   loading.value = true
   try {
-    const resp = await productionApi.listReports(query) as any
+    const resp = await productionApi.listReports(listQueryParams()) as any
     if (resp?.items) {
       reports.value = resp.items
       total.value = resp.total ?? resp.items.length
@@ -103,7 +116,8 @@ onMounted(load)
     <el-card shadow="never" class="mb-4">
       <el-form :model="query" inline>
         <el-form-item :label="t('production.common.status')">
-          <el-select v-model="query.status" clearable placeholder="全部" @change="load">
+          <el-select v-model="query.status" clearable placeholder="待审（默认）" @change="load">
+            <el-option label="待审（初审+终审）" value="" />
             <el-option label="待初审" value="submitted" />
             <el-option label="待终审" value="leader_approved" />
             <el-option label="已通过" value="qc_approved" />

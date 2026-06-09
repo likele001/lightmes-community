@@ -20,6 +20,8 @@ class Department(Base):
     feishu_chat_group_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
     wecom_department_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     wecom_chat_group_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    dingtalk_dept_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    dingtalk_chat_group_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="1")
 
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())

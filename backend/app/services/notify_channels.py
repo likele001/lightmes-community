@@ -11,6 +11,7 @@ class Channel(str, Enum):
 
     FEISHU = "feishu"
     WECOM = "wecom"
+    DINGTALK = "dingtalk"
     IN_APP = "in_app"  # 系统内通知
 
 
@@ -34,8 +35,14 @@ class PushTarget(dict):
         return cls(channel=channel, kind=TargetKind.CHAT.value, ref=ref, group_code=group_code)
 
     @classmethod
-    def webhook(cls, channel: str, ref: str, group_code: str = "") -> "PushTarget":
-        return cls(channel=channel, kind=TargetKind.WEBHOOK.value, ref=ref, group_code=group_code)
+    def webhook(cls, channel: str, ref: str, group_code: str = "", webhook_secret: str = "") -> "PushTarget":
+        return cls(
+            channel=channel,
+            kind=TargetKind.WEBHOOK.value,
+            ref=ref,
+            group_code=group_code,
+            webhook_secret=webhook_secret,
+        )
 
 
 # 事件分类：仅 personal（按用户绑定分流）

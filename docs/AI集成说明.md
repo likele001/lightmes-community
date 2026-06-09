@@ -29,7 +29,7 @@
 | 租户自动化配置 | `GET/PUT /admin/automation/settings` |
 | 执行日志 / 预检 | `GET /admin/automation/logs`、`POST /admin/automation/dry-run` |
 | 计划流水线 | Celery `production.automation.pipeline` |
-| 每日简报 | `GET /admin/ai/brief`；Celery `ai.daily_brief.send` |
+| 每日简报 | `GET /admin/ai/brief`；Celery `ai.daily_brief.send`；推飞书/企微见 [工厂日报飞书企微推送配置指南.md](./工厂日报飞书企微推送配置指南.md) |
 | 审核预审 | Celery `audit.prescreen`；字段 `prescreen_level` |
 | 交期/APS | `GET /admin/plans/{id}/forecast`、`/aps-strategy` |
 

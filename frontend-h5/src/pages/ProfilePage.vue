@@ -5,6 +5,7 @@ import { showLoadingToast, showSuccessToast, showToast, closeToast } from 'vant'
 import { changePassword, me, updateProfile, type MeOut } from '@/api/auth'
 import { getFeishuBindStatus, getFeishuBindUrl } from '@/api/feishu'
 import { getWecomBindStatus, getWecomBindUrl } from '@/api/wecom'
+import { getDingtalkBindStatus, getDingtalkBindUrl } from '@/api/dingtalk'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -24,6 +25,10 @@ const wecomEnabled = ref(false)
 const wecomBound = ref(false)
 const wecomUserid = ref('')
 const wecomBinding = ref(false)
+const dingtalkEnabled = ref(false)
+const dingtalkBound = ref(false)
+const dingtalkUserid = ref('')
+const dingtalkBinding = ref(false)
 const showBindQr = ref(false)
 const bindAuthorizeUrl = ref('')
 
@@ -88,6 +93,19 @@ async function loadFeishuStatus() {
   }
 }
 
+async function loadDingtalkStatus() {
+  try {
+    const ds = await getDingtalkBindStatus()
+    dingtalkEnabled.value = ds.enabled
+    dingtalkBound.value = ds.bound
+    dingtalkUserid.value = ds.dingtalk_userid || ''
+  } catch {
+    dingtalkEnabled.value = false
+    dingtalkBound.value = false
+    dingtalkUserid.value = ''
+  }
+}
+
 async function loadWecomStatus() {
   try {
     const ws = await getWecomBindStatus()
@@ -108,6 +126,7 @@ async function loadMe() {
     fillForm(meData.value)
     await loadFeishuStatus()
     await loadWecomStatus()
+    await loadDingtalkStatus()
     auth.userInfo = {
       full_name: meData.value.full_name,
       roles: meData.value.roles,
@@ -197,6 +216,18 @@ async function onOpenFeishuBot() {
   window.location.href = feishuBotLink.value
 }
 
+async function onBindDingtalk() {
+  dingtalkBinding.value = true
+  try {
+    const res = await getDingtalkBindUrl()
+    window.location.href = res.authorize_url
+  } catch (e: unknown) {
+    showToast(String(e))
+  } finally {
+    dingtalkBinding.value = false
+  }
+}
+
 async function onBindWecom() {
   wecomBinding.value = true
   try {
@@ -237,6 +268,12 @@ onMounted(async () => {
     router.replace({ path: '/profile' })
     return
   }
+  if (route.query.dingtalk_bound === '1') {
+    await loadMe()
+    showSuccessToast('钉钉绑定成功，派工/报工通知将推送到工作通知')
+    router.replace({ path: '/profile' })
+    return
+  }
   await loadMe()
 })
 </script>
@@ -269,6 +306,16 @@ onMounted(async () => {
       </div>
       <div v-else class="px-4 pb-4">
         <van-button block type="primary" plain round @click="onOpenFeishuBot">打开飞书机器人</van-button>
+      </div>
+    </van-cell-group>
+
+    <van-cell-group v-if="dingtalkEnabled" inset title="钉钉通知">
+      <van-cell title="绑定状态" :value="dingtalkBound ? '已绑定' : '未绑定'" />
+      <van-cell v-if="dingtalkBound && dingtalkUserid" title="钉钉账号" :value="dingtalkUserid" />
+      <div v-if="!dingtalkBound" class="px-4 pb-4">
+        <van-button block type="primary" plain round :loading="dingtalkBinding" @click="onBindDingtalk">
+          绑定钉钉
+        </van-button>
       </div>
     </van-cell-group>
 

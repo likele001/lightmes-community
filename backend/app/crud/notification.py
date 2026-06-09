@@ -71,6 +71,24 @@ def create_notification(
             )
         except Exception:
             pass
+        try:
+            from app.services.dingtalk.notify import emit_dingtalk_event
+
+            emit_dingtalk_event(
+                db,
+                tenant_id,
+                feishu_event,
+                title=title,
+                content=content,
+                level=level,
+                biz_type=biz_type,
+                biz_id=biz_id,
+                user_id=user_id,
+                department_id=feishu_department_id,
+                workshop=feishu_workshop,
+            )
+        except Exception:
+            pass
     return obj
 
 
