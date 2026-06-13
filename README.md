@@ -381,7 +381,7 @@ Pro 版为商业授权，源码交付，详情请联系微信咨询。
 | 官网 | [https://lightmes.user.023ent.net/site](https://lightmes.user.023ent.net/site) |
 | 在线体验 | [https://admin.mes.cenkor.cn/register/](https://admin.mes.cenkor.cn/register/) |
 | 微信咨询 | <!-- 请替换为实际微信号 --> `your-wechat-id` |
-| 问题反馈 | [GitHub Issues](https://github.com/your-org/lightmes/issues) |
+| 问题反馈 | [GitHub Issues](https://github.com/likele001/lightmes-community/issues) |
 
 ---
 
@@ -389,7 +389,7 @@ Pro 版为商业授权，源码交付，详情请联系微信咨询。
 
 ### 觉得 LightMes 有帮助？
 
-<a href="https://github.com/your-org/lightmes" target="_blank">
+<a href="https://github.com/likele001/lightmes-community/" target="_blank">
   <img src="https://img.shields.io/badge/%E2%AD%90%20Star-%E6%94%AF%E6%8C%81%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE-yellow?style=for-the-badge" alt="Star this repo" />
 </a>
 
