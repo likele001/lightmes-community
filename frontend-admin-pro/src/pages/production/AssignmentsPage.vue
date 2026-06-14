@@ -39,7 +39,7 @@
           </el-table-column>
           <el-table-column label="状态" width="100">
             <template #default="{ row }">
-              <el-tag :type="statusType(row.status)" size="small">{{ statusText(row.status) }}</el-tag>
+              <el-tag :type="statusTagType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="分配时间" width="170">
@@ -97,8 +97,10 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { productionApi, type DispatchAssignmentOut } from '@/api/production'
 import { openPrintWindow } from '@/utils/print'
 import { downloadSvgAsPng, downloadSvgFile, svgToDataUrl } from '@/utils/qr'
+import { useStatus } from '@/utils/status-maps'
 
 const { t } = useI18n()
+const { label: statusLabel, type: statusTagType } = useStatus('assignment')
 const router = useRouter()
 const loading = ref(false)
 const items = ref<DispatchAssignmentOut[]>([])
@@ -127,17 +129,6 @@ function resetQrDlg() {
   qrDlg.svg = ''
   qrDlg.imgSrc = ''
   qrDlg.reportUrl = ''
-}
-
-function statusText(s: string) {
-  const m: Record<string, string> = { pending: t('production.assignments.pending'), working: t('production.assignments.working'), done: t('production.assignments.done') }
-  return m[s] || s
-}
-
-function statusType(s: string) {
-  if (s === 'done') return 'success'
-  if (s === 'working') return 'warning'
-  return 'info'
 }
 
 function formatTime(t: string) {

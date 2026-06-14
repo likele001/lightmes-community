@@ -27,7 +27,7 @@
         <LoginCaptchaField ref="captchaRef" />
         <el-form-item class="!mb-2">
           <el-checkbox v-model="rememberMe">{{ t('auth.login.rememberMe') }}</el-checkbox>
-          <p class="text-xs text-[#909399] mt-1 w-full">{{ t('auth.login.rememberMeDesc') }}</p>
+          <p class="text-xs text-el-placeholder mt-1 w-full">{{ t('auth.login.rememberMeDesc') }}</p>
         </el-form-item>
         <el-form-item class="!mb-0 mt-1">
           <el-button class="w-full" type="primary" :loading="loading" @click="onSubmit">{{ t('auth.login.loginBtn') }}</el-button>

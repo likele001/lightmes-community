@@ -534,7 +534,85 @@ const guideData: GuideSection[] = [
 <li>驳回时务必填写明确的原因</li>
 <li>审核通过后报工数据即进入工资计算</li>
 <li>定期审核避免积压影响工资计算</li>
-</ul>`
+</ul>
+<h4>QC 审核中可关联质检模板与缺陷代码</h4>
+<p>新版 QC 终审支持<strong>按质检模板逐项打勾</strong>，并对不合格项<strong>关联缺陷代码</strong>，自动落库到 <code>inspection_records</code>。详见 <a>6.3 质量管理</a>。</p>`
+          },
+          {
+            id: 'ch6-3',
+            title: '6.3 质量管理（质检模板 / 缺陷代码 / 检测记录）',
+            content: `<h3>质量管理</h3>
+<p>LightMes 提供「<strong>质检模板 → 检测记录 → 缺陷分析</strong>」的完整质量管理闭环：先配置好模板（哪些工序要查什么），QC 审核报工时按模板逐项打勾，结果自动汇总到缺陷分析报表里。</p>
+<h4>角色与权限</h4>
+<ul>
+<li><code>report.audit</code> 权限：可管理质检模板、缺陷代码、查看检测记录</li>
+<li>QC 终审岗：审核报工时填写检测记录</li>
+<li>质量分析（厂长/经理）：查看缺陷分析报表</li>
+</ul>
+<h4>1. 质检模板（Inspection Template）</h4>
+<p><strong>路径</strong>：主数据 → 质检模板</p>
+<p>模板是「某个工序 / 某类产品要做哪些检查项」的清单。</p>
+<p>字段说明：</p>
+<ul>
+<li><strong>编码 / 名称</strong>：如 <code>WELD-STD-01</code>「标准焊接检查」</li>
+<li><strong>关联工序</strong>（可选）：限定本模板只在该工序审核时出现</li>
+<li><strong>关联产品</strong>（可选）：限定只对该产品生效</li>
+<li><strong>是否启用</strong>：停用后审核页不再出现</li>
+</ul>
+<p>模板下有多个<strong>检查明细项</strong>，每项 3 种类型：</p>
+<ul>
+<li><code>pass_fail</code> 合格/不合格：最常用（焊点是否饱满、尺寸是否合规）</li>
+<li><code>measure</code> 测量值：填实测数值（厚度 1.2mm、长度 50mm），需配 <code>standard_value</code> / <code>upper_limit</code> / <code>lower_limit</code> / <code>unit</code>，系统自动判定 pass/fail</li>
+<li><code>text</code> 文本描述：开放文字（外观描述、备注）</li>
+</ul>
+<p>明细项可设置 <code>is_required</code> 必填，QC 不填该项不能通过审核。</p>
+<h4>2. 缺陷代码（Defect Code）</h4>
+<p><strong>路径</strong>：主数据 → 缺陷代码</p>
+<p>把工厂常出现的质量问题<strong>标准化成代码</strong>，便于统计与趋势分析。</p>
+<p>字段：</p>
+<ul>
+<li><strong>编码 / 名称</strong>：如 <code>D-001</code>「焊点虚焊」、<code>D-002</code>「尺寸超差」</li>
+<li><strong>严重度</strong>：
+  <ul>
+    <li><code>critical</code> 致命：影响安全的缺陷，必须返工/报废</li>
+    <li><code>major</code> 主要：影响功能但可让步接收</li>
+    <li><code>minor</code> 次要：轻微外观缺陷，不影响使用</li>
+  </ul>
+</li>
+<li><strong>是否启用</strong>：旧缺陷下线后停用</li>
+</ul>
+<h4>3. 检测记录（Inspection Record）</h4>
+<p><strong>录入路径</strong>：报工审核 → QC 终审时</p>
+<p>QC 进入审核页 → 系统自动加载该工序/产品对应的<strong>生效模板</strong> → 逐项打勾 / 填值：</p>
+<ul>
+<li><code>pass_fail</code> 项：选「合格 / 不合格 / 不适用」</li>
+<li><code>measure</code> 项：填实测值，超上下限自动标红</li>
+<li>不合格项必填<strong>缺陷代码</strong> + 备注</li>
+</ul>
+<p>审核提交后写入 <code>inspection_records</code> 表，与 <code>report_unit_audits</code> 关联。</p>
+<h4>4. 缺陷分析报表</h4>
+<p><strong>路径</strong>：报表 → 缺陷分析</p>
+<p>从 <code>inspection_records</code> 汇总：</p>
+<ul>
+<li><strong>缺陷码 TOP 10</strong>：出现频率最高的缺陷，便于针对性改善工艺</li>
+<li><strong>缺陷严重度分布</strong>：critical / major / minor 占比，监控质量趋势</li>
+<li><strong>按工序 / 产品 / 时间段</strong>筛选</li>
+<li><strong>缺陷-员工关联</strong>：分析某员工的高频缺陷，定位培训需求</li>
+</ul>
+<h4>典型流程</h4>
+<ol>
+<li>质量主管在「主数据 → 质检模板」配置模板（如「焊接检查」），挂 5~10 个检查项</li>
+<li>在「主数据 → 缺陷代码」维护 10~30 个缺陷码（含 critical/major/minor）</li>
+<li>QC 审核报工时，系统自动加载模板，QC 逐项打勾 + 标缺陷</li>
+<li>月底看缺陷分析报表，对 top 缺陷做工艺改善或员工培训</li>
+</ol>
+<h4>与报工审核的关联</h4>
+<p>QC 终审不通过时，可以同时：</p>
+<ul>
+<li>把报工<strong>驳回</strong>（员工重新报工）</li>
+<li>把对应<strong>缺陷码</strong>绑定到 <code>inspection_records</code>（用于缺陷分析）</li>
+</ul>
+<p>这样驳回原因有数据支撑，后续能追到「哪个工序 / 哪个员工 / 哪类缺陷最多」。</p>`
           },
         ]
       },
@@ -898,12 +976,173 @@ const guideData: GuideSection[] = [
       },
       {
         id: 'ch12',
+        title: '第十二章 智能中心与 IM 推送',
+        icon: 'ChatLineRound',
+        children: [
+          {
+            id: 'ch12-1',
+            title: '12.1 飞书消息推送',
+            content: `<h3>飞书消息推送</h3>
+<p>LightMes 通过飞书自建应用把派工、报工审核、工资、预警等事件推送到飞书群或个人。<strong>必须先在飞书开放平台创建企业自建应用</strong>，详见 <a href="https://admin.mes.cenkor.cn" target="_blank">《飞书消息推送部署指南》</a>（docs/飞书消息推送部署指南.md）。</p>
+<h4>配置入口</h4>
+<p>侧边栏 → <strong>系统管理 → 飞书消息推送</strong>（需 <code>setting.manage</code> 权限）。</p>
+<h4>三步开启</h4>
+<ol>
+<li><strong>填入 App ID / App Secret</strong>：从飞书开放平台 → 应用 → 凭证获取；<code>Encrypt Key</code> / <code>Verification Token</code> 在「事件订阅」页获取。</li>
+<li><strong>设置事件回调</strong>：在「飞书消息推送」页面保存后会显示事件回调 URL（<code>{域名}/api/feishu/events</code>），粘贴到飞书开放平台 → 事件订阅 → 请求地址 URL，飞书会发起 <code>url_verification</code> 验证。</li>
+<li><strong>配置群组 chat_id</strong>：点「拉取机器人所在群」自动列出机器人已加入的群；选三个固定群（<strong>生产群 / 管理群 / 全厂群</strong>），<code>chat_id</code> 必须以 <code>oc_</code> 开头，<em>不是</em>机器人 webhook URL。</li>
+</ol>
+<h4>员工飞书账号绑定（推到个人）</h4>
+<ul>
+<li><strong>方案 A · OAuth（推荐）</strong>：员工在 H5 个人中心点「绑定我的飞书」跳转飞书授权，回调后系统自动存 <code>open_id</code>。</li>
+<li><strong>方案 B · 管理员后台批量匹配</strong>：Admin → 飞书消息推送 → 「按手机号批量匹配」，员工手机号与飞书账号一致时一键批量绑定。</li>
+<li><strong>方案 C · 个人手动</strong>：Admin → 「人员绑定」用邮箱 / 手机号逐个匹配（适用于手机号不一致的少数员工）。</li>
+</ul>
+<h4>推送规则</h4>
+<p>事件码 → 推送目标 → 通道。系统默认规则可按需调整，典型事件：</p>
+<ul>
+<li><code>dispatch.assigned</code> 派工 → 推给被派员工（飞书 + 站内）</li>
+<li><code>report.submitted</code> 报工提交 → 推给部门负责人 + 车间负责人（飞书 + 站内）</li>
+<li><code>report.leader_approved</code> / <code>report.qc_approved</code> 审核通过 → 推给员工</li>
+<li><code>report.rejected</code> 驳回 → 推给员工</li>
+<li><code>salary.slip_remind</code> / <code>salary.slip_reset</code> 工资条 → 推给员工</li>
+<li><code>alert</code> 预警 → 按 <code>level</code>（info/warning/danger/critical）逐级升级到部门管理 / 老板 / 全厂群</li>
+<li><code>brief.daily</code> 每日简报 → 推给老板 + 管理群 + 全厂群（每天 20:00 自动跑，需开启 <code>briefing.daily_enabled</code>）</li>
+</ul>
+<h4>静默时段</h4>
+<p>配置 <code>quiet_hours</code>（默认 22:00–07:00）后，该时段事件会落库为 <code>deferred</code> 状态，<strong>Celery Beat 每 5 分钟</strong>触发 <code>feishu.flush_deferred</code> 任务到点发送。</p>
+<h4>故障排查</h4>
+<ul>
+<li>「完全收不到」：检查 Celery worker + beat 是否在跑（<code>ps aux | grep celery -A app.celery_app</code>）。</li>
+<li>「deferred 一直不发」：Beat 没起来或调度没加载，<code>grep feishu /tmp/lightmes-celery/beat.log</code> 应能看到 <code>feishu-flush-deferred</code> 每 5 分钟。</li>
+<li>「open_id 与 App 不匹配」：更换了飞书 App ID 但员工 <code>open_id</code> 没重绑 → 走「按手机号批量匹配」一键恢复。</li>
+<li>日志查 <code>/tmp/lightmes-celery/worker.log</code>，失败任务会有 <code>error</code> 字段。</li>
+</ul>`
+          },
+          {
+            id: 'ch12-2',
+            title: '12.2 钉钉消息推送',
+            content: `<h3>钉钉消息推送</h3>
+<p>钉钉通道支持两种推送方式：</p>
+<ul>
+<li><strong>群机器人 Webhook</strong>（推荐）：最简，群里加个机器人即可收消息；支持 ActionCard 卡片（含按钮），无需企业自建应用。</li>
+<li><strong>工作通知（企业自建应用）</strong>：需在钉钉开放平台建应用、配置 <code>AgentId</code>，可向指定员工单发；可发卡片含审核按钮（报工审核场景）。</li>
+</ul>
+<h4>配置入口</h4>
+<p>侧边栏 → <strong>系统管理 → 钉钉消息推送</strong>（需 <code>setting.manage</code> 权限）。</p>
+<h4>群机器人配置</h4>
+<ol>
+<li>在钉钉群里「群设置 → 智能群助手 → 添加机器人 → 自定义」获取 <strong>Webhook URL</strong>；如启用「加签」会得到 <strong>Secret</strong>，两者都要填到 LightMes。</li>
+<li>LightMes → 钉钉消息推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook + secret → 保存。</li>
+<li>点「测试推送」验证。</li>
+</ol>
+<h4>工作通知配置</h4>
+<ol>
+<li>钉钉开放平台 → 应用开发 → 创建「企业内部应用」→ 拿到 <code>AppKey</code> / <code>AppSecret</code> / <code>AgentId</code>。</li>
+<li>应用权限开通「<strong>机器人发送消息</strong>」「<strong>工作通知</strong>」「<strong>免登</strong>」。</li>
+<li>LightMes → 钉钉消息推送 → 顶部填 AppKey / AppSecret / AgentId → 保存。</li>
+</ol>
+<h4>员工钉钉账号绑定</h4>
+<p>工作通知通道依赖 <code>dingtalk_userid</code>，三种方式：</p>
+<ul>
+<li><strong>OAuth 绑定</strong>：员工在 H5 个人中心 → 「绑定钉钉」走授权。</li>
+<li><strong>手机号匹配</strong>：Admin → 钉钉推送 → 「按手机号批量匹配」。</li>
+<li><strong>手动</strong>：Admin → 人员绑定 → 输入钉钉 userid。</li>
+</ul>
+<h4>卡片含审核按钮</h4>
+<p>报工提交后推给审核人，钉钉卡片含「初审通过 / 驳回」按钮，点按钮直接审批（不打开网页）。需在钉钉推送页开启 <code>card_actions_enabled</code>，并在「安全设置」配置回调 URL <code>{域名}/api/dingtalk/card_action</code>。</p>
+<h4>推送规则与静默时段</h4>
+<p>事件码 → 目标 → 通道结构与飞书一致；静默时段配置 <code>quiet_hours</code>，<strong>Beat 每 5 分钟</strong>触发 <code>dingtalk.flush_deferred</code>。</p>
+<h4>故障排查</h4>
+<ul>
+<li>「完全收不到」：Celery worker/beat 未跑；或总开关未启用。</li>
+<li>「ActionCard 报错 400002」：ActionCard 字段名错（已修复为 <code>markdown</code>），<code>grep 'dingtalk webhook failed' /tmp/lightmes-celery/worker.log</code> 看实际发出去的 payload。</li>
+<li>「工作通知 task_id 返回但收不到」：钉钉「机器人单聊」需在钉钉里主动给应用发一条消息激活。</li>
+</ul>`
+          },
+          {
+            id: 'ch12-3',
+            title: '12.3 企业微信消息推送',
+            content: `<h3>企业微信消息推送</h3>
+<p>企微通道以<strong>群机器人 Webhook</strong>为主，把派工、报工审核、工资、预警推到企微群。无需企业自建应用，几分钟就能配好。</p>
+<h4>配置入口</h4>
+<p>侧边栏 → <strong>系统管理 → 企微消息推送</strong>（需 <code>setting.manage</code> 权限）。</p>
+<h4>三步开启</h4>
+<ol>
+<li>企微群里「群设置 → 群机器人 → 添加」拿到 <strong>Webhook URL</strong>。</li>
+<li>LightMes → 企微推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook → 保存。</li>
+<li>点「测试推送」验证。</li>
+</ol>
+<h4>员工企微账号绑定</h4>
+<p>企微通道默认只推群。如需推个人，需在「企业微信推送」页配置企业自建应用 <code>CorpID</code> + 应用 <code>AgentId</code> + <code>Secret</code>，并让员工在 H5 完成 OAuth 绑定。详细见 <a href="https://admin.mes.cenkor.cn" target="_blank">docs/飞书消息推送部署指南.md</a>（IM 通道通用部分）。</p>
+<h4>故障排查</h4>
+<ul>
+<li>「完全收不到」：<code>grep wecom /tmp/lightmes-celery/worker.log</code>，看任务是否被消费；<code>wecom.flush_deferred</code> beat 调度是否注册。</li>
+<li>「Webhook 返回 40069」：频率超限，企业微信群机器人限制 20 条/分钟。</li>
+</ul>`
+          },
+          {
+            id: 'ch12-4',
+            title: '12.4 统一消息中心',
+            content: `<h3>统一消息中心</h3>
+<p>统一管理飞书 / 企微 / 钉钉多通道推送。<strong>三个通道的群组、规则、日志</strong>在一页面对照维护，避免飞书配一遍企微又配一遍。</p>
+<h4>配置入口</h4>
+<p>侧边栏 → <strong>系统管理 → 统一消息中心</strong>（需 <code>setting.manage</code> 权限）。</p>
+<h4>系统指定 3 个群</h4>
+<p>无论用哪个 IM 通道，都建议维护这三群：</p>
+<ul>
+<li><strong>生产群</strong>：车间班组长、生产主管（收派工、报工提醒、异常报警）。</li>
+<li><strong>管理群</strong>：厂长 / 经理 / 业务（收订单、工资异常、每天 20:00 工厂日报）。</li>
+<li><strong>全厂群</strong>：老板 / 管理层（收 critical 级别预警、工厂日报）。</li>
+</ul>
+<p>每个群可在三个通道里各设一个 webhook / chat_id，<strong>可同时启用</strong>，消息会同步发到三个通道。</p>
+<h4>推送规则</h4>
+<p>事件码 → 目标 → 通道。三通道默认规则一致，可独立微调；修改后需分别点保存。</p>
+<h4>推送日志</h4>
+<p>页面底部表格显示最近 <code>feishu_push_logs</code> / <code>wecom_push_logs</code> / <code>dingtalk_push_logs</code>，含状态（pending / deferred / success / failed）、错误信息、飞书 message_id / 钉钉 task_id。可按状态、目标筛选。</p>
+<h4>绑定状态</h4>
+<p>页面右侧显示员工 IM 绑定情况：</p>
+<ul>
+<li><code>feishu_open_id</code> 已绑 / 未绑</li>
+<li><code>wecom_userid</code> 已绑 / 未绑</li>
+<li><code>dingtalk_userid</code> 已绑 / 未绑</li>
+</ul>
+<p>未绑员工收不到个人通知，会回退到站内通知（铃铛）。</p>`
+          },
+          {
+            id: 'ch12-5',
+            title: '12.5 AI 助手（智能对话）',
+            content: `<h3>AI 助手（智能对话）</h3>
+<p>LightMes 内置 AI 助手，按角色提供问答与操作建议。需要先在 <code>.env</code> 配置 <code>AI_BASE_URL</code> / <code>AI_API_KEY</code>，并开启 <code>AI_ENABLED=true</code>。详见 <a href="https://admin.mes.cenkor.cn" target="_blank">docs/AI集成说明.md</a>。</p>
+<h4>入口</h4>
+<p>侧边栏 → <strong>智能中心 → AI 助手</strong>（需 <code>ai.use</code> 权限）。</p>
+<h4>典型用法</h4>
+<ul>
+<li><strong>老板/管理层</strong>：「本月订单达成率」「毛利最高的产品」「昨天异常报警有哪些」「帮我写个催货话术」。</li>
+<li><strong>生产主管</strong>：「某订单当前在哪个工序」「这个工序积压了多少待报工任务」「帮我排个 30 号前能交的计划」。</li>
+<li><strong>班组长</strong>：「今天的待审报工」「最近一次驳回原因最多的缺陷码是什么」。</li>
+<li><strong>员工</strong>：H5 端也能用，「我本月预估工资」「我的任务里最紧急的是哪个」。</li>
+</ul>
+<h4>上下文（context_id）</h4>
+<p>多次对话会自动带上 <code>context_id</code>，AI 能记得前文（如「那上一单呢？」「把这个订单的工价也对比下」）。同一会话最长保留 30 轮，超过会触发摘要压缩。</p>
+<h4>智能中心其他模块</h4>
+<ul>
+<li><strong>首页 AI 数据预警</strong>：Celery 每天 8/12/16/20 点扫描指标，超阈值推飞书/企微/钉钉群。</li>
+<li><strong>工厂日报（每日简报）</strong>：每天 20:00 自动生成，汇总当日产值、达成率、不良率、订单进度；推老板 + 管理群 + 全厂群。</li>
+<li><strong>排产 AI 建议</strong>：生产计划保存时，<code>aiScheduleSuggest</code> 调用 OR-Tools + AI 给出交期/优先级建议。</li>
+<li><strong>AI 交期分析</strong>：对当前计划跑一遍瓶颈分析，提示哪道工序会卡交期。</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'ch13',
         title: '附录：常见问题与最佳实践',
         icon: 'QuestionFilled',
         children: [
           {
-            id: 'ch12-1',
-            title: '12.1 常见问题',
+            id: 'ch13-1',
+            title: '13.1 常见问题',
             content: `<h3>常见问题</h3>
 <h4>Q1：订单确认后发现产品型号错了，怎么办？</h4>
 <p>已确认的订单不能直接修改。操作：<strong>作废该订单 → 新建正确的订单</strong>，系统会记录作废原因和时间。</p>
@@ -916,11 +1155,19 @@ const guideData: GuideSection[] = [
 <h4>Q5：员工对工资有异议，怎么处理？</h4>
 <p>在工资管理里查看明细，每笔报工的工序和金额都有记录。如有虚报，可查看报工照片/视频对质。确实算错的由财务调整。</p>
 <h4>Q6：产品的工艺路线要改，已生成的订单受影响吗？</h4>
-<p>已确认的订单按原工艺路线执行不受影响。只有新确认的订单才用新工艺路线。建议新旧同时维护一段时间再删除旧的。</p>`
+<p>已确认的订单按原工艺路线执行不受影响。只有新确认的订单才用新工艺路线。建议新旧同时维护一段时间再删除旧的。</p>
+<h4>Q7：飞书推送"完全收不到"怎么查？</h4>
+<p>三步定位：① <code>ps aux | grep 'celery -A app.celery_app worker'</code> 确认 worker 活着；② <code>grep feishu /tmp/lightmes-celery/worker.log</code> 看任务是否成功；③ 飞书推送页 → 推送日志，按时间查 error_msg 字段。</p>
+<h4>Q8：换服务器后旧飞书 open_id 全部失效？</h4>
+<p>更换了飞书 App ID 才会失效（飞书 open_id 按应用隔离）。换服务器但 App ID 不变则不受影响。失效时 Admin → 飞书推送 → 「按手机号批量匹配」一键恢复。</p>
+<h4>Q9：Celery 任务一直 "pending" 不执行？</h4>
+<p>看 Redis db 是否被同机其他项目占用（典型症状：和 bizcloud/dify 撞 db 0）。修改 <code>backend/.env</code> 的 <code>CELERY_BROKER_URL</code> 到独立 db（推荐 db 2），重启 worker。</p>
+<h4>Q10：报工审核后没推飞书？</h4>
+<p>检查三件事：① 飞书推送总开关是否启用；② 员工 <code>feishu_open_id</code> 是否已绑（未绑会回退到站内通知）；③ 事件码规则里 <code>channels</code> 是否包含 <code>feishu</code>。</p>`
           },
           {
-            id: 'ch12-2',
-            title: '12.2 最佳实践建议',
+            id: 'ch13-2',
+            title: '13.2 最佳实践建议',
             content: `<h3>最佳实践建议</h3>
 <h4>1. 数据准确性最重要</h4>
 <ul>
@@ -949,6 +1196,12 @@ const guideData: GuideSection[] = [
 <li>不同角色需要培训不同功能</li>
 <li>班组长要理解报工审核的重要性</li>
 <li>员工要知道如何正确报工</li>
+</ul>
+<h4>6. IM 推送运维必做</h4>
+<ul>
+<li>服务器迁移后必须改 <code>.env</code> 的 Redis db（避免和同机项目撞库）</li>
+<li>飞书 / 钉钉 改了 App ID / AgentId 后必须重做员工 open_id 绑定</li>
+<li>改完代码 / 上线新功能后必须重启 Celery（Beat 不会热加载调度表）</li>
 </ul>`
           },
         ]
@@ -1168,7 +1421,22 @@ const guideData: GuideSection[] = [
 <tr><td>客户下单</td><td>❌</td><td>✅</td></tr>
 <tr><td>查看订单进度</td><td>❌</td><td>✅</td></tr>
 <tr><td>对账单</td><td>❌</td><td>✅</td></tr>
-</table>`
+</table>
+<h4>Q7：怎么绑定飞书 / 钉钉 / 企微 收个人通知？</h4>
+<ol>
+<li>「我的」→「账号设置」→ 找到「飞书 / 钉钉 / 企微绑定」</li>
+<li>点「去绑定」会跳到对应 IM 授权页（需安装对应 App）</li>
+<li>授权后回跳 LightMes，自动存 <code>open_id</code> / <code>dingtalk_userid</code> / <code>wecom_userid</code></li>
+<li>绑定后派工、报工审核、工资条会推送到对应 IM</li>
+</ol>
+<p><strong>注意</strong>：未绑定也能用站内通知（铃铛），但 IM 推送需要绑定才能收个人消息。</p>
+<h4>Q8：收不到派工/工资推送通知？</h4>
+<ul>
+<li>先确认已绑定 IM（见 Q7）</li>
+<li>检查手机 IM App 通知权限是否被关闭</li>
+<li>在「我的 → 通知设置」里检查是否被静默</li>
+<li>静默时段（默认 22:00–07:00）内的消息会延迟到点发送</li>
+</ul>`
           },
         ]
       },
@@ -1385,6 +1653,460 @@ const guideData: GuideSection[] = [
 </ul>
 <h4>Q6：支持哪些浏览器？</h4>
 <p>iPhone：Safari 或 Chrome；Android：Chrome、Firefox。推荐使用最新版 Chrome 或 Safari。</p>`
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'part4',
+    title: '第四篇：微信小程序管理端使用指南',
+    icon: 'Cellphone',
+    children: [
+      {
+        id: 'wx-ch1',
+        title: '第一章 小程序管理端简介',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'wx-1-1',
+            title: '1.1 什么是管理端小程序',
+            content: `<h3>微信小程序管理端</h3>
+<p>LightMes 提供一个<strong>微信小程序版"轻量管理端"</strong>，面向厂长 / 班组长 / 财务 / 业务，适合<strong>出差、外勤、车间走动</strong>等不方便打开 PC 的场景。功能定位：<strong>PC 端的手机伴侣</strong>，不是替代。</p>
+<h4>入口</h4>
+<p>微信 → 搜索「LightMes」小程序（或扫码「管理端」入口）→ 选择「<strong>管理端</strong>」模式登录。</p>
+<h4>登录方式</h4>
+<ul>
+<li>手机号 + 验证码（默认）</li>
+<li>账号密码（PC 创建账号后可用）</li>
+</ul>
+<h4>适用角色</h4>
+<table>
+<tr><th>角色</th><th>核心场景</th></tr>
+<tr><td>老板 / 厂长</td><td>查实时看板、看工厂日报、审重要单据</td></tr>
+<tr><td>班组长</td><td>现场审核报工、扫码分配、查本组任务</td></tr>
+<tr><td>财务</td><td>查工资 / 对账、确认工资条</td></tr>
+<tr><td>业务</td><td>客户管理、订单跟进、外勤报价</td></tr>
+</table>
+<h4>与 PC 管理端的区别</h4>
+<ul>
+<li>✅ 手机端能做的：审核、查询、扫码、轻度配置</li>
+<li>❌ 手机端<strong>不能</strong>做的：批量导入、复杂报表导出、初始化配置、生产计划全流程编排</li>
+<li>数据：与 PC 端实时同步（同一后端）</li>
+</ul>`
+          },
+          {
+            id: 'wx-1-2',
+            title: '1.2 角色与权限',
+            content: `<h3>角色与权限</h3>
+<p>管理端小程序登录后，<strong>角色权限与 PC 端完全一致</strong>。例如：</p>
+<ul>
+<li>没有 <code>order.manage</code> 权限，看不到订单管理入口</li>
+<li>只有 <code>report.audit</code> 权限，能进入审核页但不能改产品/工价</li>
+</ul>
+<p>权限按租户隔离，员工只能看到自己租户下的数据。</p>
+<h4>切换角色（一人多租户时）</h4>
+<p>「我的」→ 「切换租户 / 角色」→ 选目标租户。小程序会刷新权限与菜单。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch2',
+        title: '第二章 首页与看板',
+        icon: 'DataLine',
+        children: [
+          {
+            id: 'wx-2-1',
+            title: '2.1 首页（管理端仪表盘）',
+            content: `<h3>首页</h3>
+<p>登录后默认进入首页，展示：</p>
+<ul>
+<li>今日关键指标：产值、订单达成率、不良率</li>
+<li>待办事项：待审报工、待确认工资、待处理预警</li>
+<li>实时生产趋势：折线图展示当日各小时产量</li>
+<li>快捷入口：根据角色推荐（审核 / 看板 / 工厂助手）</li>
+</ul>`
+          },
+          {
+            id: 'wx-2-2',
+            title: '2.2 看板 / 车间大屏',
+            content: `<h3>看板 / 车间大屏</h3>
+<p><strong>路径</strong>：底部 tab「首页」→ 「看板」/「车间大屏」</p>
+<p>与 PC 端相同：实时显示各产线进度、异常报警、交期倒计时。车间大屏建议投到 TV，做横屏自适应。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch3',
+        title: '第三章 报工审核',
+        icon: 'Document',
+        children: [
+          {
+            id: 'wx-3-1',
+            title: '3.1 批量审核',
+            content: `<h3>批量审核（小程序特色）</h3>
+<p><strong>路径</strong>：底部「管理」tab → 报工审核 → 批量</p>
+<p>班组长在现场用手机审核最频繁，<strong>小程序为审核做了大量优化</strong>：</p>
+<ul>
+<li>按工序 / 班组 / 员工筛选待审</li>
+<li>支持<strong>滑动审批</strong>（左滑通过 / 右滑驳回）</li>
+<li>支持<strong>扫码</strong>调出报工详情（扫任务二维码定位到具体报工）</li>
+<li>一次最多 20 条批量过 / 批量驳</li>
+</ul>
+<h4>审核要点</h4>
+<ol>
+<li>看员工上传的照片/视频（小程序能直接预览原图与视频）</li>
+<li>核对数量（合格数 / 不良数）</li>
+<li>通过 → 进入 QC 终审；驳回 → 填原因</li>
+</ol>`
+          },
+          {
+            id: 'wx-3-2',
+            title: '3.2 单位审核（QC 终审）',
+            content: `<h3>单位审核（QC 终审）</h3>
+<p><strong>路径</strong>：底部「管理」tab → 报工单位</p>
+<p>QC 终审岗用，<strong>支持按质检模板逐项打勾</strong>（详见 PC 端 6.3 节）：</p>
+<ul>
+<li>选择不合格项 → 必填缺陷代码 + 备注</li>
+<li>测量型项目填入实测值，系统自动判定 pass/fail</li>
+</ul>`
+          },
+          {
+            id: 'wx-3-3',
+            title: '3.3 审核详情',
+            content: `<h3>审核详情</h3>
+<p><strong>路径</strong>：报工列表 → 点某条报工</p>
+<p>展示：员工 / 工序 / 数量 / 报工时间 / 照片视频 / 历史审核记录 / 关联工单 / 关联订单。</p>
+<p>驳回时可选择驳回原因模板（从字典里选）或填自定义原因。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch4',
+        title: '第四章 主数据管理',
+        icon: 'Box',
+        children: [
+          {
+            id: 'wx-4-1',
+            title: '4.1 产品 / 型号 / 工序 / 工艺路线',
+            content: `<h3>产品 / 型号 / 工序 / 工艺路线</h3>
+<p><strong>路径</strong>：底部「管理」tab → 主数据</p>
+<p>小程序支持<strong>浏览 + 轻量编辑</strong>，适合：</p>
+<ul>
+<li>外勤报价时翻产品库、看价格、复制产品编码给客户</li>
+<li>车间现场查询某产品用的什么工艺路线、每道工序工价</li>
+</ul>
+<p><strong>不能</strong>在小程序做的：批量导入、复杂公式配置、删除（避免误操作）。这些需回 PC。</p>`
+          },
+          {
+            id: 'wx-4-2',
+            title: '4.2 物料 / BOM / 供应商',
+            content: `<h3>物料 / BOM / 供应商</h3>
+<p><strong>路径</strong>：主数据 → 物料 / BOM / 供应商</p>
+<p>查询用得最多，看库存、看供应商联系方式、看某产品的 BOM 结构。</p>`
+          },
+          {
+            id: 'wx-4-3',
+            title: '4.3 批量设置型号工价',
+            content: `<h3>批量设置型号工价</h3>
+<p><strong>路径</strong>：主数据 → 型号 → 批量工价</p>
+<p>车间调整工价时，老板/厂长在手机上<strong>勾选多个型号 + 多个工序</strong>，一键设工价。比 PC 操作快很多。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch5',
+        title: '第五章 订单与工单',
+        icon: 'List',
+        children: [
+          {
+            id: 'wx-5-1',
+            title: '5.1 订单管理',
+            content: `<h3>订单管理</h3>
+<p><strong>路径</strong>：底部「管理」tab → 订单</p>
+<p>支持：浏览、筛选、改状态（确认 / 作废）、看订单详情、查客户联系方式。</p>
+<p><strong>不能</strong>在小程序做：新建订单、编辑订单明细（需 PC）。</p>`
+          },
+          {
+            id: 'wx-5-2',
+            title: '5.2 工单 / 任务',
+            content: `<h3>工单 / 任务</h3>
+<p><strong>路径</strong>：底部「管理」tab → 工单 / 任务</p>
+<p>小程序特色功能：</p>
+<ul>
+<li><strong>任务二维码</strong>：点单条任务 → 「生成任务码」→ 把图片保存到相册 → 打印贴工位，员工扫码报工</li>
+<li><strong>扫码分配</strong>：扫员工码 + 扫任务码 → 一键派工</li>
+<li><strong>任务跟踪</strong>：看每个任务当前进度（待报工 / 报工中 / 已完成）</li>
+</ul>`
+          },
+          {
+            id: 'wx-5-3',
+            title: '5.3 客户管理',
+            content: `<h3>客户管理</h3>
+<p><strong>路径</strong>：底部「管理」tab → 客户</p>
+<p>查客户档案、跟进记录、订单历史、联系人。客户详情页可直接拨打电话或加微信。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch6',
+        title: '第六章 生产与计划',
+        icon: 'Calendar',
+        children: [
+          {
+            id: 'wx-6-1',
+            title: '6.1 生产计划',
+            content: `<h3>生产计划</h3>
+<p><strong>路径</strong>：底部「管理」tab → 计划</p>
+<p>小程序支持：浏览计划、看每条计划的甘特图（简化版）、改计划状态、<strong>AI 排产建议</strong>查看。</p>
+<p><strong>不能</strong>在小程序做：新建复杂计划、甘特图拖拽、APS 高级选项（需 PC）。</p>`
+          },
+          {
+            id: 'wx-6-2',
+            title: '6.2 产能设置',
+            content: `<h3>产能设置</h3>
+<p><strong>路径</strong>：计划 → 产能</p>
+<p>配置每道工序的<strong>标准工时</strong>、<strong>每日产能上限</strong>，APS 排产会用到。适合车间主任现场调整。</p>`
+          },
+          {
+            id: 'wx-6-3',
+            title: '6.3 自动化设置',
+            content: `<h3>自动化设置</h3>
+<p><strong>路径</strong>：底部「管理」tab → 系统 → 自动化</p>
+<p>配置自动化规则：</p>
+<ul>
+<li>订单确认后自动派工</li>
+<li>报工审核后自动推送飞书 / 钉钉</li>
+<li>异常自动报警</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch7',
+        title: '第七章 采购与仓库',
+        icon: 'Goods',
+        children: [
+          {
+            id: 'wx-7-1',
+            title: '7.1 采购单 / 对账单',
+            content: `<h3>采购单 / 对账单</h3>
+<p><strong>路径</strong>：底部「管理」tab → 采购</p>
+<p>查采购单进度（待发货 / 在途 / 已入库）、对账单确认、查供应商联系方式。</p>
+<p>采购对账单的<strong>确认 / 标记已付</strong>操作可在小程序完成。</p>`
+          },
+          {
+            id: 'wx-7-2',
+            title: '7.2 仓库 / 库存',
+            content: `<h3>仓库 / 库存</h3>
+<p><strong>路径</strong>：底部「管理」tab → 仓库</p>
+<p>查实时库存、看安全库存预警、查入库出库流水。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch8',
+        title: '第八章 财务与工资',
+        icon: 'Wallet',
+        children: [
+          {
+            id: 'wx-8-1',
+            title: '8.1 工资管理',
+            content: `<h3>工资管理</h3>
+<p><strong>路径</strong>：底部「管理」tab → 工资</p>
+<p>支持：浏览月工资、点员工看明细、加补贴 / 扣款、确认工资、导出 Excel。</p>`
+          },
+          {
+            id: 'wx-8-2',
+            title: '8.2 工资条',
+            content: `<h3>工资条</h3>
+<p><strong>路径</strong>：工资 → 工资条</p>
+<p>生成员工的电子工资条、查看签名进度、催签。</p>`
+          },
+          {
+            id: 'wx-8-3',
+            title: '8.3 利润分析 / 收支流水',
+            content: `<h3>利润分析 / 收支流水</h3>
+<p><strong>路径</strong>：底部「管理」tab → 财务</p>
+<p>看月度利润、客户毛利、订单毛利。收支流水可查每笔进账出账。</p>`
+          },
+          {
+            id: 'wx-8-4',
+            title: '8.4 对账单',
+            content: `<h3>对账单</h3>
+<p><strong>路径</strong>：财务 → 对账单</p>
+<p>客户对账单的生成、确认、催收、标记已收。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch9',
+        title: '第九章 CRM',
+        icon: 'UserFilled',
+        children: [
+          {
+            id: 'wx-9-1',
+            title: '9.1 销售机会',
+            content: `<h3>销售机会</h3>
+<p><strong>路径</strong>：底部「管理」tab → CRM → 销售机会</p>
+<p>业务外勤时最常用：客户拜访后实时录入机会、改阶段、记跟进。</p>
+<p>公海池自动回收：超期未跟进的机会自动回收到公海，业务可重新认领。</p>`
+          },
+          {
+            id: 'wx-9-2',
+            title: '9.2 客户标签 / 机会统计',
+            content: `<h3>客户标签 / 机会统计</h3>
+<p>客户标签用于分类（如 VIP、长期、一次性）。机会统计看转化率、阶段分布、外勤业绩。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch10',
+        title: '第十章 设备与报表',
+        icon: 'Tools',
+        children: [
+          {
+            id: 'wx-10-1',
+            title: '10.1 设备管理',
+            content: `<h3>设备管理</h3>
+<p><strong>路径</strong>：底部「管理」tab → 设备</p>
+<p>查设备档案、看保养计划、登记保养记录、报修。</p>
+<p><strong>日常点检</strong>：设备管理员现场扫码点检，避免漏检。</p>`
+          },
+          {
+            id: 'wx-10-2',
+            title: '10.2 报表',
+            content: `<h3>报表</h3>
+<p><strong>路径</strong>：底部「管理」tab → 报表</p>
+<p>小程序支持<strong>图表速览</strong>（生产报表、采购统计、缺陷分析、利润分析），不提供 Excel 导出（需 PC）。</p>
+<p>老板最常用：手机打开看本月关键指标。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch11',
+        title: '第十一章 系统与设置',
+        icon: 'Setting',
+        children: [
+          {
+            id: 'wx-11-1',
+            title: '11.1 系统设置',
+            content: `<h3>系统设置</h3>
+<p><strong>路径</strong>：底部「管理」tab → 系统</p>
+<p>可做：</p>
+<ul>
+<li>查看租户信息、套餐</li>
+<li>用户/角色/部门<strong>查询</strong>（增删改回 PC）</li>
+<li>字典查看、打印模板查看</li>
+<li>操作日志查询</li>
+</ul>`
+          },
+          {
+            id: 'wx-11-2',
+            title: '11.2 考勤',
+            content: `<h3>考勤</h3>
+<p><strong>路径</strong>：系统 → 考勤</p>
+<p>查看员工打卡记录、补卡、导出月度考勤表。员工自己打卡用「员工端」小程序（不同模式）。</p>`
+          },
+          {
+            id: 'wx-11-3',
+            title: '11.3 IM 推送配置',
+            content: `<h3>IM 推送配置（小程序仅查看）</h3>
+<p>飞书 / 钉钉 / 企微的 AppID、AppSecret 等敏感配置<strong>不能在小程序修改</strong>，必须回 PC 管理端（系统管理 → 飞书消息推送 / 钉钉消息推送 / 企微消息推送）。</p>
+<p>小程序可查看：当前启用了哪些群、推送规则、推送日志。</p>`
+          },
+          {
+            id: 'wx-11-4',
+            title: '11.4 通知中心',
+            content: `<h3>通知中心</h3>
+<p><strong>路径</strong>：底部「我的」→ 通知</p>
+<p>站内通知（铃铛）汇总，按事件码分类。已读 / 未读 / 一键全读。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch12',
+        title: '第十二章 工厂助手 / AI 中心',
+        icon: 'MagicStick',
+        children: [
+          {
+            id: 'wx-12-1',
+            title: '12.1 工厂助手（AI 对话）',
+            content: `<h3>工厂助手（AI 对话）</h3>
+<p><strong>路径</strong>：底部「管理」tab → AI → 工厂助手</p>
+<p>小程序 AI 助手与 PC 完全同步：</p>
+<ul>
+<li>支持多轮对话 + <code>context_id</code> 上下文</li>
+<li>问「今天产量 / 本月毛利 / 哪个工序卡交期 / 帮我写个催货话术」</li>
+<li>语音输入：长按麦克风按钮直接说话</li>
+</ul>`
+          },
+          {
+            id: 'wx-12-2',
+            title: '12.2 AI 深度分析 / 统计',
+            content: `<h3>AI 深度分析 / 统计</h3>
+<p><strong>深度分析</strong>：因果分析，帮你定位「为什么本月不良率上升」。</p>
+<p><strong>AI 统计</strong>：AI 调用量、按场景拆解（问得最多的是什么）、调用成功率。</p>`
+          },
+        ]
+      },
+      {
+        id: 'wx-ch13',
+        title: '第十三章 小程序常见问题',
+        icon: 'QuestionFilled',
+        children: [
+          {
+            id: 'wx-13-1',
+            title: '13.1 登录与权限',
+            content: `<h3>登录与权限</h3>
+<h4>Q1：登录后看不到某些菜单？</h4>
+<p>权限问题。让 PC 端超级管理员在「系统管理 → 角色」里给该员工加对应权限码（如 <code>order.manage</code>、<code>report.audit</code>）。</p>
+<h4>Q2：登录后显示「无租户」？</h4>
+<p>该手机号没绑定到任何租户。让管理员在「用户管理」里给该员工绑定手机号。</p>
+<h4>Q3：登录态过期？</h4>
+<p>默认 token 8 小时有效。超期会自动跳登录页，重新验证码登录即可。</p>`
+          },
+          {
+            id: 'wx-13-2',
+            title: '13.2 数据同步',
+            content: `<h3>数据同步</h3>
+<h4>Q1：手机上看到的订单状态和 PC 不一致？</h4>
+<p>下拉刷新页面。LightMes 没有走实时推送，每页进入时拉取最新。</p>
+<h4>Q2：上传照片失败？</h4>
+<ul>
+<li>检查微信是否授权「使用相册」</li>
+<li>单张最大 100MB（可在 PC 端 .env 调 <code>FILE_MAX_UPLOAD_SIZE</code>）</li>
+<li>网络问题：切换 WiFi / 数据流量重试</li>
+</ul>`
+          },
+          {
+            id: 'wx-13-3',
+            title: '13.3 拍照与扫码',
+            content: `<h3>拍照与扫码</h3>
+<h4>Q1：报工拍照模糊？</h4>
+<p>小程序拍照调用微信原生相机，点击对焦后等 1 秒再按快门。避免逆光。</p>
+<h4>Q2：扫码扫不出来？</h4>
+<ul>
+<li>二维码太小：手机距离 15~30cm</li>
+<li>模糊：对焦后再扫</li>
+<li>屏幕太暗：调亮屏幕</li>
+<li>仍扫不出：用手输任务码兜底</li>
+</ul>`
+          },
+          {
+            id: 'wx-13-4',
+            title: '13.4 与 PC 端数据对应',
+            content: `<h3>与 PC 端数据对应</h3>
+<p>小程序管理端、PC 管理端、H5 端 三者共享同一后端，<strong>数据完全一致</strong>。差异只在交互方式：</p>
+<table>
+<tr><th>场景</th><th>推荐</th></tr>
+<tr><td>车间走动审核</td><td>小程序</td></tr>
+<tr><td>复杂报表导出</td><td>PC</td></tr>
+<tr><td>外勤报价 / 客户管理</td><td>小程序</td></tr>
+<tr><td>初始化配置 / 批量导入</td><td>PC</td></tr>
+<tr><td>客户下单</td><td>客户端 H5 / 小程序</td></tr>
+<tr><td>员工报工 / 查工资</td><td>员工端 H5 / 小程序</td></tr>
+</table>`
           },
         ]
       },

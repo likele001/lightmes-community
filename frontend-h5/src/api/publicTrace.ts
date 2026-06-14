@@ -31,8 +31,12 @@ export interface PublicTraceDetail {
   generated_at?: string | null
 }
 
-export function getPublicTrace(code: string) {
-  return apiGet<PublicTraceDetail>(`/h5/public/trace/${encodeURIComponent(code.trim())}`)
+export function getPublicTrace(code: string, tenant?: string) {
+  let url = `/h5/public/trace/${encodeURIComponent(code.trim())}`
+  if (tenant) {
+    url += `?tenant=${encodeURIComponent(tenant.trim())}`
+  }
+  return apiGet<PublicTraceDetail>(url)
 }
 
 export function publicTraceMediaUrl(attachmentId: number, code: string, apiUrl?: string | null) {

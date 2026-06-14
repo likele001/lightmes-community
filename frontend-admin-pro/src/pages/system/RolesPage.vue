@@ -33,8 +33,8 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133]">{{ row.name }}</div>
-                <div class="text-xs text-[#909399]">{{ row.code }} · #{{ row.id }}</div>
+                <div class="font-semibold text-el-primary">{{ row.name }}</div>
+                <div class="text-xs text-el-placeholder">{{ row.code }} · #{{ row.id }}</div>
               </div>
             </div>
             <dl class="admin-mobile-kv">

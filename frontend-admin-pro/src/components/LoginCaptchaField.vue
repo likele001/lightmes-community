@@ -9,7 +9,7 @@
         class="flex-1"
       />
       <div
-        class="shrink-0 h-10 w-[128px] border border-[#dcdfe6] rounded flex items-center justify-center cursor-pointer bg-[#f5f7fa] overflow-hidden"
+        class="shrink-0 h-10 w-[128px] border border-[var(--el-border-color)] rounded flex items-center justify-center cursor-pointer bg-[var(--el-fill-color-light)] overflow-hidden"
         :title="loadError ? t('common.loadFailedRetry') : t('common.clickRefreshCaptcha')"
         @click="refresh"
       >
@@ -19,11 +19,11 @@
           class="h-full w-full object-contain"
           :alt="t('common.captcha')"
         />
-        <span v-else-if="loading" class="text-xs text-[#909399]">{{ t('common.loading') }}</span>
-        <span v-else class="text-xs text-[#409eff] px-1 text-center">{{ t('common.clickRefresh') }}</span>
+        <span v-else-if="loading" class="text-xs" style="color:var(--el-text-color-placeholder)">{{ t('common.loading') }}</span>
+        <span v-else class="text-xs px-1 text-center" style="color:var(--el-color-primary)">{{ t('common.clickRefresh') }}</span>
       </div>
     </div>
-    <p v-if="loadError" class="text-xs text-[#f56c6c] mt-1">{{ loadError }}</p>
+    <p v-if="loadError" class="text-xs mt-1" style="color:var(--el-color-danger)">{{ loadError }}</p>
   </el-form-item>
 </template>
 

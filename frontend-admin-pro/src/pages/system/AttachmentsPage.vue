@@ -47,8 +47,8 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133] text-sm break-all">{{ row.original_filename }}</div>
-                <div class="text-xs text-[#909399]">#{{ row.id }} · {{ row.storage_driver }} · {{ row.created_at }}</div>
+                <div class="font-semibold text-el-primary text-sm break-all">{{ row.original_filename }}</div>
+                <div class="text-xs text-el-placeholder">#{{ row.id }} · {{ row.storage_driver }} · {{ row.created_at }}</div>
               </div>
             </div>
             <AttachmentPreview v-if="isPreviewable(row)" :attachment="row" :width="160" :height="100" class="mt-2" />

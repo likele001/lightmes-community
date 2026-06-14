@@ -1,5 +1,5 @@
 <template>
-  <AdminPage title="{{ isEdit ? '编辑生产计划' : '新增生产计划' }}">
+  <AdminPage :title="isEdit ? t('production.planForm.titleEdit') : t('production.planForm.titleCreate')">
     <el-card v-loading="loading">
           <template #actions>
       <div class="flex items-center gap-2">

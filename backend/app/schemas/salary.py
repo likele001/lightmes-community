@@ -46,6 +46,8 @@ class SalarySlipOut(BaseModel):
     month: str
     total_qty: int
     item_amount: float
+    hourly_amount: float = 0
+    hourly_hours: float = 0
     bonus_amount: float
     deduction_amount: float
     net_amount: float

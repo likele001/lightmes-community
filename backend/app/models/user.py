@@ -1,6 +1,7 @@
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Table, UniqueConstraint, Column, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Table, UniqueConstraint, Column, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -38,6 +39,10 @@ class User(Base):
     dingtalk_bound_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="1")
     is_superuser: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="0")
+
+    salary_type: Mapped[str] = mapped_column(String(16), nullable=False, server_default="piece")
+    hourly_rate: Mapped[Decimal | None] = mapped_column(Numeric(12, 4), nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
     tenant = relationship("Tenant", back_populates="users")

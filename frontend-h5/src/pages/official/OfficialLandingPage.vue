@@ -1,154 +1,544 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { getStoredTenantCode } from '@/utils/tenant'
 import PhonePreview from '@/components/official/PhonePreview.vue'
 import DashboardPreview from '@/components/official/DashboardPreview.vue'
-import { coreFeatures, highlights, workflowSteps } from '@/data/official-content'
+
+const communityUrl = 'https://github.com/likele001/lightmes-community'
+const trialUrl = 'https://admin.mes.cenkor.cn/register/'
+// 静态官网配置：填写真实微信号后，复制按钮会自动可用。
+const salesWechat = ''
+const showWechatPanel = ref(false)
+const copied = ref(false)
 
 const loginPath = computed(() => {
   const code = getStoredTenantCode()
   return code ? `/t/${code}/login` : '/login'
 })
 
-const previewScreens = [
-  { screen: 'home' as const, label: '工作看板' },
-  { screen: 'report' as const, label: '扫码报工' },
-  { screen: 'tasks' as const, label: '任务列表' },
+const heroHighlights = [
+  { label: '扫码报工', desc: '手机扫码录入产量，照片留痕' },
+  { label: '自动算薪', desc: '审核通过自动计件工资' },
+  { label: 'AI 工厂助手', desc: '智能分析、数据预警、操作指引' },
+  { label: 'CRM 客户', desc: '客户档案、商机、公海、跟进' },
+  { label: '仓储库存', desc: '出入库、盘点、安全库存预警' },
+  { label: '经营报表', desc: '产量、良率、成本、客户贡献' },
 ]
 
-const iconPaths: Record<string, string> = {
-  'shopping-cart': 'M6 6h15l-1.5 9h-12L6 6Zm3 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z',
-  scan: 'M4 7V5a1 1 0 0 1 1-1h2M20 7V5a1 1 0 0 0-1-1h-2M4 17v2a1 1 0 0 0 1 1h2M20 17v2a1 1 0 0 1-1 1h-2M8 12h8',
-  wallet: 'M3 7a2 2 0 0 1 2-2h14v14H5a2 2 0 0 1-2-2V7Zm16 0v2H7a2 2 0 0 0 0 4h12v-6Z',
-  'shield-check': 'M12 3 20 7v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4Zm-1 9 2 2 4-4',
-  calendar: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
-  'check-circle': 'M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4 12 14.01l-3-3',
-  monitor: 'M2 3h20v14H2Zm3 17h14M12 21v-4',
-  'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Zm-1-4v5h5M8 13h8M8 17h5',
+const painPoints = [
+  {
+    title: '微信群报工，月底全靠回忆',
+    desc: '产量、合格、不良、照片散在不同群和聊天记录里，月底想回看一条都翻半天，员工和班组长经常对不上数。',
+  },
+  {
+    title: 'Excel 算计件工资，加班对到崩溃',
+    desc: '一个工人一个月几十张单子，工序、单价、补贴、扣款全靠手算，算错一次就是一次扯皮，员工不信任、老板背锅。',
+  },
+  {
+    title: '订单进度不透明，老板天天追问',
+    desc: '客户来电话问交期，只能挨个打电话问车间组长，订单卡在哪一道工序、还差多少件、谁在做，全靠人脑记。',
+  },
+  {
+    title: '出了质量问题，根本查不到根',
+    desc: '客户投诉一批货，想知道是哪个工人、哪台机、哪批料做的，翻不到记录，只能集体担责或者下次注意。',
+  },
+  {
+    title: '客户资料散在销售手机里',
+    desc: '客户名单、跟进记录、报价历史都在销售微信或脑子里，人一走客户就断，公海客户没人跟也发现不了。',
+  },
+  {
+    title: '库存多少没人说得清',
+    desc: '仓库进了多少、出了多少、还剩多少，月底盘才知道差了一截。缺料停线才发现，补料已经来不及了。',
+  },
+  {
+    title: '设备坏了才知道该保养了',
+    desc: '没有点检记录，没有保养计划，设备出故障停机了才发现该维护了，一停就是半天一天，交期全耽误。',
+  },
+  {
+    title: '想上系统又被报价吓退',
+    desc: '随便问一家就是十几万、几十万，实施半年起步，小厂用不起，大功能也用不上，最后回到 Excel 和微信群。',
+  },
+  {
+    title: '客户催交期，心里没底',
+    desc: '客户天天催货，但工厂到底能做到哪一步、哪些订单会延期，老板自己也说不准，只能靠经验猜或者让销售安抚。',
+  },
+  {
+    title: '员工对工资有异议，解释不清',
+    desc: '工人觉得这个月工资少了，但你拿不出每道工序的报工明细和审核记录，只能靠口头解释，解释不通就留不住人。',
+  },
+  {
+    title: '想分析数据，发现根本没有数据',
+    desc: '月底想看看哪个工序效率低、哪个产品利润高、哪个客户贡献大，发现数据全在本子和 Excel 里，想分析都没法下手。',
+  },
+]
+
+const advantageGroups = [
+  {
+    group: '生产管理',
+    color: '#2563eb',
+    items: [
+      { title: '扫码报工', desc: '一码一任务，手机扫码录入合格/不良数量，拍照留痕，提交后显示预估工资。' },
+      { title: '两级审核', desc: '班组长初审 + 质检终审，驳回必须填原因，重报有记录可追溯。' },
+      { title: '甘特排产', desc: '甘特图拖拽排产，智能派工到人，齐套检查提示缺料，任务码批量打印推送。' },
+      { title: '生产看板', desc: '车间大屏实时滚动产量、良率和异常，订单全生命周期追踪。' },
+      { title: '质量溯源', desc: '一物一码，扫成品反查物料批次、操作人、设备、时间和质检记录。' },
+      { title: '客户下单', desc: '客户 H5 自助浏览型号、选数量交期、下单，进度自己查。' },
+    ],
+  },
+  {
+    group: 'AI 智能中心',
+    color: '#7c3aed',
+    items: [
+      { title: '工厂助手', desc: '基于生产数据的 AI 问答，问产量、问进度、问异常，直接给答案。' },
+      { title: '数据预警', desc: '产能负荷异常、良率下滑、交期临近自动预警，不用人盯数据。' },
+      { title: '智能分析', desc: 'AI 自动分析产量趋势、工序瓶颈、人员效率，给出改进建议。' },
+      { title: '操作指引', desc: '系统内置智能帮助，新员工遇到问题直接问 AI，不靠老员工带。' },
+    ],
+  },
+  {
+    group: '经营与协同',
+    color: '#0891b2',
+    items: [
+      { title: '计件工资', desc: '型号 × 工序工价，审核通过自动入工资，补贴扣款单独项，月底一键生成工资条。' },
+      { title: 'CRM 客户管理', desc: '客户档案、联系人、销售机会、公海池、客户标签、售后跟进，商机转订单。' },
+      { title: '人事管理', desc: '组织架构、员工档案、技能标签、GPS 考勤打卡（可选地理围栏）。' },
+      { title: '仓储库存', desc: '仓库管理、出入库、退货、库存流水、安全库存预警，和采购、订单联动。' },
+      { title: '采购管理', desc: '采购单、入库、退货、供应商管理、采购对账。' },
+      { title: '财务管理', desc: '客户对账单、收支流水、成本毛利分析，数据从订单和报工自动汇总。' },
+      { title: '设备管理', desc: '设备档案、日常点检、保养计划与保养记录，维护日期自动联动。' },
+      { title: '数据报表', desc: '产量/良率/工序排行/日报趋势，ECharts 图表，老板移动端随时看。' },
+    ],
+  },
+]
+
+const compareRows = [
+  ['月底算工资', '加班对账 1-3 天，错算扯皮', '审核通过自动算，几分钟出表'],
+  ['老板看进度', '打电话问车间', '手机随时看订单和工序'],
+  ['员工报工', '微信群发数字，没凭证', '扫码 + 完工照片，留痕可查'],
+  ['质量追溯', '出问题翻不到记录', '扫成品码反查整链'],
+  ['客户管理', '名单在销售微信里', 'CRM 统一管理，公海回收'],
+  ['库存进出', '月底盘才知道差了', '出入库实时，库存预警'],
+  ['AI 分析', '靠人盯报表', 'AI 自动预警、分析、建议'],
+  ['上线周期', '半年起步，预算十几万', '几天到两周，按需部署'],
+]
+
+const whySourceCode = [
+  { saas: '数据在别人服务器，心里不踏实', source: '源码部署在自己服务器，数据不出厂' },
+  { saas: '按月扣费，用久了比买源码贵', source: '年费 ¥1800 起，成本可控' },
+  { saas: '停服了数据就没了', source: '源码在手，永久可用' },
+  { saas: '功能改不了，等厂商排期', source: '有源码可以自己改或找人改' },
+  { saas: '工厂数据外泄风险', source: '私有部署，自己管控安全' },
+  { saas: '绑定一家服务商，换不了', source: '源码交付，自由迁移' },
+]
+
+const deliverables = [
+  { deliver: '完整源码（前端 + 后端）', extra: '服务器购买和配置' },
+  { deliver: '一年内版本更新', extra: '域名和 SSL 证书' },
+  { deliver: 'GitHub 私有仓库权限', extra: '系统安装和部署' },
+  { deliver: '基础部署文档', extra: '数据导入和培训' },
+  { deliver: '微信技术支持群', extra: '定制开发' },
+]
+
+const featureCompare = [
+  { name: '扫码报工', community: true, pro: true },
+  { name: '派工管理', community: true, pro: true },
+  { name: '报工审核', community: true, pro: true },
+  { name: '工单列表', community: true, pro: true },
+  { name: '计件工资', community: false, pro: true },
+  { name: '工资条签名', community: false, pro: true },
+  { name: 'CRM 客户管理', community: false, pro: true },
+  { name: 'AI 工厂助手', community: false, pro: true },
+  { name: 'AI 数据预警', community: false, pro: true },
+  { name: '仓储库存', community: false, pro: true },
+  { name: '采购管理', community: false, pro: true },
+  { name: '财务管理', community: false, pro: true },
+  { name: '设备管理', community: false, pro: true },
+  { name: '甘特排产', community: false, pro: true },
+  { name: '客户自助下单', community: false, pro: true },
+  { name: '数据报表', community: false, pro: true },
+  { name: '用户数', community: '≤5', pro: '不限' },
+  { name: 'SKU 数', community: '≤20', pro: '不限' },
+  { name: '工序数', community: '≤10', pro: '不限' },
+]
+
+const closingSteps = [
+  { title: '创建订单', desc: '后台建单或客户 H5 自助下单，系统自动按工艺分解出工单和任务。' },
+  { title: '排产派工', desc: '甘特图排产，按员工技能和负荷智能派工，每个任务生成唯一二维码。' },
+  { title: '扫码报工', desc: '员工手机扫任务码，填合格 / 不良数量，拍照留证据，提交即看到预估工资。' },
+  { title: '审核算薪', desc: '班组长初审、质检终审，通过即计入工资，月底一键导工资条，员工手机签字。' },
+]
+
+const allModules = [
+  '产品管理', 'SKU 型号', '工序工价', '订单管理', '生产计划', '甘特排产',
+  '派工管理', '扫码报工', '两级审核', '生产看板', '质量溯源', '客户下单',
+  '计件工资', '工资条签名', 'CRM 客户', '销售机会', '公海池', '客户标签',
+  '人事管理', '考勤打卡', '技能标签', '仓储库存', '出入库', '安全库存',
+  '采购管理', '供应商管理', '对账单', '财务管理', '收支流水', '成本毛利',
+  '设备管理', '点检保养', 'AI 工厂助手', 'AI 数据预警', 'AI 智能分析', '数据报表',
+]
+
+const industries = ['五金加工', '钣金加工', '注塑加工', '服装加工', '家具定制', '电子装配', '包装印刷', '机械零件加工', '金属制品', '食品加工']
+
+const plans = [
+  {
+    name: 'Community 社区版',
+    price: '免费',
+    suffix: '开源',
+    desc: '扫码报工、派工、审核，适合小团队先跑通核心流程。',
+    features: ['扫码报工 + H5 派工', '班组长初审', '基础订单和工单', '5 人 / 20 SKU / 10 工序限制', 'GitHub 公开仓库，自行下载部署'],
+    cta: '免费下载',
+    href: communityUrl,
+  },
+  {
+    name: 'Pro 商业版',
+    price: '¥1800',
+    suffix: '/ 年',
+    desc: '全功能源码，无限制，一年更新。生产、CRM、AI、仓储、财务全覆盖。',
+    features: ['全部 36 个功能模块', '无限用户 / SKU / 工序', '一年内版本更新', 'GitHub 私有仓库权限', '源码交付，私有部署'],
+    highlight: true,
+    cta: '获取 Pro 报价',
+    href: null,
+  },
+  {
+    name: 'Pro + 标准实施',
+    price: '¥2800',
+    suffix: '/ 年',
+    desc: '源码 + 远程部署 + 数据导入 + 培训，确保工厂真正用起来。',
+    features: ['包含 Pro 全部内容', '远程安装部署', '基础数据导入', '管理员 / 班组长培训', '试运行陪跑'],
+    cta: '预约实施',
+    href: null,
+  },
+]
+
+const rollout = [
+  { step: 1, title: '聊清楚流程', desc: '了解你的产品、工序、工价规则，确认上线范围。' },
+  { step: 2, title: '配置基础数据', desc: '产品 / SKU / 工序 / 工价 / 人员 / 权限一次性配齐。' },
+  { step: 3, title: '导入历史数据', desc: '订单、客户、库存、工资基础数据可批量导入。' },
+  { step: 4, title: '培训三类角色', desc: '管理员、班组长、一线员工分别培训，半小时学会。' },
+  { step: 5, title: '一个车间试跑', desc: '先选一条产线或一个车间跑一周，发现问题立即调。' },
+  { step: 6, title: '正式上线扩展', desc: '试跑没问题再扩到全厂，可分批接入业务模块。' },
+]
+
+const faqs = [
+  {
+    q: '社区版和 Pro 版有什么区别？',
+    a: '社区版免费开源，包含扫码报工、派工、审核核心流程，但有 5 人 / 20 SKU / 10 工序限制，不含工资、CRM、AI、仓储、财务等模块。Pro 版全功能无限制，源码交付。',
+  },
+  {
+    q: '源码怎么交付？',
+    a: '购买 Pro 后开通 GitHub 私有仓库权限，源码直接克隆。一年内免费更新，到期可续费。',
+  },
+  {
+    q: '部署谁来做？',
+    a: '源码交付不包含部署，需要自己有服务器或找运维。Pro + 实施版包含远程部署和培训，另外也可以单独购买部署服务。',
+  },
+  {
+    q: '数据放在你们服务器还是我们自己的？',
+    a: '源码部署在你自己的服务器上，数据完全在工厂内部。我们不托管任何客户数据。',
+  },
+  {
+    q: 'AI 功能需要额外付费吗？',
+    a: 'AI 工厂助手、数据预警、智能分析是 Pro 版内置功能，不需要额外付费。需要接入外部大模型的按配置接入。',
+  },
+  {
+    q: '能不能先免费试一下再决定？',
+    a: '可以。社区版免费开源，5 人以内可跑通扫码报工和审核流程。也可以在线试用体验系统。觉得合适再购买 Pro 商业版源码。',
+  },
+  {
+    q: '后续要加功能或者改流程怎么办？',
+    a: '有源码可以自己改或找人改。我们也提供定制开发服务，按人天报价（¥1500-3000/人天）。',
+  },
+  {
+    q: '我们工厂员工不会用智能手机怎么办？',
+    a: '只要会扫码、会拍照就够了，扫码报工是用大字加图标设计的。第一天发任务二维码贴在工位上，老员工带 5 分钟就会。',
+  },
+]
+
+const wechatText = computed(() => salesWechat || '微信号待填写')
+
+function toggleWechatPanel() {
+  showWechatPanel.value = !showWechatPanel.value
+  copied.value = false
+}
+
+async function copyWechat() {
+  if (!salesWechat) return
+  await navigator.clipboard.writeText(salesWechat)
+  copied.value = true
 }
 
 onMounted(() => {
-  document.title = 'LightMes · 轻量化生产管理'
+  document.title = 'LightMes · 中小加工厂生产管理系统：源码交付 · 私有部署 · 扫码报工 + AI + CRM'
 })
 </script>
 
 <template>
-  <div class="official-container">
-    <!-- Hero：左文案 + 右预览（PC 双栏） -->
-    <header class="official-hero">
+  <div class="official-container sales-page">
+    <header class="official-hero sales-hero">
       <div class="official-hero-grid">
         <div class="official-hero__content">
-          <div class="official-badge">
+          <div class="official-badge sales-hero__badge">
             <span class="official-badge__dot" />
-            中小型加工厂 · 全端覆盖
+            源码交付 · 私有部署 · 数据不出厂
           </div>
-          <h1 class="official-hero__title">
-            深色工业风<br>也能<em>轻快</em>管生产
+          <h1 class="official-hero__title sales-hero__title">
+            不只是扫码报工<br>是一套完整的加工厂经营系统
           </h1>
-          <p class="official-hero__desc">
-            PC 管理后台排产派工，手机扫码报工算薪——从下单到发货，一套系统跑通加工厂全流程。
+          <p class="official-hero__desc sales-hero__desc">
+            生产报工、计件工资、CRM、人事考勤、仓储库存、采购对账、财务管理、AI 数据分析。买源码，部署在自己服务器，数据不出厂。
           </p>
-          <div class="official-hero__actions">
-            <router-link class="official-btn official-btn--primary" :to="loginPath">立即登录</router-link>
-            <router-link class="official-btn official-btn--ghost" to="/site/features">浏览功能</router-link>
+          <div class="official-hero__actions sales-hero__actions">
+            <a class="official-btn official-btn--primary" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版</a>
+            <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">获取 Pro 商业版</button>
+            <a class="official-btn official-btn--text" :href="trialUrl" target="_blank" rel="noopener">在线试用体验</a>
           </div>
-          <div class="official-highlights">
-            <div v-for="h in highlights" :key="h.label" class="official-highlight">
-              <strong>{{ h.label }}</strong>
-              <span>{{ h.desc }}</span>
-            </div>
+          <div v-if="showWechatPanel" class="sales-wechat-card" role="status">
+            <span>微信号</span>
+            <strong>{{ wechatText }}</strong>
+            <button class="sales-copy" type="button" :disabled="!salesWechat" @click="copyWechat">
+              {{ copied ? '已复制' : '复制微信号' }}
+            </button>
+            <p>添加时备注「MES 演示」，方便我们安排你工厂的真实场景演示。</p>
           </div>
         </div>
 
-        <div class="official-showcase">
+        <div class="official-showcase sales-showcase">
           <div class="official-showcase__dash">
-            <DashboardPreview label="PC 管理后台" />
+            <DashboardPreview label="老板端：订单 · 计划 · 工资 · 看板" />
           </div>
           <div class="official-showcase__float">
-            <PhonePreview screen="report" label="员工 H5" />
-            <PhonePreview screen="home" label="移动看板" />
+            <PhonePreview screen="report" label="员工扫码报工" />
+            <PhonePreview screen="tasks" label="任务推送列表" />
           </div>
+        </div>
+      </div>
+
+      <div class="sales-hero-highlights">
+        <div v-for="h in heroHighlights" :key="h.label" class="sales-hero-highlight">
+          <h3>{{ h.label }}</h3>
+          <p>{{ h.desc }}</p>
         </div>
       </div>
     </header>
 
-    <!-- 全端能力 -->
-    <section class="official-section official-section--bordered" aria-labelledby="platform-heading">
-      <div class="official-section__head">
-        <p class="official-section__eyebrow">全端协同</p>
-        <h2 id="platform-heading" class="official-section__title">PC 管全局，手机干实事</h2>
-        <p class="official-section__desc">
-          厂长在电脑前看报表排产，员工在车间扫码报工——两端数据实时同步。
-        </p>
+    <section class="official-section sales-pain" aria-labelledby="pain-heading">
+      <div class="sales-split-head">
+        <p class="sales-eyebrow">老板的真实日常</p>
+        <h2 id="pain-heading" class="official-section__title">每一条都让人头大，是不是你正在经历的？</h2>
+        <p class="official-section__desc">这些不是危言耸听，是几乎每家中小加工厂都在重复的事。LightMes 把它们一个一个解决。</p>
       </div>
-      <div class="official-platforms">
-        <DashboardPreview label="订单 · 排产 · 报表 · 大屏" />
-        <div>
-          <span class="official-platform-tag">移动端 H5</span>
-          <div class="official-carousel">
-            <div v-for="item in previewScreens" :key="item.label" class="official-carousel__item">
-              <PhonePreview :screen="item.screen" :label="item.label" />
-            </div>
+      <div class="sales-pain-list">
+        <article v-for="(point, idx) in painPoints" :key="point.title" class="sales-pain-item">
+          <span class="sales-pain-item__num">{{ String(idx + 1).padStart(2, '0') }}</span>
+          <h3>{{ point.title }}</h3>
+          <p>{{ point.desc }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="official-section official-section--bordered" aria-labelledby="close-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">四步闭环</p>
+        <h2 id="close-heading" class="official-section__title">从接单到算薪，跑通整个车间</h2>
+        <p class="official-section__desc">先选一个车间或一条产线试起来，跑通后再扩展到全厂。</p>
+      </div>
+      <div class="sales-flow-grid">
+        <article v-for="(step, index) in closingSteps" :key="step.title" class="sales-flow-step">
+          <div class="sales-flow-step__num">{{ index + 1 }}</div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.desc }}</p>
+        </article>
+      </div>
+    </section>
+
+    <template v-for="group in advantageGroups" :key="group.group">
+      <section class="official-section official-section--bordered sales-advantages" :aria-labelledby="`adv-${group.group}`">
+        <div class="sales-split-head">
+          <p class="sales-eyebrow" :style="{ background: group.color + '14', color: group.color }">{{ group.group }}</p>
+          <h2 :id="`adv-${group.group}`" class="official-section__title">{{ group.group === '生产管理' ? '车间高频动作，全部数字化' : group.group === 'AI 智能中心' ? 'AI 不是噱头，是每天都在用的能力' : '不只管生产，经营数据一个系统汇总' }}</h2>
+          <p class="official-section__desc">{{ group.group === '生产管理' ? '从订单到报工、从排产到溯源，把散在微信群和 Excel 里的事搬到系统里。' : group.group === 'AI 智能中心' ? '基于你工厂的真实数据做分析、预警和建议，不是通用聊天机器人。' : 'CRM、人事、工资、仓储、采购、财务、设备、报表，数据从订单和报工自动汇总。' }}</p>
+        </div>
+        <div class="sales-advantage-grid">
+          <article v-for="item in group.items" :key="item.title" class="sales-advantage">
+            <span class="sales-advantage__tag" :style="{ background: group.color + '14', color: group.color }">{{ group.group }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+          </article>
+        </div>
+      </section>
+    </template>
+
+    <section class="official-section official-section--bordered" aria-labelledby="compare-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">用之前 vs 用之后</p>
+        <h2 id="compare-heading" class="official-section__title">同一件事，工厂会发生什么变化</h2>
+      </div>
+      <div class="sales-compare-table">
+        <div class="sales-compare-row sales-compare-row--head" role="row">
+          <div role="cell">日常场景</div>
+          <div role="cell">现在的做法</div>
+          <div role="cell">LightMes 上线后</div>
+        </div>
+        <div v-for="row in compareRows" :key="row[0]" class="sales-compare-row" role="row">
+          <div role="cell" class="sales-compare-row__title">{{ row[0] }}</div>
+          <div role="cell" class="sales-compare-row__before">{{ row[1] }}</div>
+          <div role="cell" class="sales-compare-row__after">{{ row[2] }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="official-section official-section--bordered sales-source-code" aria-labelledby="source-heading">
+      <div class="sales-split-head">
+        <p class="sales-eyebrow">为什么买源码</p>
+        <h2 id="source-heading" class="official-section__title">买源码，不买 SaaS</h2>
+        <p class="official-section__desc">工厂数据敏感，按月扣费不划算，买源码部署在自己服务器才踏实。</p>
+      </div>
+      <div class="sales-source-grid">
+        <article v-for="(item, idx) in whySourceCode" :key="idx" class="sales-source-row">
+          <div class="sales-source-row__saas">
+            <span>SaaS</span>
+            <p>{{ item.saas }}</p>
+          </div>
+          <div class="sales-source-row__arrow" aria-hidden="true">→</div>
+          <div class="sales-source-row__source">
+            <span>买源码</span>
+            <p>{{ item.source }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="official-section official-section--bordered" aria-labelledby="pricing-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">价格透明</p>
+        <h2 id="pricing-heading" class="official-section__title">三个版本，按需选择</h2>
+        <p class="official-section__desc">社区版免费试水，Pro 版买源码，实施版帮你部署上线。</p>
+      </div>
+      <div class="sales-plan-grid">
+        <article v-for="plan in plans" :key="plan.name" class="sales-plan" :class="{ 'sales-plan--highlight': plan.highlight }">
+          <span v-if="plan.highlight" class="sales-plan__badge">推荐</span>
+          <h3>{{ plan.name }}</h3>
+          <div class="sales-plan__price">
+            <strong>{{ plan.price }}</strong>
+            <em v-if="plan.suffix">{{ plan.suffix }}</em>
+          </div>
+          <p class="sales-plan__desc">{{ plan.desc }}</p>
+          <ul>
+            <li v-for="f in plan.features" :key="f">{{ f }}</li>
+          </ul>
+          <a v-if="plan.href" class="official-btn" :class="plan.highlight ? 'official-btn--primary' : 'official-btn--ghost'" :href="plan.href" target="_blank" rel="noopener">{{ plan.cta }}</a>
+          <button v-else class="official-btn" :class="plan.highlight ? 'official-btn--primary' : 'official-btn--ghost'" type="button" @click="toggleWechatPanel()">{{ plan.cta }}</button>
+        </article>
+      </div>
+      <p class="sales-pricing-note">源码交付 · 部署在自己服务器 · 数据不出厂</p>
+    </section>
+
+    <section class="official-section official-section--bordered" aria-labelledby="deliver-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">交付说明</p>
+        <h2 id="deliver-heading" class="official-section__title">我们交付什么，不交付什么</h2>
+        <p class="official-section__desc">买的是源码和更新，部署运维按需付费。Pro + 实施版包含部署和培训。</p>
+      </div>
+      <div class="sales-deliver-table">
+        <div class="sales-deliver-row sales-deliver-row--head" role="row">
+          <div role="cell">包含交付</div>
+          <div role="cell">另外付费</div>
+        </div>
+        <div v-for="row in deliverables" :key="row.deliver" class="sales-deliver-row" role="row">
+          <div role="cell">✓ {{ row.deliver }}</div>
+          <div role="cell">✗ {{ row.extra }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="official-section official-section--bordered" aria-labelledby="feature-compare-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">Community vs Pro</p>
+        <h2 id="feature-compare-heading" class="official-section__title">社区版够试用，Pro 版才是完整经营系统</h2>
+      </div>
+      <div class="sales-feature-compare-table">
+        <div class="sales-fc-row sales-fc-row--head" role="row">
+          <div role="cell">功能</div>
+          <div role="cell">Community</div>
+          <div role="cell">Pro</div>
+        </div>
+        <div v-for="row in featureCompare" :key="row.name" class="sales-fc-row" role="row">
+          <div role="cell" class="sales-fc-row__name">{{ row.name }}</div>
+          <div role="cell" class="sales-fc-row__community">
+            <template v-if="typeof row.community === 'boolean'">{{ row.community ? '✓' : '✗' }}</template>
+            <template v-else>{{ row.community }}</template>
+          </div>
+          <div role="cell" class="sales-fc-row__pro">
+            <template v-if="typeof row.pro === 'boolean'">{{ row.pro ? '✓' : '✗' }}</template>
+            <template v-else>{{ row.pro }}</template>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Bento 核心能力 -->
-    <section class="official-section official-section--bordered" aria-labelledby="core-heading">
-      <div class="official-section__head">
-        <p class="official-section__eyebrow">核心能力</p>
-        <h2 id="core-heading" class="official-section__title">八大高频场景，开箱即用</h2>
-        <p class="official-section__desc">不搞大而全的复杂部署，聚焦加工厂真正每天在用的事。</p>
+    <section class="official-section official-section--bordered sales-industries" aria-labelledby="industry-heading">
+      <div class="sales-split-head">
+        <p class="sales-eyebrow">适用行业</p>
+        <h2 id="industry-heading" class="official-section__title">有工序、有派工、有计件，就适合用</h2>
+        <p class="official-section__desc">尤其适合订单多、工序多、人员流动大、月底工资核算压力大的加工型企业。</p>
       </div>
-      <div class="official-bento">
-        <article
-          v-for="f in coreFeatures"
-          :key="f.title"
-          class="official-feature-card"
-        >
-          <div class="official-feature-card__icon" :class="`official-feature-card__icon--${f.color}`">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-              <path :d="iconPaths[f.icon]" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="official-feature-card__title">{{ f.title }}</h3>
-            <p class="official-feature-card__desc">{{ f.desc }}</p>
-          </div>
-        </article>
+      <div class="sales-industry-grid">
+        <span v-for="item in industries" :key="item">{{ item }}</span>
       </div>
     </section>
 
-    <!-- 流程预览 -->
-    <section class="official-section official-section--bordered" aria-labelledby="flow-heading">
+    <section class="official-section official-section--bordered" aria-labelledby="modules-heading">
       <div class="official-section__head">
-        <p class="official-section__eyebrow">生产流程</p>
-        <h2 id="flow-heading" class="official-section__title">从下单到算薪，四步闭环</h2>
-        <router-link to="/site/workflow" class="official-link">查看完整流程 →</router-link>
+        <p class="sales-eyebrow">功能清单</p>
+        <h2 id="modules-heading" class="official-section__title">Pro 版覆盖加工厂全流程</h2>
+        <p class="official-section__desc">以下是 LightMes Pro 已有的功能模块，持续迭代更新中。</p>
       </div>
-      <div class="official-timeline official-timeline--horizontal">
-        <article v-for="step in workflowSteps" :key="step.step" class="official-step">
-          <div class="official-step__num">{{ step.step }}</div>
-          <div>
-            <span class="official-step__tag">{{ step.tag }}</span>
-            <h3 class="official-step__title">{{ step.title }}</h3>
-            <p class="official-step__desc">{{ step.desc }}</p>
-          </div>
-        </article>
+      <div class="sales-module-grid">
+        <span v-for="mod in allModules" :key="mod">{{ mod }}</span>
       </div>
     </section>
 
-    <aside class="official-cta">
-      <p class="official-cta__title">准备好接入你的工厂？</p>
-      <p class="official-cta__desc">登录后即可体验 PC 后台与移动端报工、任务推送和工资统计。</p>
-      <router-link class="official-btn official-btn--primary official-btn--block" :to="loginPath">
-        进入系统
-      </router-link>
+    <section class="official-section official-section--bordered sales-rollout" aria-labelledby="rollout-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">上线流程</p>
+        <h2 id="rollout-heading" class="official-section__title">不折腾，按你厂里的流程走</h2>
+        <p class="official-section__desc">从沟通到正式上线，每一步都有交付物。</p>
+      </div>
+      <ol class="sales-rollout-list">
+        <li v-for="r in rollout" :key="r.step">
+          <span class="sales-rollout-list__num">{{ String(r.step).padStart(2, '0') }}</span>
+          <h4>{{ r.title }}</h4>
+          <p>{{ r.desc }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="official-section official-section--bordered sales-faq" aria-labelledby="faq-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">老板常问</p>
+        <h2 id="faq-heading" class="official-section__title">买之前，你大概会问这些</h2>
+      </div>
+      <div class="sales-faq-list">
+        <details v-for="item in faqs" :key="item.q" class="sales-faq-item">
+          <summary>{{ item.q }}</summary>
+          <p>{{ item.a }}</p>
+        </details>
+      </div>
+    </section>
+
+    <aside class="official-cta sales-final-cta">
+      <p class="sales-eyebrow sales-eyebrow--light">现在就动手</p>
+      <p class="official-cta__title">先下载社区版试起来，觉得合适再升级 Pro</p>
+      <p class="official-cta__desc">社区版免费开源，跑通扫码报工和审核。Pro 版源码交付，部署在自己服务器，数据不出厂。</p>
+      <div class="sales-final-cta__actions">
+        <a class="official-btn official-btn--primary" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版</a>
+        <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">获取 Pro 商业版</button>
+      </div>
+      <p class="sales-final-cta__note">源码交付 · 私有部署 · 年费 ¥1800 起</p>
     </aside>
 
     <footer class="official-footer">
-      <p>LightMes · 轻量化生产管理系统</p>
+      <p>LightMes · 中小加工厂生产管理系统</p>
     </footer>
   </div>
 </template>

@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import { getStoredTenantCode } from '@/utils/tenant'
 import '@/styles/official.css'
 
+const defaultRegisterUrl = 'https://admin.mes.cenkor.cn/register/'
+
 const route = useRoute()
 
 const loginPath = computed(() => {
@@ -18,6 +20,10 @@ const navItems = [
   { path: '/guide', label: '指南' },
   { path: '/site/about', label: '关于' },
 ] as const
+
+function openRegister() {
+  window.location.href = defaultRegisterUrl
+}
 
 const tabs = [
   { path: '/site', label: '首页', icon: 'home' },
@@ -57,6 +63,7 @@ function isActive(tabPath: string): boolean {
       </nav>
 
       <div class="official-header__actions">
+        <button class="official-header__trial" type="button" @click="openRegister">注册试用</button>
         <router-link class="official-header__login" :to="loginPath">登录系统</router-link>
       </div>
     </header>

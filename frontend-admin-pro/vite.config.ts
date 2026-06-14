@@ -5,7 +5,7 @@ import Inspector from 'unplugin-vue-dev-locator/vite'
 
 export default defineConfig({
   build: {
-    sourcemap: 'hidden',
+    sourcemap: false,
   },
   server: {
     proxy: {

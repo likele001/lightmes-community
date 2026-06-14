@@ -36,7 +36,7 @@
           <el-table-column :label="t('production.tasks.order')" min-width="140">
             <template #default="{ row }">
               <div class="font-medium">{{ row.order?.code || '—' }}</div>
-              <div v-if="row.order?.customer_name" class="text-xs text-[#909399]">{{ row.order.customer_name }}</div>
+              <div v-if="row.order?.customer_name" class="text-xs text-el-placeholder">{{ row.order.customer_name }}</div>
             </template>
           </el-table-column>
           <el-table-column :label="t('production.tasks.productSku')" min-width="200">
@@ -47,7 +47,7 @@
           <el-table-column :label="t('production.tasks.process')" min-width="140">
             <template #default="{ row }">
               <span>{{ processRowLabel({ process: row.process }) }}</span>
-              <span class="text-xs text-[#909399] ml-1">#{{ row.seq }}</span>
+              <span class="text-xs text-el-placeholder ml-1">#{{ row.seq }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="planned_qty" :label="t('production.tasks.plannedQty')" width="90" align="center" />
@@ -61,7 +61,7 @@
               <span v-if="row.assignments?.length">
                 {{ row.assignments.length }}人 / {{ row.assigned_total_qty ?? 0 }}/{{ row.planned_qty }}
               </span>
-              <span v-else class="text-[#909399]">{{ t('production.tasks.notAssigned') }}</span>
+              <span v-else class="text-el-placeholder">{{ t('production.tasks.notAssigned') }}</span>
             </template>
           </el-table-column>
           <el-table-column :label="t('production.tasks.equipment')" width="160">
@@ -92,8 +92,8 @@
                   @update:model-value="(v: string | number | boolean) => toggleSelectTask(row.id, Boolean(v))"
                 />
                 <div class="min-w-0">
-                  <div class="font-semibold text-[#303133] font-mono text-sm">{{ row.task_code }}</div>
-                  <div class="text-xs text-[#909399]">
+                  <div class="font-semibold text-el-primary font-mono text-sm">{{ row.task_code }}</div>
+                  <div class="text-xs text-el-placeholder">
                     {{ row.order?.code || '—' }}
                     <span v-if="row.order?.customer_name"> · {{ row.order.customer_name }}</span>
                   </div>
@@ -154,8 +154,8 @@
       <el-form label-width="96px">
         <el-form-item label="任务">
           <span class="font-mono">{{ assign.taskCode || assign.taskId }}</span>
-          <span class="ml-2 text-[#606266]">{{ assign.taskSummary }}</span>
-          <span class="ml-3 text-[#909399]">
+          <span class="ml-2 text-el-regular">{{ assign.taskSummary }}</span>
+          <span class="ml-3 text-el-placeholder">
             已派 {{ assignAssignedTotal }} / 计划 {{ assign.plannedQty }}
           </span>
         </el-form-item>

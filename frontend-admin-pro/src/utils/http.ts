@@ -25,6 +25,22 @@ export class HttpClient {
     this.ins = axios.create({
       baseURL,
       timeout: 20000,
+      paramsSerializer: {
+        serialize: (params) => {
+          const cleaned = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined && v !== null)
+          )
+          const searchParams = new URLSearchParams()
+          for (const [k, v] of Object.entries(cleaned)) {
+            if (Array.isArray(v)) {
+              v.forEach((item) => searchParams.append(k, String(item)))
+            } else {
+              searchParams.append(k, String(v))
+            }
+          }
+          return searchParams.toString()
+        },
+      },
     })
 
     this.ins.interceptors.request.use((config) => {

@@ -33,6 +33,8 @@ class UserCreateIn(BaseModel):
     is_superuser: bool = False
     department_id: int | None = None
     role_ids: list[int] = Field(default_factory=list)
+    salary_type: str = Field(default="piece", max_length=16, description="piece/hourly/mixed")
+    hourly_rate: float | None = Field(default=None, ge=0, description="时薪")
 
 
 class UserUpdateIn(BaseModel):
@@ -42,3 +44,5 @@ class UserUpdateIn(BaseModel):
     is_superuser: bool | None = None
     department_id: int | None = None
     role_ids: list[int] | None = None
+    salary_type: str | None = Field(default=None, max_length=16, description="piece/hourly/mixed")
+    hourly_rate: float | None = Field(default=None, ge=0, description="时薪")

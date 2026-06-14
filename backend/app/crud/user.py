@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -63,6 +65,8 @@ def update_user(
     is_active: bool | None = None,
     is_superuser: bool | None = None,
     department_id: int | None = None,
+    salary_type: str | None = None,
+    hourly_rate: Decimal | float | None = None,
 ) -> User:
     if full_name is not None:
         user.full_name = full_name
@@ -76,6 +80,10 @@ def update_user(
         user.is_superuser = is_superuser
     if department_id is not None:
         user.department_id = department_id
+    if salary_type is not None:
+        user.salary_type = salary_type
+    if hourly_rate is not None:
+        user.hourly_rate = Decimal(str(hourly_rate))
     db.flush()
     return user
 

@@ -5,7 +5,7 @@ import Inspector from 'unplugin-vue-dev-locator/vite'
 
 export default defineConfig({
   build: {
-    sourcemap: 'hidden',
+    sourcemap: false,
     // 宝塔 dist/.user.ini 防删保护，避免 emptyDir 构建失败
     emptyOutDir: false,
   },

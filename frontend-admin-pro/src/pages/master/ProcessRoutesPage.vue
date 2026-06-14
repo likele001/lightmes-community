@@ -51,15 +51,15 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133]">{{ row.name }}</div>
-                <div class="text-xs text-[#909399]">#{{ row.id }} · {{ productLabel(row.product_id) }}</div>
+                <div class="font-semibold text-el-primary">{{ row.name }}</div>
+                <div class="text-xs text-el-placeholder">#{{ row.id }} · {{ productLabel(row.product_id) }}</div>
               </div>
               <div class="flex flex-col items-end gap-1">
                 <el-tag :type="row.is_active ? 'success' : 'info'" size="small">{{ row.is_active ? t('master.processRoutes.enabled') : t('master.processRoutes.disabled') }}</el-tag>
                 <el-tag v-if="row.is_default" type="success" size="small">{{ t('master.processRoutes.isDefault') }}</el-tag>
               </div>
             </div>
-            <div class="text-xs text-[#606266] leading-snug">{{ stepsLabel(row.steps) }}</div>
+            <div class="text-xs text-el-regular leading-snug">{{ stepsLabel(row.steps) }}</div>
             <div class="admin-mobile-actions">
               <el-button size="small" @click="openEdit(row)">{{ t('master.processRoutes.edit') }}</el-button>
               <el-popconfirm :title="t('master.processRoutes.confirmDisable')" @confirm="onDisable(row)">

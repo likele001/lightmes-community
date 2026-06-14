@@ -37,7 +37,7 @@
           </el-table-column>
           <el-table-column :label="t('production.common.status')" width="120">
             <template #default="{ row }">
-              <el-tag :type="row.status === 'draft' ? 'info' : 'success'">{{ statusLabel(row.status) }}</el-tag>
+              <el-tag :type="statusTagType(row.status)">{{ statusLabel(row.status) }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="due_date" :label="t('production.orders.dueDate')" width="130" />
@@ -80,10 +80,10 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133] truncate">{{ row.code }}</div>
-                <div class="text-xs text-[#909399]">ID {{ row.id }}</div>
+                <div class="font-semibold text-el-primary truncate">{{ row.code }}</div>
+                <div class="text-xs text-el-placeholder">ID {{ row.id }}</div>
               </div>
-              <el-tag :type="row.status === 'draft' ? 'info' : 'success'" size="small">{{ statusLabel(row.status) }}</el-tag>
+              <el-tag :type="statusTagType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
             </div>
             <dl class="admin-mobile-kv">
               <dt>客户</dt>
@@ -172,7 +172,7 @@
         </el-table>
         <div v-if="detail.data" class="lg:hidden space-y-3 mt-4">
           <div v-for="row in detail.data.items" :key="row.line_no" class="admin-mobile-row">
-            <div class="text-xs text-[#909399]">行 {{ row.line_no }}</div>
+            <div class="text-xs text-el-placeholder">行 {{ row.line_no }}</div>
             <div v-if="row.sku" class="text-sm">
               <div class="font-medium">{{ row.sku.product_name || row.sku.name }}</div>
               <div class="text-xs text-zinc-500">{{ row.sku.sku_name || row.sku.display_label }}</div>
@@ -409,8 +409,10 @@ import { systemApi } from '@/api/system'
 import { codeForSubmit } from '@/utils/code'
 import { formatAutomationFeedback } from '@/utils/automationFeedback'
 import { orderSkuOptionLabel, partyOptionLabel, type OrderSkuOption } from '@/utils/display'
+import { useStatus } from '@/utils/status-maps'
 
 const { t } = useI18n()
+const { label: statusLabel, type: statusTagType } = useStatus('order')
 const router = useRouter()
 const loading = ref(false)
 const items = ref<OrderOut[]>([])
@@ -472,13 +474,7 @@ const editDlg = reactive({
   lines: [] as EditLine[],
 })
 
-function statusLabel(s: string) {
-  if (s === 'draft') return '草稿'
-  if (s === 'pending_confirm') return '待审核'
-  if (s === 'confirmed') return '已确认'
-  if (s === 'producing') return '生产中'
-  return s || '-'
-}
+
 
 async function onReject(orderId: number) {
   const reason = await ElMessageBox.prompt('请输入驳回原因', '驳回订单', { inputPattern: /.+/, inputErrorMessage: '请填写原因' })

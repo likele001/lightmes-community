@@ -154,7 +154,7 @@
               <div class="min-w-0 font-mono text-sm font-semibold break-all">{{ row.key }}</div>
             </div>
             <pre class="text-[12px] whitespace-pre-wrap break-words m-0 bg-[#fafafa] p-2 rounded max-h-40 overflow-auto">{{ stringify(row.value) }}</pre>
-            <div class="text-xs text-[#909399] mt-2">{{ row.updated_at || '—' }}</div>
+            <div class="text-xs text-el-placeholder mt-2">{{ row.updated_at || '—' }}</div>
             <div class="admin-mobile-actions">
               <el-button size="small" @click="openEdit(row)">{{ t('system.users.edit') }}</el-button>
               <el-popconfirm :title="t('system.settings.confirmDelete')" @confirm="onDelete(row)">

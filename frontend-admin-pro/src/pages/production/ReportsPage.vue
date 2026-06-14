@@ -4,8 +4,10 @@ import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { productionApi, type ReportOut } from '@/api/production'
+import { useStatus } from '@/utils/status-maps'
 
 const { t } = useI18n()
+const { label: statusLabel, type: statusTagType } = useStatus('report')
 const loading = ref(false)
 const reports = ref<ReportOut[]>([])
 const total = ref(0)
@@ -17,20 +19,6 @@ const query = reactive({
   offset: 0,
   limit: 50,
 })
-
-const statusMap: Record<string, string> = {
-  submitted: t('production.reports.pendingLeader'),
-  leader_approved: t('production.reports.pendingQc'),
-  qc_approved: t('production.reports.passed'),
-  rejected: t('production.reports.rejected'),
-}
-
-const statusColors: Record<string, string> = {
-  submitted: 'warning',
-  leader_approved: '',
-  qc_approved: 'success',
-  rejected: 'danger',
-}
 
 function listQueryParams() {
   const params: Record<string, unknown> = {
@@ -151,8 +139,8 @@ onMounted(load)
           <el-table-column prop="bad_qty" label="不良数" width="70" />
           <el-table-column prop="status" :label="t('production.common.status')" width="100">
             <template #default="{ row }">
-              <el-tag :type="statusColors[row.status] || 'info'">
-                {{ statusMap[row.status] || row.status }}
+              <el-tag :type="statusTagType(row.status) || 'info'">
+                {{ statusLabel(row.status) || row.status }}
               </el-tag>
             </template>
           </el-table-column>
@@ -178,10 +166,10 @@ onMounted(load)
           <div v-for="row in reports" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133]">报工 #{{ row.id }}</div>
-                <div class="text-xs text-[#909399] font-mono">{{ row.task?.task_code || `任务#${row.task_id}` }}</div>
+                <div class="font-semibold text-el-primary">报工 #{{ row.id }}</div>
+                <div class="text-xs text-el-placeholder font-mono">{{ row.task?.task_code || `任务#${row.task_id}` }}</div>
               </div>
-              <el-tag :type="statusColors[row.status] || 'info'" size="small">{{ statusMap[row.status] || row.status }}</el-tag>
+              <el-tag :type="statusTagType(row.status) || 'info'" size="small">{{ statusLabel(row.status) || row.status }}</el-tag>
             </div>
             <dl class="admin-mobile-kv">
               <dt>报工人</dt>
@@ -216,8 +204,8 @@ onMounted(load)
         <el-descriptions :column="2" border>
           <el-descriptions-item label="报工ID">{{ currentReport.id }}</el-descriptions-item>
           <el-descriptions-item :label="t('production.common.status')">
-            <el-tag :type="statusColors[currentReport.status] || 'info'">
-              {{ statusMap[currentReport.status] || currentReport.status }}
+            <el-tag :type="statusTagType(currentReport.status) || 'info'">
+              {{ statusLabel(currentReport.status) || currentReport.status }}
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="合格数">{{ currentReport.good_qty }}</el-descriptions-item>
@@ -250,7 +238,7 @@ onMounted(load)
           <div class="lg:hidden space-y-2">
             <div v-for="(row, idx) in currentReport.audits" :key="idx" class="admin-mobile-row">
               <div class="admin-mobile-row__head">
-                <span class="text-xs text-[#909399]">{{ row.created_at }}</span>
+                <span class="text-xs text-el-placeholder">{{ row.created_at }}</span>
                 <div class="flex gap-2">
                   <el-tag size="small">{{ row.audit_level === 'leader' ? '班组长' : '质检' }}</el-tag>
                   <el-tag :type="row.action === 'approve' ? 'success' : 'danger'" size="small">
@@ -258,7 +246,7 @@ onMounted(load)
                   </el-tag>
                 </div>
               </div>
-              <p v-if="row.reason" class="text-sm text-[#606266] m-0">原因：{{ row.reason }}</p>
+              <p v-if="row.reason" class="text-sm text-el-regular m-0">原因：{{ row.reason }}</p>
             </div>
           </div>
         </template>

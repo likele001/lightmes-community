@@ -52,15 +52,15 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row cursor-pointer" @click="onRowClick(row)">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133] text-sm">{{ row.title }}</div>
-                <div class="text-xs text-[#909399] mt-1">{{ row.created_at }}</div>
+                <div class="font-semibold text-el-primary text-sm">{{ row.title }}</div>
+                <div class="text-xs text-el-placeholder mt-1">{{ row.created_at }}</div>
               </div>
               <div class="flex flex-col items-end gap-1 shrink-0">
                 <el-tag :type="levelTag(row.level)" size="small">{{ row.level }}</el-tag>
                 <el-tag :type="row.read_at ? 'success' : 'info'" size="small">{{ row.read_at ? t('system.notifications.readStatus') : t('system.notifications.unreadStatus') }}</el-tag>
               </div>
             </div>
-            <p class="text-xs text-[#606266] line-clamp-3 m-0">{{ row.content }}</p>
+            <p class="text-xs text-el-regular line-clamp-3 m-0">{{ row.content }}</p>
             <div class="mt-2 flex flex-wrap gap-2">
               <el-tag v-if="row.biz_type === 'report'" size="small">{{ t('system.notifications.reportType') }}</el-tag>
               <el-tag v-else-if="row.biz_type === 'salary_slip'" size="small" type="warning">{{ t('system.notifications.salarySlipType') }}</el-tag>

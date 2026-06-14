@@ -420,6 +420,8 @@ export type SalarySlipOut = {
   month: string
   total_qty: number
   item_amount: number
+  hourly_amount: number
+  hourly_hours: number
   bonus_amount: number
   deduction_amount: number
   net_amount: number
@@ -429,6 +431,19 @@ export type SalarySlipOut = {
   confirm_status?: string
   reject_reason?: string | null
   rejected_at?: string | null
+}
+
+export type HourlyItemOut = {
+  id: number
+  user_id: number
+  user_name: string | null
+  item_type: string
+  work_date: string | null
+  work_hours: number
+  hourly_rate: number
+  amount: number
+  month: string
+  is_absent: boolean
 }
 
 export type ExportJobOut = {
@@ -955,6 +970,36 @@ export const productionApi = {
       url: '/admin/production/reports/salary/slips/remind',
       method: 'POST',
       params: { month },
+    })
+  },
+
+  // 计时工资
+  listHourlyItems(params?: { month?: string; user_id?: number; offset?: number; limit?: number }) {
+    return http.request<{ items: HourlyItemOut[]; total: number }>({
+      url: '/admin/production/reports/salary/hourly-items',
+      method: 'GET',
+      params,
+    })
+  },
+  generateTimeItems(params: { date_from: string; date_to?: string; user_id?: number }) {
+    return http.request<{ generated: number; date_from: string; date_to: string }>({
+      url: '/admin/production/reports/salary/generate-time-items',
+      method: 'POST',
+      params,
+    })
+  },
+  getHourlySummary(params?: { month?: string; user_id?: number }) {
+    return http.request<{ total_hours: number; total_amount: number }>({
+      url: '/admin/production/reports/salary/hourly-summary',
+      method: 'GET',
+      params,
+    })
+  },
+  listHourlyLedger(params?: { month?: string; user_id?: number; offset?: number; limit?: number }) {
+    return http.request<{ items: any[]; total: number }>({
+      url: '/admin/production/reports/salary/hourly-ledger',
+      method: 'GET',
+      params,
     })
   },
 

@@ -59,8 +59,8 @@
                 <div v-for="row in items" :key="row.id" class="admin-mobile-row">
                   <div class="admin-mobile-row__head">
                     <div class="min-w-0">
-                      <div class="font-semibold text-[#303133]">{{ row.label }}</div>
-                      <div class="text-xs text-[#909399]">{{ row.value }} · #{{ row.id }}</div>
+                      <div class="font-semibold text-el-primary">{{ row.label }}</div>
+                      <div class="text-xs text-el-placeholder">{{ row.value }} · #{{ row.id }}</div>
                     </div>
                     <el-tag :type="row.is_active ? 'success' : 'info'" size="small">{{ row.is_active ? t('system.dictionary.enabled') : t('system.dictionary.disabled') }}</el-tag>
                   </div>

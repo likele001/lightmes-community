@@ -33,6 +33,10 @@ class BizType:
     DEPARTMENT = "department"
     CRM_OPPORTUNITY = "crm_opportunity"
     SAAS_PACKAGE = "saas_package"
+    SHIFT = "shift"
+    MRP_RUN = "mrp_run"
+    QUOTATION = "quotation"
+    SUBCONTRACT = "subcontract"
 
 
 @dataclass(frozen=True)
@@ -60,6 +64,10 @@ _RULES: dict[str, _Rule] = {
     BizType.DEPARTMENT: _Rule("DEPT"),
     BizType.CRM_OPPORTUNITY: _Rule("OPP"),
     BizType.SAAS_PACKAGE: _Rule("PKG"),
+    BizType.SHIFT: _Rule("SHF"),
+    BizType.MRP_RUN: _Rule("MRP"),
+    BizType.QUOTATION: _Rule("QT"),
+    BizType.SUBCONTRACT: _Rule("SC"),
 }
 
 

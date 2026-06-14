@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html as _html
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
@@ -26,7 +28,7 @@ def dingtalk_oauth_callback_api(
         tenant_id, user_id = parse_bind_state(state)
         user = bind_user_with_code(db, tenant_id=tenant_id, user_id=user_id, code=code)
         db.commit()
-        name = user.full_name or user.username
+        name = _html.escape(user.full_name or user.username)
         cfg = get_dingtalk_settings_raw(db, tenant_id)
         h5_base = (cfg.get("h5_public_base_url") or "").strip().rstrip("/")
         if h5_base:
@@ -45,9 +47,9 @@ def dingtalk_oauth_callback_api(
         return HTMLResponse(html)
     except Exception as e:
         db.rollback()
-        html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><title>绑定失败</title></head>
+        html = """<!DOCTYPE html><html><head><meta charset="utf-8"><title>绑定失败</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:40px;">
-<h2>绑定失败</h2><p>{str(e)[:200]}</p>
+<h2>绑定失败</h2><p>钉钉账号绑定过程中发生错误，请稍后重试或联系管理员。</p>
 </body></html>"""
         return HTMLResponse(html, status_code=400)
 
@@ -62,6 +64,7 @@ def dingtalk_card_action_api(
     try:
         msg = handle_card_action_token(db, token=token)
         db.commit()
+        msg = _html.escape(msg)
         html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><title>操作成功</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:40px;max-width:520px;margin:0 auto;">
 <h2>操作成功</h2><p>{msg}</p>
@@ -69,15 +72,15 @@ def dingtalk_card_action_api(
         return HTMLResponse(html)
     except DingtalkAuditError as e:
         db.rollback()
-        html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><title>操作失败</title></head>
+        html = """<!DOCTYPE html><html><head><meta charset="utf-8"><title>操作失败</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:40px;">
-<h2>操作失败</h2><p>{str(e)[:200]}</p>
+<h2>操作失败</h2><p>操作处理失败，请稍后重试或联系管理员。</p>
 </body></html>"""
         return HTMLResponse(html, status_code=400)
     except Exception as e:
         db.rollback()
-        html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><title>操作失败</title></head>
+        html = """<!DOCTYPE html><html><head><meta charset="utf-8"><title>操作失败</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:40px;">
-<h2>操作失败</h2><p>{str(e)[:200]}</p>
+<h2>操作失败</h2><p>操作处理发生错误，请稍后重试或联系管理员。</p>
 </body></html>"""
         return HTMLResponse(html, status_code=400)

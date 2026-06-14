@@ -50,11 +50,11 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133]">
+                <div class="font-semibold text-el-primary">
                   <span v-if="row.sku">{{ row.sku.display_label || row.sku.name }}</span>
                   <span v-else>{{ t('production.common.customer') }}#{{ row.sku_id }}</span>
                 </div>
-                <div class="text-xs text-[#909399]">{{ t('production.workOrders.orderPrefix') }} #{{ row.id }} · {{ t('production.common.customer') }} {{ row.order_id }}</div>
+                <div class="text-xs text-el-placeholder">{{ t('production.workOrders.orderPrefix') }} #{{ row.id }} · {{ t('production.common.customer') }} {{ row.order_id }}</div>
               </div>
               <el-tag :type="statusTagType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
             </div>
@@ -127,7 +127,7 @@
         </el-table>
         <div class="lg:hidden space-y-3">
           <div v-for="row in detailData.tasks || []" :key="row.task_code + '-' + row.seq" class="admin-mobile-row">
-            <div class="font-mono text-xs text-[#606266]">{{ row.task_code }}</div>
+            <div class="font-mono text-xs text-el-regular">{{ row.task_code }}</div>
             <div class="text-sm">
               <span v-if="row.process">{{ row.process.name }}</span>
               <span v-else>#{{ row.process_id }}</span>
@@ -165,6 +165,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { productionApi, type WorkOrderDetailOut, type WorkOrderOut } from '@/api/production'
 import { processRowLabel, skuRowLabel } from '@/utils/display'
 import { openPrintWindow } from '@/utils/print'
+import { useStatus } from '@/utils/status-maps'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -179,20 +180,7 @@ const detailLoading = ref(false)
 const detailData = ref<WorkOrderDetailOut | null>(null)
 const printingLabels = ref(false)
 
-function statusLabel(s: string) {
-  if (s === 'open') return '待处理'
-  if (s === 'in_progress') return '进行中'
-  if (s === 'done') return '已完成'
-  if (s === 'cancelled') return '已取消'
-  return s || '-'
-}
-
-function statusTagType(s: string) {
-  if (s === 'open') return 'warning'
-  if (s === 'in_progress') return ''
-  if (s === 'done') return 'success'
-  return 'info'
-}
+const { label: statusLabel, type: statusTagType } = useStatus('work_order')
 
 function taskStatusLabel(s: string | undefined) {
   if (s === 'pending') return '待开始'

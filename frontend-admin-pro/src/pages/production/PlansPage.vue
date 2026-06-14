@@ -95,8 +95,8 @@
               <div v-for="row in items" :key="row.id" class="admin-mobile-row">
                 <div class="admin-mobile-row__head">
                   <div class="min-w-0">
-                    <div class="font-semibold text-[#303133] truncate">{{ row.code }}</div>
-                    <div class="text-xs text-[#909399]">#{{ row.id }} · {{ row.order_code }}</div>
+                    <div class="font-semibold text-el-primary truncate">{{ row.code }}</div>
+                    <div class="text-xs text-el-placeholder">#{{ row.id }} · {{ row.order_code }}</div>
                   </div>
                   <el-tag :type="statusTagType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
                 </div>
@@ -178,7 +178,7 @@
                   @click="openLoadDetail(d)"
                 >
                   <div class="flex justify-between items-center gap-2">
-                    <span class="font-medium text-[#303133]">{{ d }}</span>
+                    <span class="font-medium text-el-primary">{{ d }}</span>
                     <el-tag
                       v-if="loadMap.get(d)?.is_workday === false"
                       size="small"
@@ -189,7 +189,7 @@
                       size="small"
                       type="danger"
                     >超负荷 {{ fmtLoad(loadMap.get(d)?.count) }}</el-tag>
-                    <span v-else class="text-sm text-[#606266]">{{ fmtLoad(loadMap.get(d)?.count) }}</span>
+                    <span v-else class="text-sm text-el-regular">{{ fmtLoad(loadMap.get(d)?.count) }}</span>
                   </div>
                 </div>
               </div>
@@ -197,7 +197,7 @@
                 <el-collapse-item v-for="p in items" :key="`m-gantt-${p.id}`" :name="String(p.id)">
                   <template #title>
                     <div class="flex flex-col items-start gap-0.5 min-w-0 py-0.5">
-                      <span class="font-medium text-[#303133] text-sm truncate max-w-[85vw]">{{ p.code }}</span>
+                      <span class="font-medium text-el-primary text-sm truncate max-w-[85vw]">{{ p.code }}</span>
                       <span class="text-xs text-zinc-500 truncate max-w-[85vw]">
                         <span v-if="p.order_code">{{ p.order_code }}</span>
                         <span v-if="p.customer_name"> · {{ p.customer_name }}</span>
@@ -1000,6 +1000,7 @@ import AdminPage from '@/components/admin/AdminPage.vue'
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useStatus } from '@/utils/status-maps'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   plansApi,
@@ -1027,6 +1028,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
 const router = useRouter()
+const { label: statusLabel, type: statusTagType } = useStatus('plan')
 const auth = useAuthStore()
 const canAi = computed(() => auth.hasAnyPermission(['ai.use', 'plan.manage']))
 const canAutomationSettings = computed(() => auth.hasAnyPermission(['setting.manage']))
@@ -1428,21 +1430,7 @@ async function runAutoDispatch() {
   }
 }
 
-function statusLabel(s: string) {
-  if (s === 'planned') return t('production.plans.planned')
-  if (s === 'in_progress') return t('production.plans.inProgress')
-  if (s === 'done') return t('production.plans.done')
-  if (s === 'canceled') return t('production.plans.canceled')
-  return s || '-'
-}
 
-function statusTagType(s: string) {
-  if (s === 'planned') return 'info'
-  if (s === 'in_progress') return 'warning'
-  if (s === 'done') return 'success'
-  if (s === 'canceled') return 'danger'
-  return 'info'
-}
 
 function barStyle(p: PlanOut) {
   const days = ganttDays.value

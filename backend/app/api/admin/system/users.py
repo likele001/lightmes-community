@@ -41,6 +41,8 @@ def _out(x: User) -> dict:
         "full_name": x.full_name,
         "is_active": x.is_active,
         "is_superuser": x.is_superuser,
+        "salary_type": x.salary_type,
+        "hourly_rate": float(x.hourly_rate) if x.hourly_rate is not None else None,
         "created_at": x.created_at,
         "roles": [_role_out(r) for r in x.roles],
         "department": _department_out(getattr(x, "department", None)),
@@ -70,6 +72,8 @@ def create_api(
     exists = get_user_by_tenant_and_username(db, tenant_id=user.tenant_id, username=payload.username)
     if exists:
         raise HTTPException(status_code=400, detail="用户名已存在")
+    if payload.is_superuser and not user.is_superuser:
+        raise HTTPException(status_code=403, detail="仅超级管理员可创建超管账号")
     if payload.department_id is not None:
         dept = get_department_by_id(db, tenant_id=user.tenant_id, department_id=payload.department_id)
         if not dept:
@@ -81,7 +85,14 @@ def create_api(
             raise HTTPException(status_code=400, detail=f"角色不存在: {rid}")
         roles.append(r)
     item = create_user(db, tenant_id=user.tenant_id, username=payload.username, password=payload.password, full_name=payload.full_name)
-    update_user(db, item, is_active=payload.is_active, is_superuser=payload.is_superuser, department_id=payload.department_id)
+    update_user(
+        db, item,
+        is_active=payload.is_active,
+        is_superuser=payload.is_superuser,
+        department_id=payload.department_id,
+        salary_type=payload.salary_type,
+        hourly_rate=payload.hourly_rate,
+    )
     if roles:
         set_user_roles(db, item, roles)
     write_op_log(
@@ -118,6 +129,12 @@ def update_api(
     item = get_user_by_id(db, tenant_id=user.tenant_id, user_id=user_id)
     if not item:
         raise HTTPException(status_code=404, detail="用户不存在")
+    # 普通管理员不可编辑超级管理员账号
+    if item.is_superuser and not user.is_superuser:
+        raise HTTPException(status_code=403, detail="普通管理员不可编辑超级管理员账号")
+    # 仅超管可授予超管权限
+    if payload.is_superuser is not None and payload.is_superuser and not user.is_superuser:
+        raise HTTPException(status_code=403, detail="仅超级管理员可授予超管权限")
     if payload.department_id is not None:
         dept = get_department_by_id(db, tenant_id=user.tenant_id, department_id=payload.department_id)
         if not dept:
@@ -139,6 +156,8 @@ def update_api(
         is_active=payload.is_active,
         is_superuser=payload.is_superuser,
         department_id=payload.department_id,
+        salary_type=payload.salary_type,
+        hourly_rate=payload.hourly_rate,
     )
     write_op_log(
         db,
@@ -165,6 +184,8 @@ def delete_api(
     item = get_user_by_id(db, tenant_id=user.tenant_id, user_id=user_id)
     if not item:
         raise HTTPException(status_code=404, detail="用户不存在")
+    if item.is_superuser:
+        raise HTTPException(status_code=403, detail="不可禁用超级管理员账号")
     update_user(db, item, is_active=False)
     write_op_log(
         db,

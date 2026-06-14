@@ -13,12 +13,17 @@ const traceCode = computed(() => {
   return typeof q === 'string' ? q.trim() : ''
 })
 
+const tenantCode = computed(() => {
+  const q = route.query.tenant
+  return typeof q === 'string' ? q.trim() : ''
+})
+
 async function load() {
   if (!traceCode.value) return
   loading.value = true
   detail.value = null
   try {
-    detail.value = await getPublicTrace(traceCode.value)
+    detail.value = await getPublicTrace(traceCode.value, tenantCode.value || undefined)
   } catch {
     showToast('未找到追溯信息')
   } finally {

@@ -53,8 +53,8 @@
           <div v-for="row in items" :key="row.id" class="admin-mobile-row">
             <div class="admin-mobile-row__head">
               <div class="min-w-0">
-                <div class="font-semibold text-[#303133]">{{ row.full_name || row.username }}</div>
-                <div class="text-xs text-[#909399]">{{ row.username }} · #{{ row.id }}</div>
+                <div class="font-semibold text-el-primary">{{ row.full_name || row.username }}</div>
+                <div class="text-xs text-el-placeholder">{{ row.username }} · #{{ row.id }}</div>
               </div>
               <el-tag :type="row.is_active ? 'success' : 'info'" size="small">{{ row.is_active ? t('system.users.enabled') : t('system.users.disabled') }}</el-tag>
             </div>
@@ -105,6 +105,16 @@
         <el-form-item :label="t('system.users.isSuperuser')" prop="is_superuser">
           <el-switch v-model="dlg.form.is_superuser" />
         </el-form-item>
+        <el-form-item label="计薪方式" prop="salary_type">
+          <el-select v-model="dlg.form.salary_type" style="width: 100%">
+            <el-option label="计件" value="piece" />
+            <el-option label="计时" value="hourly" />
+            <el-option label="混合" value="mixed" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="时薪（元）" prop="hourly_rate" v-if="dlg.form.salary_type !== 'piece'">
+          <el-input-number v-model="dlg.form.hourly_rate" :min="0" :precision="2" style="width: 100%" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dlg.open = false">{{ t('system.users.cancel') }}</el-button>
@@ -146,6 +156,8 @@ const dlg = reactive({
     role_ids: [] as number[],
     is_active: true,
     is_superuser: false,
+    salary_type: 'piece',
+    hourly_rate: null as number | null,
   },
 })
 
@@ -199,6 +211,8 @@ function resetForm() {
     role_ids: [],
     is_active: true,
     is_superuser: false,
+    salary_type: 'piece',
+    hourly_rate: null,
   }
 }
 
@@ -218,6 +232,8 @@ function openEdit(row: UserOut) {
     role_ids: row.roles.map((x) => x.id),
     is_active: row.is_active,
     is_superuser: row.is_superuser,
+    salary_type: row.salary_type || 'piece',
+    hourly_rate: row.hourly_rate ?? null,
   }
   dlg.open = true
 }
@@ -241,6 +257,8 @@ async function onSave() {
         role_ids: dlg.form.role_ids,
         is_active: dlg.form.is_active,
         is_superuser: dlg.form.is_superuser,
+        salary_type: dlg.form.salary_type,
+        hourly_rate: dlg.form.hourly_rate,
       })
     } else {
       await systemApi.updateUser(dlg.id, {
@@ -250,6 +268,8 @@ async function onSave() {
         role_ids: dlg.form.role_ids,
         is_active: dlg.form.is_active,
         is_superuser: dlg.form.is_superuser,
+        salary_type: dlg.form.salary_type,
+        hourly_rate: dlg.form.hourly_rate,
       })
     }
     dlg.open = false

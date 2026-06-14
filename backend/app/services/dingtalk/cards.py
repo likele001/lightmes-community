@@ -70,14 +70,14 @@ def build_action_card(
     if len(btns) == 1 and btns[0]["title"] == "查看详情":
         return {
             "title": title[:64],
-            "text": markdown[:1000],
+            "markdown": markdown[:1000],
             "singleTitle": "查看详情",
             "singleURL": link,
         }
 
     return {
         "title": title[:64],
-        "text": markdown[:1000],
+        "markdown": markdown[:1000],
         "btnOrientation": "0",
         "btns": btns[:4],
     }

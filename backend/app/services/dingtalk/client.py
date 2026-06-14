@@ -70,10 +70,22 @@ def send_webhook_message(webhook_url: str, payload: dict, *, secret: str = "") -
     url = _signed_webhook_url(webhook_url, secret)
     if not url:
         raise DingtalkApiError(-1, "webhook_url empty")
+    safe_url = url.split("?")[0]
     with httpx.Client(timeout=20.0) as client:
         resp = client.post(url, json=payload)
         resp.raise_for_status()
         data = resp.json()
+    errcode = int(data.get("errcode") or 0)
+    if errcode != 0:
+        logger.warning(
+            "dingtalk webhook failed: url=%s errcode=%s errmsg=%s payload=%s response=%s",
+            safe_url,
+            errcode,
+            data.get("errmsg"),
+            json.dumps(payload, ensure_ascii=False)[:600],
+            json.dumps(data, ensure_ascii=False)[:600],
+        )
+        raise DingtalkApiError(errcode, str(data.get("errmsg") or "unknown error"))
     _check_oapi(data)
 
 
@@ -107,6 +119,17 @@ def send_work_notification(
         resp = client.post(url, json=payload)
         resp.raise_for_status()
         data = resp.json()
+    errcode = int(data.get("errcode") or 0)
+    if errcode != 0:
+        logger.warning(
+            "dingtalk work_notify failed: userid=%s errcode=%s errmsg=%s msg=%s response=%s",
+            userid,
+            errcode,
+            data.get("errmsg"),
+            json.dumps(msg, ensure_ascii=False)[:600],
+            json.dumps(data, ensure_ascii=False)[:600],
+        )
+        raise DingtalkApiError(errcode, str(data.get("errmsg") or "unknown error"))
     _check_oapi(data)
     return str(data.get("task_id") or "")
 

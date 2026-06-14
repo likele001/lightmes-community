@@ -101,7 +101,7 @@
 }
 
 .el-card:hover {
-  box-shadow: var(--el-box-shadow) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* 按钮轻量 hover */
@@ -130,6 +130,48 @@
 .el-tag {
   border-radius: var(--el-border-radius-small);
 }
+
+/* ── 表格紧凑行高 ── */
+.el-table td {
+  padding: 8px 0;
+}
+
+/* ── 菜单分组标签 ── */
+.menu-group-label {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 16px 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 颜色别名（替代 Tailwind 任意值硬编码） ── */
+.text-el-primary { color: var(--el-text-color-primary); }
+.text-el-regular { color: var(--el-text-color-regular); }
+.text-el-placeholder { color: var(--el-text-color-placeholder); }
+.bg-el-fill { background-color: var(--el-fill-color-light); }
+.border-el-primary { border-color: var(--el-color-primary); }
+
+/* ── TV 大屏独立主题变量 ── */
+:root {
+  --tv-bg: #0f0f1a;
+  --tv-card: #1a1a2e;
+  --tv-border: #2a2a3e;
+  --tv-text: #e2e8f0;
+  --tv-muted: #64748b;
+  --tv-green: #22c55e;
+  --tv-red: #ef4444;
+  --tv-amber: #f59e0b;
+  --tv-sky: #38bdf8;
+  --tv-emerald: #34d399;
+}
+
+/* TV 大屏不受 admin 暗色模式影响 */
+.tv-screen,
+.tv-screen .el-card,
+.tv-screen .el-table { background: transparent; }
 
 .el-dialog,
 .el-message-box {

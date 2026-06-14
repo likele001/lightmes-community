@@ -30,6 +30,8 @@ export type UserOut = {
   full_name: string | null
   is_active: boolean
   is_superuser: boolean
+  salary_type: string
+  hourly_rate: number | null
   created_at: string
   roles: { id: number; code: string; name: string }[]
   department: { id: number; code: string; name: string } | null

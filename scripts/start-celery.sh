@@ -15,6 +15,12 @@ if ! "$VENV/bin/python" -c "import redis; r=redis.from_url('${REDIS_URL:-redis:/
   exit 1
 fi
 
+# 幂等：worker / beat 已经在跑就直接退出（用于 @reboot + */5 自愈 cron）
+if pgrep -fa 'celery -A app.celery_app worker' | grep -q "$VENV/bin/celery" && pgrep -fa 'celery -A app.celery_app beat' | grep -q "$VENV/bin/celery"; then
+  echo "Celery worker + beat 已在运行（$VENV），跳过启动"
+  exit 0
+fi
+
 echo "启动 Celery worker..."
 nohup "$VENV/bin/celery" -A app.celery_app worker -l info \
   >> "$LOG_DIR/worker.log" 2>&1 &

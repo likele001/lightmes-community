@@ -12,19 +12,19 @@
     <el-row v-if="canCrm && crmSummary" :gutter="16" class="mb-4">
       <el-col :xs="24" :sm="8">
         <el-card shadow="never" class="cursor-pointer" @click="router.push('/crm/opportunities')">
-          <div class="text-sm text-[#909399]">{{ t('home.crmOpenOpps') }}</div>
+          <div class="text-sm text-el-placeholder">{{ t('home.crmOpenOpps') }}</div>
           <div class="text-2xl font-semibold mt-1">{{ crmSummary.open_opportunities }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
         <el-card shadow="never" class="cursor-pointer" @click="router.push('/crm/public-pool')">
-          <div class="text-sm text-[#909399]">{{ t('home.crmPublicPool') }}</div>
+          <div class="text-sm text-el-placeholder">{{ t('home.crmPublicPool') }}</div>
           <div class="text-2xl font-semibold mt-1">{{ crmSummary.public_pool }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
         <el-card shadow="never" class="cursor-pointer" @click="router.push('/crm/opportunities')">
-          <div class="text-sm text-[#909399]">{{ t('home.crmDueFollowups') }}</div>
+          <div class="text-sm text-el-placeholder">{{ t('home.crmDueFollowups') }}</div>
           <div class="text-2xl font-semibold mt-1 text-[#e6a23c]">{{ crmSummary.due_followups }}</div>
         </el-card>
       </el-col>
@@ -93,7 +93,7 @@
                 <el-icon :size="20"><Document /></el-icon>
               </div>
               <div class="stat-label">{{ t('home.ordersTotalConfirmed') }}</div>
-              <div class="stat-value text-[#303133]">{{ summary?.orders.total ?? '-' }} / {{ summary?.orders.confirmed ?? '-' }}</div>
+              <div class="stat-value text-el-primary">{{ summary?.orders.total ?? '-' }} / {{ summary?.orders.confirmed ?? '-' }}</div>
             </div>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-4">
@@ -102,7 +102,7 @@
                 <el-icon :size="20"><List /></el-icon>
               </div>
               <div class="stat-label">{{ t('home.tasksPendingDone') }}</div>
-              <div class="stat-value text-[#303133]">{{ summary?.tasks.pending ?? '-' }} / {{ summary?.tasks.done ?? '-' }}</div>
+              <div class="stat-value text-el-primary">{{ summary?.tasks.pending ?? '-' }} / {{ summary?.tasks.done ?? '-' }}</div>
             </div>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-4">
@@ -124,7 +124,7 @@
           <el-card class="admin-chart-card" shadow="never">
             <template #header>
               <div class="flex items-center justify-between gap-3 flex-wrap">
-                <span class="text-[14px] font-semibold text-[#303133]">{{ t('home.recentDaysTrend', { days: chartDays }) }}</span>
+                <span class="text-[14px] font-semibold text-el-primary">{{ t('home.recentDaysTrend', { days: chartDays }) }}</span>
                 <el-radio-group v-model="chartDays" size="small" @change="loadCharts">
                   <el-radio-button :value="7">7{{ t('home.days') }}</el-radio-button>
                   <el-radio-button :value="14">14{{ t('home.days') }}</el-radio-button>
@@ -141,7 +141,7 @@
         <el-col :xs="24" :lg="10" class="mb-4">
           <el-card class="admin-chart-card" shadow="never">
             <template #header>
-              <span class="text-[14px] font-semibold text-[#303133]">{{ t('home.processRankTop10') }}</span>
+              <span class="text-[14px] font-semibold text-el-primary">{{ t('home.processRankTop10') }}</span>
             </template>
             <div class="h-[300px] min-h-[260px]">
               <v-chart v-if="rankOption" :option="rankOption" autoresize />
@@ -153,7 +153,7 @@
 
     <el-card v-if="canAi" shadow="never" class="mb-4" v-loading="briefLoading">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-[14px] font-semibold text-[#303133]">{{ t('home.todayBrief') }}</span>
+        <span class="text-[14px] font-semibold text-el-primary">{{ t('home.todayBrief') }}</span>
         <el-tag v-if="aiBrief?.mode" size="small" effect="plain">{{ aiBrief.mode === 'llm' ? t('home.llm') : t('home.rule') }}</el-tag>
       </div>
       <pre v-if="aiBrief?.content" class="text-sm text-zinc-700 whitespace-pre-wrap m-0 font-sans leading-relaxed">{{ aiBrief.content }}</pre>
@@ -162,7 +162,7 @@
 
     <el-card v-if="canAiAlert" shadow="never" class="mb-4">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-[14px] font-semibold text-[#303133]">{{ t('home.aiDataAlert') }}</span>
+        <span class="text-[14px] font-semibold text-el-primary">{{ t('home.aiDataAlert') }}</span>
         <div class="flex gap-2">
           <el-button v-if="canAi" size="small" link :loading="alertScanning" @click="runAlertScan">{{ t('home.scanNow') }}</el-button>
           <el-button v-if="canAiSettings" size="small" link @click="openAlertSettings">{{ t('home.thresholdConfig') }}</el-button>
