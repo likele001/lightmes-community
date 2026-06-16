@@ -124,30 +124,34 @@ def leader_approve_unit(
     unit = get_unit_by_id(db, tenant_id, unit_id)
     if not unit:
         raise ReportAuditError("报工件次不存在")
-    if unit.status != "submitted":
-        raise ReportAuditError(f"当前状态不可初审：{unit.status}")
+    if unit.status not in ("submitted", "leader_approved") and not unit.status.startswith("step_"):
+        raise ReportAuditError(f"当前状态不可审核：{unit.status}")
+    from app.services.approval_flow_resolver import get_status_after_approval
+
+    audit_count = len([a for a in unit.audits if a.action == "approve"])
+    new_status = get_status_after_approval(db, tenant_id, audit_count)
     create_unit_audit(
         db,
         tenant_id=tenant_id,
         report_unit_id=unit.id,
         auditor_id=auditor.id,
-        audit_level="leader",
+        audit_level="leader" if audit_count == 0 else "qc",
         action="approve",
-        reason=f"{channel_label}卡片初审",
+        reason=f"{channel_label}卡片审核",
     )
-    unit.status = "leader_approved"
+    unit.status = new_status
     create_notification(
         db,
         tenant_id=tenant_id,
         user_id=unit.user_id,
-        title="件次报工已初审通过",
-        content=f"任务件次 #{unit.unit_seq} 已初审通过（{channel_label}）",
+        title="件次报工已审核通过",
+        content=f"任务件次 #{unit.unit_seq} 已审核通过（{channel_label}）",
         level="info",
         biz_type="report_unit",
         biz_id=unit.id,
         feishu_event="report.leader_approved",
     )
-    return f"件次 #{unit.unit_seq} 已初审通过"
+    return f"件次 #{unit.unit_seq} 已审核通过"
 
 
 def reject_unit(
@@ -166,7 +170,7 @@ def reject_unit(
     unit = get_unit_by_id(db, tenant_id, unit_id)
     if not unit:
         raise ReportAuditError("报工件次不存在")
-    if unit.status not in ("submitted", "leader_approved"):
+    if unit.status not in ("submitted", "leader_approved") and not unit.status.startswith("step_"):
         raise ReportAuditError(f"当前状态不可驳回：{unit.status}")
     create_unit_audit(
         db,

@@ -1,5 +1,6 @@
 export default {
   common: {
+    send: "发送",
     loading: '加载中...',
     noData: '暂无数据',
     confirm: '确认',
@@ -158,5 +159,15 @@ export default {
       done: '已完成',
       rejected: '已拒绝',
     },
+  },
+  aiEmployee: {
+    title: "AI 员工",
+    empty: "暂无可用的 AI 员工",
+    chat: "AI 员工",
+    inputPlaceholder: "输入消息...",
+    newChat: "新对话",
+    deleteChat: "删除对话",
+    deleted: "已删除",
+    error: "发送失败，请重试",
   },
 }

@@ -37,6 +37,12 @@ export const warehouseApi = {
     if (params.item_type && params.item_type !== 'all') p.item_type = params.item_type
     return http.request<ListResp<StockOut>>({ url: '/admin/warehouse/stocks', method: 'GET', params: p })
   },
+  exportStocks(params: { warehouse_id?: number; item_type?: 'product' | 'material' | 'all' }) {
+    const p: any = {}
+    if (params.warehouse_id) p.warehouse_id = params.warehouse_id
+    if (params.item_type && params.item_type !== 'all') p.item_type = params.item_type
+    return http.request<Blob>({ url: '/admin/warehouse/stocks/export', method: 'GET', params: p, responseType: 'blob' })
+  },
   listLogs(params: { warehouse_id?: number; sku_id?: number; item_type?: 'product' | 'material' | 'all'; offset?: number; limit?: number }) {
     const p: any = { warehouse_id: params.warehouse_id, sku_id: params.sku_id, offset: params.offset, limit: params.limit }
     if (params.item_type && params.item_type !== 'all') p.item_type = params.item_type

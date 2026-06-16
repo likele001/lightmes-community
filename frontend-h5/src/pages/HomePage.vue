@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { showToast } from 'vant'
+import { showDialog, showLoadingToast, closeToast, showToast } from 'vant'
 import { getMyDashboardSummary, type H5DashboardSummary } from '@/api/tasks'
-import { getAiBrief, listAiAlerts, runAiAlerts, type AlertItem, type AiBriefOut } from '@/api/ai'
+import { getAiBrief, listAiAlerts, runAiAlerts, shiftAiSummary, type AlertItem, type AiBriefOut, type ShiftSummaryOut } from '@/api/ai'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -19,8 +19,14 @@ const brief = ref<AiBriefOut | null>(null)
 const canAi = computed(() => auth.hasPermission('ai.use'))
 const canAiAlert = computed(() => auth.hasPermission('ai.alert.view'))
 const canAiBrief = computed(() => canAi.value && canAiAlert.value)
-const showAiHub = computed(() => canAi.value || canAiAlert.value)
+const canAiEmployee = computed(() => auth.hasPermission("ai_employee.use"))
+const canShiftSummary = computed(() => auth.hasPermission('ai.report_assist'))
+const showAiHub = computed(() => canAi.value || canAiAlert.value || canAiEmployee.value)
 const showStaffHome = computed(() => !auth.isCustomer)
+
+// 交接摘要（Task 6）
+const shiftSummaryLoading = ref(false)
+const shiftSummary = ref<ShiftSummaryOut | null>(null)
 
 const todayLabel = computed(() => {
   const d = new Date()
@@ -84,6 +90,51 @@ async function scanAlerts() {
   }
 }
 
+// AI 生成换班/交接摘要
+async function generateShiftSummary() {
+  shiftSummaryLoading.value = true
+  showLoadingToast({ message: 'AI 正在汇总本班次…', duration: 0 })
+  try {
+    shiftSummary.value = await shiftAiSummary({ shift_hours: 8 })
+    closeToast()
+    await showDialog({
+      title: '交接摘要',
+      message: buildShiftSummaryText(shiftSummary.value!),
+      confirmButtonText: '知道了',
+    })
+  } catch (e: unknown) {
+    closeToast()
+    showToast(e instanceof Error ? e.message : '生成摘要失败')
+  } finally {
+    shiftSummaryLoading.value = false
+  }
+}
+
+function buildShiftSummaryText(s: ShiftSummaryOut): string {
+  const t = s.totals
+  const lines = [
+    `时段：${s.shift_start} ~ ${s.shift_end}`,
+    `报工 ${t.report_count} 单 / 件次 ${t.unit_count}`,
+    `合格 ${t.good} · 不良 ${t.bad} · 驳回 ${t.rejected}`,
+    `未交接 ${t.open_assignments}`,
+    '',
+    s.summary,
+  ]
+  if (s.highlights?.length) {
+    lines.push('', '✨ 亮点:')
+    lines.push(...s.highlights.map((h) => `· ${h}`))
+  }
+  if (s.alerts?.length) {
+    lines.push('', '⚠️ 异常:')
+    lines.push(...s.alerts.map((h) => `· ${h}`))
+  }
+  if (s.unfinished?.length) {
+    lines.push('', '🔧 未完成待交接:')
+    lines.push(...s.unfinished.map((h) => `· ${h}`))
+  }
+  return lines.join('\n')
+}
+
 function go(path: string) {
   router.push(path)
 }
@@ -118,6 +169,46 @@ onMounted(async () => {
           <div class="text-2xl font-bold">{{ formatRate(summary?.today.yield_rate) }}</div>
           <div class="mt-0.5 text-xs opacity-80">良率</div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="canShiftSummary" class="mx-4 mt-4 rounded-xl bg-white p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-sm font-medium text-zinc-700">换班/交接摘要（AI）</div>
+        <van-button
+          size="mini"
+          type="primary"
+          plain
+          :loading="shiftSummaryLoading"
+          icon="exchange"
+          @click="generateShiftSummary"
+        >
+          生成摘要
+        </van-button>
+      </div>
+      <div v-if="!shiftSummary" class="text-xs text-zinc-400">
+        点击「生成摘要」AI 将汇总近 8 小时本班次的报工/不良/待交接，自动生成一段交接话术。
+      </div>
+      <div v-else class="space-y-2">
+        <div class="grid grid-cols-4 gap-2 text-center text-xs">
+          <div class="rounded bg-green-50 p-2">
+            <div class="font-bold text-green-600">{{ shiftSummary.totals.good }}</div>
+            <div class="text-zinc-500">合格</div>
+          </div>
+          <div class="rounded bg-red-50 p-2">
+            <div class="font-bold text-red-500">{{ shiftSummary.totals.bad }}</div>
+            <div class="text-zinc-500">不良</div>
+          </div>
+          <div class="rounded bg-orange-50 p-2">
+            <div class="font-bold text-orange-500">{{ shiftSummary.totals.rejected }}</div>
+            <div class="text-zinc-500">驳回</div>
+          </div>
+          <div class="rounded bg-blue-50 p-2">
+            <div class="font-bold text-blue-500">{{ shiftSummary.totals.open_assignments }}</div>
+            <div class="text-zinc-500">待交接</div>
+          </div>
+        </div>
+        <div class="text-xs text-zinc-500 whitespace-pre-wrap leading-relaxed">{{ shiftSummary.summary }}</div>
       </div>
     </div>
 
@@ -157,6 +248,14 @@ onMounted(async () => {
         >
           <div class="text-orange-500 text-2xl">⚠️</div>
           <div class="mt-1 text-sm font-medium">数据预警</div>
+        </div>
+        <div
+          v-if="canAiEmployee"
+          class="rounded-xl bg-white p-3 text-center shadow-sm cursor-pointer"
+          @click="go('/ai-employees')"
+        >
+          <div class="text-green-500 text-2xl">💬</div>
+          <div class="mt-1 text-sm font-medium">AI 员工</div>
         </div>
       </div>
     </div>

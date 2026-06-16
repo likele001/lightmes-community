@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --ext .ts,.vue --fix"
   },
   "dependencies": {
+    "@unhead/vue": "1.11.20",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.511.0",

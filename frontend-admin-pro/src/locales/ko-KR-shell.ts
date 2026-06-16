@@ -180,6 +180,7 @@ export default {
     save: '저장',
     cancel: '취소',
     edit: '편집',
+    delete: '삭제',
     create: '추가',
     noData: '기록 없음',
     enterpriseManagement: '기업 생산 관리',

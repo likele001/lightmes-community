@@ -13,7 +13,8 @@ const loginPath = computed(() => {
 const principles = [
   '产品与型号独立管理，工价与「型号 × 工序」强关联',
   '工资只基于审核通过的报工记录计算',
-  '报工支持图片/视频证据，审核可直接查看',
+  '报工支持图片/视频/AI 照片计数/AI 缺陷分类，审核可直接查看',
+  '审批流程、质检模板、缺陷代码均可自定义配置',
   'Windows / Linux 均可部署，无需 Docker',
 ]
 
@@ -21,6 +22,7 @@ const techStack = [
   { title: '后端', desc: 'Python FastAPI · SQLAlchemy · MySQL · Celery + Redis' },
   { title: 'PC 前端', desc: 'Vue 3 · TypeScript · Element Plus · 管理后台' },
   { title: '移动 H5', desc: 'Vue 3 · Vant 4 · 扫码报工 · 客户下单' },
+  { title: '微信小程序', desc: 'uni-app · 员工报工端 + 客户端双端覆盖' },
 ]
 
 onMounted(() => {

@@ -93,6 +93,13 @@ export const featureModules = [
       { title: '报工审核', desc: '扫码/页面报工，多级审核与驳回' },
       { title: '进度看板', desc: '车间大屏、订单全生命周期追踪' },
       { title: '溯源查询', desc: '成品码反查物料、人员与时间' },
+      { title: '模具管理', desc: '模具档案、保养计划、工序绑定' },
+      { title: '质检模板', desc: '自定义质检项目、合格/测量/文本' },
+      { title: '缺陷代码', desc: '缺陷分类与严重程度管理' },
+      { title: '审批流程', desc: '自定义审核步骤与审核人角色' },
+      { title: '排班管理', desc: '班次规则、员工排班日历' },
+      { title: '外协管理', desc: '外协订单、外协报工与对账' },
+      { title: 'SPC 质量图表', desc: '工序能力分析、Xbar-R 控制图' },
     ],
   },
   {
@@ -101,7 +108,12 @@ export const featureModules = [
     items: [
       { title: '员工端 H5', desc: '报工、任务、工资、电子工资条' },
       { title: '客户端 H5', desc: '浏览下单、查进度、下载对账单' },
+      { title: '微信小程序', desc: '员工/客户双端，扫码报工与下单' },
       { title: '智能中心', desc: '工厂助手、数据预警、操作指引' },
+      { title: 'AI 照片计数', desc: '上传照片自动识别产品数量，免手动输入' },
+      { title: 'AI 缺陷分类', desc: '照片上传后 AI 自动识别缺陷类型' },
+      { title: '语音报工', desc: '语音输入产量数据，系统语音播报确认' },
+      { title: 'AI 员工中心', desc: 'AI 虚拟员工辅助管理生产任务' },
     ],
   },
   {
@@ -109,8 +121,10 @@ export const featureModules = [
     accent: '#64748b',
     items: [
       { title: '工资管理', desc: '计件自动汇总、补贴扣款、Excel 导出' },
+      { title: '时薪管理', desc: '按时计薪、加班倍率、工时统计' },
       { title: 'CRM 客户', desc: '档案、销售机会、公海与跟进' },
       { title: '人事设备', desc: '组织架构、考勤、设备点检与保养计划' },
+      { title: '出货管理', desc: '出库单、发货跟踪、签收确认' },
       { title: '数据报表', desc: '产量良率、销售趋势、客户贡献' },
     ],
   },

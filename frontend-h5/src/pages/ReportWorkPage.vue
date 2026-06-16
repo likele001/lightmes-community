@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast, showLoadingToast, closeToast, showDialog } from 'vant'
 import { getTaskDetail, submitReport, type H5Task } from '@/api/tasks'
 import { uploadFile } from '@/api/files'
+import { photoAiCount, defectAiClassify, voiceParseReport, attachmentIdToUrl } from '@/api/ai'
+import { VoiceInput, isVoiceInputSupported } from '@/utils/voice-input'
 import ScanTaskCodeButton from '@/components/ScanTaskCodeButton.vue'
 import { parseTaskCodeFromScan } from '@/utils/parseTaskCode'
 import { tenantH5Path } from '@/utils/tenant'
@@ -82,6 +84,166 @@ async function handleUpload() {
 function removeUpload(idx: number) {
   uploads.value.splice(idx, 1)
   form.attachment_ids = uploads.value.map((u) => u.id).join(',')
+}
+
+// AI：语音报工 — 按住按钮录音，结束调用 voice-parse 解析为结构化字段
+const voiceInput = ref<VoiceInput | null>(null)
+const voiceRecording = ref(false)
+const voiceInterim = ref('')
+
+function handleVoiceToggle() {
+  if (voiceRecording.value) {
+    voiceInput.value?.stop()
+    return
+  }
+  if (!isVoiceInputSupported()) {
+    showToast('当前浏览器不支持语音识别，请手动输入或使用系统输入法语音')
+    return
+  }
+  voiceInterim.value = ''
+  const vi = new VoiceInput({ lang: 'zh-CN', interim: true, continuous: false })
+  voiceInput.value = vi
+  vi.on('onStart', () => {
+    voiceRecording.value = true
+  })
+  vi.on('onResult', (text, isFinal) => {
+    voiceInterim.value = text
+    if (isFinal) {
+      voiceRecording.value = false
+      parseVoiceText(text)
+    }
+  })
+  vi.on('onError', (_code, msg) => {
+    voiceRecording.value = false
+    voiceInterim.value = ''
+    showToast(msg || '语音识别失败')
+  })
+  vi.on('onEnd', () => {
+    voiceRecording.value = false
+    voiceInterim.value = ''
+  })
+  vi.start()
+}
+
+async function parseVoiceText(text: string) {
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  if (!text.trim()) return
+  showLoadingToast({ message: 'AI 解析中...', duration: 0 })
+  try {
+    const res = await voiceParseReport({ text: text.trim(), task_id: task.value.id })
+    closeToast()
+    // 将解析结果填入表单（仅在用户尚未填写时）
+    if (typeof res.good_qty === 'number' && res.good_qty > 0 && form.good_qty === 0) {
+      form.good_qty = res.good_qty
+    }
+    if (typeof res.bad_qty === 'number' && res.bad_qty > 0 && form.bad_qty === 0) {
+      form.bad_qty = res.bad_qty
+    }
+    if (res.remark && !form.remark) {
+      form.remark = res.remark
+    } else if (res.defect_keywords?.length) {
+      form.remark = form.remark
+        ? `${form.remark}\n缺陷关键词: ${res.defect_keywords.join('、')}`
+        : `缺陷关键词: ${res.defect_keywords.join('、')}`
+    }
+    await showDialog({
+      title: '语音解析完成',
+      message: `原文：${text}\n\n解析：合格 ${res.good_qty ?? '-'} 件，不良 ${res.bad_qty ?? '-'} 件，结果：${res.result_type || '-'}${res.defect_keywords?.length ? '\n关键词: ' + res.defect_keywords.join('、') : ''}`,
+    })
+  } catch (e: unknown) {
+    closeToast()
+    showToast(e instanceof Error ? e.message : 'AI 解析失败')
+  } finally {
+    voiceInput.value?.destroy()
+    voiceInput.value = null
+  }
+}
+
+onUnmounted(() => {
+  voiceInput.value?.destroy()
+  voiceInput.value = null
+})
+
+// AI：拍照计数后填入合格数
+const aiCounting = ref(false)
+async function handleAiCount() {
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  if (!uploads.value.length) {
+    showToast('请先上传零件照片')
+    return
+  }
+  aiCounting.value = true
+  try {
+    const image_urls = uploads.value.map((u) => attachmentIdToUrl(Number(u.id), u.name))
+    const res = await photoAiCount({ image_urls, task_id: task.value.id })
+    if (!res.ok) {
+      showToast(res.error || 'AI 计数不可用')
+      return
+    }
+    const cur = Number(res.count || 0)
+    if (cur <= 0) {
+      showToast('AI 未识别到零件，请检查照片')
+      return
+    }
+    form.good_qty = cur
+    showDialog({
+      title: 'AI 计数完成',
+      message: `识别 ${res.image_count} 张照片，共 ${cur} 件。可信度：${res.confidence || 'unknown'}\n${res.note || ''}`,
+    })
+  } catch (e: unknown) {
+    showToast(e instanceof Error ? e.message : 'AI 计数失败')
+  } finally {
+    aiCounting.value = false
+  }
+}
+
+// AI：识别缺陷后填入备注
+const aiClassifying = ref(false)
+async function handleAiDefect() {
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  if (!uploads.value.length) {
+    showToast('请先上传不良品照片')
+    return
+  }
+  if (form.bad_qty <= 0) {
+    showToast('请先填写不良数')
+    return
+  }
+  aiClassifying.value = true
+  try {
+    const image_urls = uploads.value.map((u) => attachmentIdToUrl(Number(u.id), u.name))
+    const res = await defectAiClassify({
+      image_urls,
+      task_id: task.value.id,
+      remark: form.remark || undefined,
+    })
+    if (!res.ok) {
+      showToast(res.error || 'AI 识别不可用')
+      return
+    }
+    const parts: string[] = []
+    if (res.defect_name) parts.push(`【${res.defect_name}】`)
+    if (res.severity) parts.push(`严重度:${res.severity}`)
+    if (res.description) parts.push(res.description)
+    const aiText = parts.join(' / ')
+    if (aiText) {
+      form.remark = form.remark ? `${form.remark}\n${aiText}` : aiText
+    }
+    showToast(`已识别为 ${res.defect_name ?? '未知缺陷'}`)
+  } catch (e: unknown) {
+    showToast(e instanceof Error ? e.message : 'AI 识别失败')
+  } finally {
+    aiClassifying.value = false
+  }
 }
 
 async function handleSubmit() {
@@ -211,10 +373,22 @@ async function handleSubmit() {
 
     <!-- 备注 -->
     <div class="mx-4 mt-4">
-      <div class="mb-1 text-sm font-medium text-zinc-700">备注</div>
+      <div class="mb-1 flex items-center justify-between">
+        <div class="text-sm font-medium text-zinc-700">备注</div>
+        <van-button
+          size="mini"
+          :type="voiceRecording ? 'danger' : 'primary'"
+          :loading="voiceRecording"
+          icon="volume-o"
+          class="!px-2"
+          @click="handleVoiceToggle"
+        >
+          {{ voiceRecording ? '录音中…点击停止' : '按住说话' }}
+        </van-button>
+      </div>
       <textarea
         v-model="form.remark"
-        placeholder="可选备注信息"
+        :placeholder="voiceRecording ? `正在识别: ${voiceInterim || '...'}` : '可选备注信息'"
         rows="2"
         class="w-full rounded-xl border border-zinc-200 bg-white p-3 text-sm outline-none focus:border-blue-400"
       />
@@ -240,6 +414,30 @@ async function handleSubmit() {
           <van-icon name="plus" />
           添加文件
         </div>
+      </div>
+      <!-- AI 按钮组 -->
+      <div v-if="uploads.length" class="mt-3 grid grid-cols-2 gap-2">
+        <van-button
+          size="small"
+          plain
+          type="primary"
+          :loading="aiCounting"
+          icon="aim"
+          @click="handleAiCount"
+        >
+          AI 数一下零件
+        </van-button>
+        <van-button
+          size="small"
+          plain
+          type="warning"
+          :loading="aiClassifying"
+          :disabled="form.bad_qty <= 0"
+          icon="warning-o"
+          @click="handleAiDefect"
+        >
+          AI 识别缺陷
+        </van-button>
       </div>
     </div>
 

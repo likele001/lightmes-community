@@ -81,6 +81,8 @@ def _get_group_targets_for_event(
     dingtalk_cfg = get_dingtalk_settings_raw(db, tenant_id) if is_dingtalk_enabled(db, tenant_id) else {}
 
     targets: list[PushTarget] = []
+    # 飞书 chat_id 跨 group 去重（management/factory 经常复用同一群）
+    seen_feishu_chat: set[str] = set()
 
     for gcode in group_codes:
         f_group = next((g for g in (feishu_cfg.get("groups") or []) if g.get("code") == gcode and g.get("enabled", True)), None)
@@ -88,7 +90,10 @@ def _get_group_targets_for_event(
             channels = f_group.get("channels") or {}
             feishu_ch = channels.get("feishu") or {}
             if feishu_ch.get("enabled", True) and (feishu_ch.get("chat_id") or "").strip():
-                targets.append(PushTarget.chat("feishu", feishu_ch["chat_id"].strip(), group_code=gcode))
+                chat_id = feishu_ch["chat_id"].strip()
+                if chat_id not in seen_feishu_chat:
+                    seen_feishu_chat.add(chat_id)
+                    targets.append(PushTarget.chat("feishu", chat_id, group_code=gcode))
             wecom_ch = channels.get("wecom") or {}
             if wecom_ch.get("enabled", False) and (wecom_ch.get("webhook_url") or "").strip():
                 targets.append(PushTarget.webhook("wecom", wecom_ch["webhook_url"].strip(), group_code=gcode))
@@ -218,9 +223,13 @@ def _dispatch_targets(
     payload: dict,
     scheduled_at: datetime | None,
     user: User | None = None,
+    restrict_channel: str | None = None,
 ) -> int:
     created = 0
     for target in targets:
+        # 通道过滤：飞书 emit_*_event 只应创建飞书 log，避免被企微/钉钉的 emit_*_event 重复建
+        if restrict_channel and target.get("channel") != restrict_channel:
+            continue
         log = _create_log(
             db,
             tenant_id=tenant_id,
@@ -256,7 +265,15 @@ def dispatch(
     workshop: str | None = None,
     payload: dict | None = None,
     scheduled_at: datetime | None = None,
+    restrict_channel: str | None = None,
 ) -> int:
+    """统一消息分发入口
+
+    参数:
+        restrict_channel: 限制本调用只产出指定通道的 log。
+            由 emit_feishu_event / emit_wecom_event / emit_dingtalk_event 等
+            调用方传入，避免多通道的 emit 串行调用时重复建同一目标的多条 log。
+    """
     payload = payload or {}
     created = 0
 
@@ -277,6 +294,7 @@ def dispatch(
                     payload=payload,
                     scheduled_at=scheduled_at,
                     user=user,
+                    restrict_channel=restrict_channel,
                 )
         return created
 
@@ -294,19 +312,21 @@ def dispatch(
             department_id=department_id,
             workshop=workshop,
         )
-        notify_in_app_for_targets(
-            db,
-            tenant_id,
-            target_codes,
-            title=title,
-            content=content,
-            level=level,
-            biz_type=biz_type,
-            biz_id=biz_id,
-            user_id=user_id,
-            department_id=department_id,
-            workshop=workshop,
-        )
+        # 站内通知不走通道过滤（多通道 emit 串行调用时只要触发一次即可）
+        if not restrict_channel or restrict_channel == "feishu":
+            notify_in_app_for_targets(
+                db,
+                tenant_id,
+                target_codes,
+                title=title,
+                content=content,
+                level=level,
+                biz_type=biz_type,
+                biz_id=biz_id,
+                user_id=user_id,
+                department_id=department_id,
+                workshop=workshop,
+            )
 
         seen_user_ids: set[int] = set()
         for t in user_targets:
@@ -332,6 +352,7 @@ def dispatch(
                 payload=payload,
                 scheduled_at=scheduled_at,
                 user=user,
+                restrict_channel=restrict_channel,
             )
         return created
 
@@ -348,6 +369,7 @@ def dispatch(
             biz_id=biz_id,
             payload=payload,
             scheduled_at=scheduled_at,
+            restrict_channel=restrict_channel,
         )
 
     if is_mixed_event(event_code):
@@ -367,6 +389,7 @@ def dispatch(
                     payload=payload,
                     scheduled_at=scheduled_at,
                     user=user,
+                    restrict_channel=restrict_channel,
                 )
         created += _dispatch_targets(
             db,
@@ -380,6 +403,7 @@ def dispatch(
             biz_id=biz_id,
             payload=payload,
             scheduled_at=scheduled_at,
+            restrict_channel=restrict_channel,
         )
         return created
 

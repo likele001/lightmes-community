@@ -5,7 +5,7 @@ import { showDialog, showToast } from 'vant'
 import { getTaskDetail, type H5Task } from '@/api/tasks'
 import { getTaskUnits, submitReportUnit, type AnomalyWarning, type ReportUnitItem, type TaskFlowContext } from '@/api/reportUnits'
 import { getReportMediaSettings, type ReportMediaSettings } from '@/api/settings'
-import { reportAiCheck } from '@/api/ai'
+import { reportAiCheck, defectAiClassify, attachmentIdToUrl, type DefectClassifyOut } from '@/api/ai'
 import { tenantH5Path } from '@/utils/tenant'
 import CameraPhotoCapture from '@/components/CameraPhotoCapture.vue'
 
@@ -16,6 +16,8 @@ const loading = ref(false)
 const submitting = ref(false)
 const aiChecking = ref(false)
 const aiHints = ref<string[]>([])
+const aiClassifying = ref(false)
+const aiClassifyResult = ref<DefectClassifyOut | null>(null)
 const task = ref<H5Task | null>(null)
 const units = ref<ReportUnitItem[]>([])
 const assignedQty = ref(0)
@@ -98,6 +100,49 @@ async function loadTask() {
   }
 }
 
+async function handleAiClassify() {
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  if (!uploads.value.length) {
+    showToast('请先上传照片')
+    return
+  }
+  aiClassifying.value = true
+  try {
+    const image_urls = uploads.value.map((u) => attachmentIdToUrl(u.id, u.name))
+    const res = await defectAiClassify({
+      image_urls,
+      task_id: task.value.id,
+      remark: form.value.remark || undefined,
+    })
+    aiClassifyResult.value = res
+    if (!res.ok) {
+      showToast(res.error || 'AI 识别不可用')
+      return
+    }
+    // 拼接备注：AI 识别 + 原始备注
+    const parts: string[] = []
+    if (res.defect_name) parts.push(`【${res.defect_name}】`)
+    if (res.severity) parts.push(`严重度:${res.severity}`)
+    if (res.description) parts.push(res.description)
+    const aiText = parts.join(' / ')
+    if (aiText) {
+      form.value.remark = form.value.remark ? `${form.value.remark}\n${aiText}` : aiText
+    }
+    if (res.confidence === 'low') {
+      showToast('识别可信度较低，请人工确认')
+    } else {
+      showToast(`已识别为 ${res.defect_name ?? '未知缺陷'}`)
+    }
+  } catch (e: unknown) {
+    showToast(e instanceof Error ? e.message : 'AI 识别失败')
+  } finally {
+    aiClassifying.value = false
+  }
+}
+
 async function handleAiCheck() {
   if (!task.value?.id) {
     showToast('请先加载任务')
@@ -123,6 +168,17 @@ async function handleAiCheck() {
     showToast(e instanceof Error ? e.message : 'AI 暂不可用')
   } finally {
     aiChecking.value = false
+  }
+}
+
+/** 展示 AI 风险分流反馈 */
+function showRiskTip(r: Record<string, unknown>) {
+  if (r.auto_passed === true) {
+    showToast('AI 已自动审核通过')
+  } else if (r.risk_level === 'high') {
+    showToast('⚠️ 高风险报工，已提交班组长审核')
+  } else if (r.risk_level === 'medium') {
+    showToast('已提交班组长审核')
   }
 }
 
@@ -161,7 +217,8 @@ async function handleSubmit() {
         })
         // 用户点了"确认提交" → 带 anomaly_confirmed=true 重新提交
         submitting.value = true
-        await submitReportUnit({
+        // 二次提交成功
+        const res2 = await submitReportUnit({
           task_code: form.value.task_code.trim(),
           unit_seq: poolMode.value ? undefined : form.value.unit_seq ?? undefined,
           result_type: form.value.result_type,
@@ -169,7 +226,7 @@ async function handleSubmit() {
           remark: form.value.remark || undefined,
           anomaly_confirmed: true,
         })
-        // 二次提交成功
+        showRiskTip(res2 as unknown as Record<string, unknown>)
         uploads.value = []
         form.value.remark = ''
         await loadTask()
@@ -187,6 +244,7 @@ async function handleSubmit() {
 
     uploads.value = []
     form.value.remark = ''
+    showRiskTip(res as unknown as Record<string, unknown>)
     await loadTask()
     if (remainingQty.value <= 0) {
       await showDialog({ title: '完成', message: '本任务件次已全部报完' })
@@ -310,6 +368,17 @@ watch(
             label="拍摄照片"
           />
         </div>
+        <van-button
+          v-if="form.result_type === 'bad' && uploads.length"
+          block
+          plain
+          type="warning"
+          :loading="aiClassifying"
+          class="mb-2"
+          @click="handleAiClassify"
+        >
+          AI 识别缺陷类型
+        </van-button>
         <van-button block plain type="primary" :loading="aiChecking" class="mb-2" @click="handleAiCheck">
           AI 检查一下
         </van-button>

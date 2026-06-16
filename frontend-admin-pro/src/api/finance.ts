@@ -104,4 +104,7 @@ export const financeApi = {
   getProfit(params: { month: string }) {
     return http.request<ProfitOut>({ url: '/admin/finance/profit', method: 'GET', params })
   },
+  exportStatementsExcel(params: { customer_id?: number; status?: string }) {
+    return http.request<Blob>({ url: '/admin/finance/statements/export', method: 'GET', params, responseType: 'blob' })
+  },
 }

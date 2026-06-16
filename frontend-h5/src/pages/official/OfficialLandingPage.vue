@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useHead } from '@unhead/vue'
+import { usePageSeo } from '@/composables/useSeo'
 import { getStoredTenantCode } from '@/utils/tenant'
-import PhonePreview from '@/components/official/PhonePreview.vue'
-import DashboardPreview from '@/components/official/DashboardPreview.vue'
 
 const communityUrl = 'https://github.com/likele001/lightmes-community'
 const trialUrl = 'https://admin.mes.cenkor.cn/register/'
@@ -19,10 +19,12 @@ const loginPath = computed(() => {
 const heroHighlights = [
   { label: '扫码报工', desc: '手机扫码录入产量，照片留痕' },
   { label: '自动算薪', desc: '审核通过自动计件工资' },
-  { label: 'AI 工厂助手', desc: '智能分析、数据预警、操作指引' },
+  { label: 'AI 智能报工', desc: '照片计数、缺陷分类、语音输入' },
+  { label: '模具管理', desc: '模具档案、保养计划、工序绑定' },
   { label: 'CRM 客户', desc: '客户档案、商机、公海、跟进' },
   { label: '仓储库存', desc: '出入库、盘点、安全库存预警' },
-  { label: '经营报表', desc: '产量、良率、成本、客户贡献' },
+  { label: '外协加工', desc: '外协订单、报工与对账管理' },
+  { label: 'SPC 质量', desc: '工序能力分析、控制图监控' },
 ]
 
 const painPoints = [
@@ -83,6 +85,13 @@ const advantageGroups = [
       { title: '生产看板', desc: '车间大屏实时滚动产量、良率和异常，订单全生命周期追踪。' },
       { title: '质量溯源', desc: '一物一码，扫成品反查物料批次、操作人、设备、时间和质检记录。' },
       { title: '客户下单', desc: '客户 H5 自助浏览型号、选数量交期、下单，进度自己查。' },
+      { title: '模具管理', desc: '模具档案、保养计划、保养执行记录、工序绑定，模具寿命预警。' },
+      { title: '质检模板', desc: '自定义质检项目，支持合格/不合格/测量/文本四种类型，模板复用。' },
+      { title: '缺陷代码', desc: '缺陷分类与严重程度管理，报工/质检时快速标记缺陷原因。' },
+      { title: '审批流程', desc: '自定义多级审核步骤，配置审核人角色，订单/报工/工资灵活适配。' },
+      { title: '排班管理', desc: '班次规则定义、员工排班日历、自动统计工时与考勤。' },
+      { title: '外协管理', desc: '外协订单分发、外协报工录入、外协对账与结算。' },
+      { title: 'SPC 质量图表', desc: 'Xbar-R 控制图、工序能力 CPK 分析，实时监控质量稳定性。' },
     ],
   },
   {
@@ -93,6 +102,10 @@ const advantageGroups = [
       { title: '数据预警', desc: '产能负荷异常、良率下滑、交期临近自动预警，不用人盯数据。' },
       { title: '智能分析', desc: 'AI 自动分析产量趋势、工序瓶颈、人员效率，给出改进建议。' },
       { title: '操作指引', desc: '系统内置智能帮助，新员工遇到问题直接问 AI，不靠老员工带。' },
+      { title: 'AI 照片计数', desc: '报工上传照片后 AI 自动识别产品数量，免去手动清点输入。' },
+      { title: 'AI 缺陷分类', desc: '上传不良品照片，AI 自动识别缺陷类型，辅助质检决策。' },
+      { title: '语音报工', desc: '语音输入产量数据，系统语音播报确认结果，双手不离开工件。' },
+      { title: 'AI 员工中心', desc: 'AI 虚拟员工辅助管理，自动分配任务、跟踪执行、异常上报。' },
     ],
   },
   {
@@ -100,10 +113,12 @@ const advantageGroups = [
     color: '#0891b2',
     items: [
       { title: '计件工资', desc: '型号 × 工序工价，审核通过自动入工资，补贴扣款单独项，月底一键生成工资条。' },
+      { title: '时薪管理', desc: '按时计薪、加班倍率设置、工时统计，适合非计件岗位。' },
       { title: 'CRM 客户管理', desc: '客户档案、联系人、销售机会、公海池、客户标签、售后跟进，商机转订单。' },
       { title: '人事管理', desc: '组织架构、员工档案、技能标签、GPS 考勤打卡（可选地理围栏）。' },
       { title: '仓储库存', desc: '仓库管理、出入库、退货、库存流水、安全库存预警，和采购、订单联动。' },
       { title: '采购管理', desc: '采购单、入库、退货、供应商管理、采购对账。' },
+      { title: '出货管理', desc: '出库单管理、发货跟踪、客户签收确认，与订单自动关联。' },
       { title: '财务管理', desc: '客户对账单、收支流水、成本毛利分析，数据从订单和报工自动汇总。' },
       { title: '设备管理', desc: '设备档案、日常点检、保养计划与保养记录，维护日期自动联动。' },
       { title: '数据报表', desc: '产量/良率/工序排行/日报趋势，ECharts 图表，老板移动端随时看。' },
@@ -118,6 +133,8 @@ const compareRows = [
   ['质量追溯', '出问题翻不到记录', '扫成品码反查整链'],
   ['客户管理', '名单在销售微信里', 'CRM 统一管理，公海回收'],
   ['库存进出', '月底盘才知道差了', '出入库实时，库存预警'],
+  ['模具保养', '坏了才知道该保养了', '到期提醒，保养记录可查'],
+  ['外协管理', '电话微信来回确认', '系统下单、报工、对账一体'],
   ['AI 分析', '靠人盯报表', 'AI 自动预警、分析、建议'],
   ['上线周期', '半年起步，预算十几万', '几天到两周，按需部署'],
 ]
@@ -147,8 +164,21 @@ const featureCompare = [
   { name: '计件工资', community: false, pro: true },
   { name: '工资条签名', community: false, pro: true },
   { name: 'CRM 客户管理', community: false, pro: true },
+  { name: '模具管理', community: false, pro: true },
+  { name: '质检模板', community: false, pro: true },
+  { name: '缺陷代码', community: false, pro: true },
+  { name: '审批流程', community: false, pro: true },
+  { name: '排班管理', community: false, pro: true },
+  { name: '外协管理', community: false, pro: true },
+  { name: 'SPC 质量图表', community: false, pro: true },
+  { name: '时薪管理', community: false, pro: true },
+  { name: '出货管理', community: false, pro: true },
   { name: 'AI 工厂助手', community: false, pro: true },
   { name: 'AI 数据预警', community: false, pro: true },
+  { name: 'AI 照片计数', community: false, pro: true },
+  { name: 'AI 缺陷分类', community: false, pro: true },
+  { name: '语音报工', community: false, pro: true },
+  { name: 'AI 员工中心', community: false, pro: true },
   { name: '仓储库存', community: false, pro: true },
   { name: '采购管理', community: false, pro: true },
   { name: '财务管理', community: false, pro: true },
@@ -156,6 +186,7 @@ const featureCompare = [
   { name: '甘特排产', community: false, pro: true },
   { name: '客户自助下单', community: false, pro: true },
   { name: '数据报表', community: false, pro: true },
+  { name: '微信小程序', community: false, pro: true },
   { name: '用户数', community: '≤5', pro: '不限' },
   { name: 'SKU 数', community: '≤20', pro: '不限' },
   { name: '工序数', community: '≤10', pro: '不限' },
@@ -171,13 +202,54 @@ const closingSteps = [
 const allModules = [
   '产品管理', 'SKU 型号', '工序工价', '订单管理', '生产计划', '甘特排产',
   '派工管理', '扫码报工', '两级审核', '生产看板', '质量溯源', '客户下单',
-  '计件工资', '工资条签名', 'CRM 客户', '销售机会', '公海池', '客户标签',
-  '人事管理', '考勤打卡', '技能标签', '仓储库存', '出入库', '安全库存',
-  '采购管理', '供应商管理', '对账单', '财务管理', '收支流水', '成本毛利',
-  '设备管理', '点检保养', 'AI 工厂助手', 'AI 数据预警', 'AI 智能分析', '数据报表',
+  '模具管理', '模具保养', '工序绑定', '质检模板', '缺陷代码', '审批流程',
+  '排班管理', '外协管理', 'SPC 质量图表',
+  '计件工资', '时薪管理', '工资条签名',
+  'CRM 客户', '销售机会', '公海池', '客户标签',
+  '人事管理', '考勤打卡', '技能标签',
+  '仓储库存', '出入库', '安全库存', '出货管理',
+  '采购管理', '供应商管理', '对账单',
+  '财务管理', '收支流水', '成本毛利',
+  '设备管理', '点检保养',
+  'AI 工厂助手', 'AI 数据预警', 'AI 智能分析',
+  'AI 照片计数', 'AI 缺陷分类', '语音报工', 'AI 员工中心',
+  '微信小程序', '数据报表',
 ]
 
 const industries = ['五金加工', '钣金加工', '注塑加工', '服装加工', '家具定制', '电子装配', '包装印刷', '机械零件加工', '金属制品', '食品加工']
+
+const trustCases = [
+  { tag: '五金加工 · 35 人', quote: '以前月底算工资要 2 天，现在 10 分钟出表。', author: '东莞某精密五金厂 王厂长' },
+  { tag: '注塑加工 · 80 人', quote: '扫码报工工人 5 分钟学会，车间主任说早知道就早上了。', author: '苏州某注塑厂 李总' },
+  { tag: '电子装配 · 50 人', quote: '客户要追溯码，上了之后客户说比大厂还规范。', author: '深圳某电子装配厂 张经理' },
+]
+
+const galleryTabs = [
+  { id: 'manufacturing', label: '生产管理' },
+  { id: 'sales', label: '销售 CRM' },
+  { id: 'finance', label: '财务库存' },
+]
+const galleryActive = ref('manufacturing')
+const galleryImages: Record<string, Array<{ src: string; label: string }>> = {
+  manufacturing: [
+    { src: '/screenshots/gallery/01-首页.png', label: '管理后台首页' },
+    { src: '/screenshots/gallery/03-大屏显示.png', label: '车间数据大屏' },
+    { src: '/screenshots/gallery/45-生产排程-工单.png', label: '生产排程 · 工单' },
+    { src: '/screenshots/gallery/54-报工管理.png', label: '扫码报工管理' },
+    { src: '/screenshots/gallery/55-工资核算.png', label: '计件工资核算' },
+    { src: '/screenshots/gallery/35-工序工价.png', label: '工序工价配置' },
+    { src: '/screenshots/gallery/57-溯源查询.png', label: '质量溯源查询' },
+    { src: '/screenshots/gallery/27-产品管理.png', label: '产品基础库' },
+  ],
+  sales: [
+    { src: '/screenshots/gallery/44-客户订单.png', label: '客户订单管理' },
+    { src: '/screenshots/gallery/38-销售漏斗.png', label: '销售漏斗分析' },
+  ],
+  finance: [
+    { src: '/screenshots/gallery/58-库存管理.png', label: '仓储库存管理' },
+    { src: '/screenshots/gallery/60-设备管理.png', label: '设备点检保养' },
+  ],
+}
 
 const plans = [
   {
@@ -193,8 +265,8 @@ const plans = [
     name: 'Pro 商业版',
     price: '¥1800',
     suffix: '/ 年',
-    desc: '全功能源码，无限制，一年更新。生产、CRM、AI、仓储、财务全覆盖。',
-    features: ['全部 36 个功能模块', '无限用户 / SKU / 工序', '一年内版本更新', 'GitHub 私有仓库权限', '源码交付，私有部署'],
+    desc: '全功能源码，无限制，一年更新。生产、CRM、AI、模具、外协、仓储、财务全覆盖。',
+    features: ['全部 46+ 个功能模块', '无限用户 / SKU / 工序', '一年内版本更新', 'GitHub 私有仓库权限', '源码交付，私有部署'],
     highlight: true,
     cta: '获取 Pro 报价',
     href: null,
@@ -245,6 +317,10 @@ const faqs = [
     a: '可以。社区版免费开源，5 人以内可跑通扫码报工和审核流程。也可以在线试用体验系统。觉得合适再购买 Pro 商业版源码。',
   },
   {
+    q: 'Pro 版相比之前新增了哪些模块？',
+    a: '最近新增了模具管理（档案/保养/工序绑定）、质检模板（自定义质检项目）、缺陷代码（分类与严重程度）、审批流程（自定义审核步骤）、排班管理、时薪管理、外协管理、出货管理、SPC 质量图表、微信小程序，以及 AI 照片计数、AI 缺陷分类、语音报工、AI 员工中心等智能报工能力。Pro 版已覆盖 46+ 个功能模块。',
+  },
+  {
     q: '后续要加功能或者改流程怎么办？',
     a: '有源码可以自己改或找人改。我们也提供定制开发服务，按人天报价（¥1500-3000/人天）。',
   },
@@ -267,8 +343,51 @@ async function copyWechat() {
   copied.value = true
 }
 
-onMounted(() => {
-  document.title = 'LightMes · 中小加工厂生产管理系统：源码交付 · 私有部署 · 扫码报工 + AI + CRM'
+usePageSeo({
+  title: 'LightMes · 中小加工厂生产管理系统 | 源码交付私有部署',
+  description: '专为中小加工厂打造的轻量化MES系统。扫码报工、计件工资自动算、CRM客户管理、AI工厂助手、仓储库存、质量溯源。源码部署在自己服务器，数据不出厂。免费社区版开源下载。',
+  keywords: 'MES系统,生产管理系统,扫码报工,计件工资,加工厂管理软件,私有部署,源码交付',
+})
+
+const jsonLdSoftwareApp = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'LightMes',
+  description: '中小加工厂生产管理系统 · 源码交付私有部署',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Linux, Windows',
+  url: 'https://lightmes.user.023ent.net',
+  codeRepository: 'https://github.com/likele001/lightmes-community',
+  offers: [
+    { '@type': 'Offer', price: '0', priceCurrency: 'CNY', description: 'Community 社区版（开源）' },
+    { '@type': 'Offer', price: '1800', priceCurrency: 'CNY', priceUnit: 'year', description: 'Pro 商业版（年费）' },
+    { '@type': 'Offer', price: '2800', priceCurrency: 'CNY', priceUnit: 'year', description: 'Pro + 标准实施版（年费）' },
+  ],
+}
+
+const jsonLdFaq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(f => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+}
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(jsonLdSoftwareApp),
+      key: 'software-app',
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(jsonLdFaq),
+      key: 'faq',
+    },
+  ],
 })
 </script>
 
@@ -282,10 +401,10 @@ onMounted(() => {
             源码交付 · 私有部署 · 数据不出厂
           </div>
           <h1 class="official-hero__title sales-hero__title">
-            不只是扫码报工<br>是一套完整的加工厂经营系统
+            不只是扫码报工<br>是一套完整的加工厂经营系统<br>模具 · 外协 · AI 智能报工
           </h1>
           <p class="official-hero__desc sales-hero__desc">
-            生产报工、计件工资、CRM、人事考勤、仓储库存、采购对账、财务管理、AI 数据分析。买源码，部署在自己服务器，数据不出厂。
+            生产报工、计件工资、模具管理、外协加工、CRM、仓储库存、采购对账、AI 智能报工（照片计数/缺陷分类/语音输入）。买源码，部署在自己服务器，数据不出厂。
           </p>
           <div class="official-hero__actions sales-hero__actions">
             <a class="official-btn official-btn--primary" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版</a>
@@ -304,11 +423,29 @@ onMounted(() => {
 
         <div class="official-showcase sales-showcase">
           <div class="official-showcase__dash">
-            <DashboardPreview label="老板端：订单 · 计划 · 工资 · 看板" />
+            <div class="sales-hero-browser">
+              <div class="sales-hero-browser__bar">
+                <span class="sales-hero-browser__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="sales-hero-browser__url">admin.mes.cenkor.cn</span>
+              </div>
+              <img src="/screenshots/dashboard.png" alt="LightMes 管理后台看板" class="sales-hero-screenshot" loading="eager" />
+            </div>
           </div>
           <div class="official-showcase__float">
-            <PhonePreview screen="report" label="员工扫码报工" />
-            <PhonePreview screen="tasks" label="任务推送列表" />
+            <figure class="sales-hero-phone">
+              <div class="sales-hero-phone__shell">
+                <div class="sales-hero-phone__notch" aria-hidden="true"></div>
+                <img src="/screenshots/phone-scan.png" alt="H5 扫码报工" class="sales-hero-phone__screen" loading="eager" />
+              </div>
+              <figcaption>员工扫码报工</figcaption>
+            </figure>
+            <figure class="sales-hero-phone">
+              <div class="sales-hero-phone__shell">
+                <div class="sales-hero-phone__notch" aria-hidden="true"></div>
+                <img src="/screenshots/phone-salary.png" alt="H5 电子工资条" class="sales-hero-phone__screen" loading="eager" />
+              </div>
+              <figcaption>电子工资条签名</figcaption>
+            </figure>
           </div>
         </div>
       </div>
@@ -384,6 +521,26 @@ onMounted(() => {
           <div role="cell" class="sales-compare-row__before">{{ row[1] }}</div>
           <div role="cell" class="sales-compare-row__after">{{ row[2] }}</div>
         </div>
+      </div>
+    </section>
+
+    <section class="official-section official-section--bordered sales-gallery" aria-labelledby="gallery-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">真实界面</p>
+        <h2 id="gallery-heading" class="official-section__title">看看系统长什么样</h2>
+        <p class="official-section__desc">不是设计稿，是 LightMes 真实运行界面截图。</p>
+      </div>
+      <div class="sales-gallery-tabs" role="tablist">
+        <button v-for="tab in galleryTabs" :key="tab.id" role="tab"
+          :class="['sales-gallery-tab', { 'sales-gallery-tab--active': galleryActive === tab.id }]"
+          :aria-selected="galleryActive === tab.id"
+          @click="galleryActive = tab.id">{{ tab.label }}</button>
+      </div>
+      <div class="sales-gallery-grid" role="tabpanel">
+        <figure v-for="img in galleryImages[galleryActive]" :key="img.src" class="sales-gallery-item">
+          <img :src="img.src" :alt="img.label" loading="lazy" />
+          <figcaption>{{ img.label }}</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -511,6 +668,21 @@ onMounted(() => {
           <p>{{ r.desc }}</p>
         </li>
       </ol>
+    </section>
+
+    <section class="official-section official-section--bordered sales-trust" aria-labelledby="trust-heading">
+      <div class="official-section__head">
+        <p class="sales-eyebrow">他们已经在用</p>
+        <h2 id="trust-heading" class="official-section__title">已经有工厂在用 LightMes 管车间了</h2>
+        <p class="official-section__desc">不是 PPT 案例，是真实在用——你也可以。</p>
+      </div>
+      <div class="sales-trust-grid">
+        <article v-for="tc in trustCases" :key="tc.tag" class="sales-trust-card">
+          <span class="sales-trust-card__tag">{{ tc.tag }}</span>
+          <blockquote>{{ tc.quote }}</blockquote>
+          <p class="sales-trust-card__author">—— {{ tc.author }}</p>
+        </article>
+      </div>
     </section>
 
     <section class="official-section official-section--bordered sales-faq" aria-labelledby="faq-heading">

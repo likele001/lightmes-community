@@ -74,6 +74,29 @@ class ReportAssistIn(BaseModel):
     bad_qty: int | None = Field(default=None, ge=0)
 
 
+class PhotoCountIn(BaseModel):
+    image_urls: list[str] = Field(min_length=1, max_length=6)
+    task_id: int | None = Field(default=None, ge=1)
+    hint: str | None = Field(default=None, max_length=200, description="可选：用户描述的零件特征")
+
+
+class VoiceParseIn(BaseModel):
+    text: str = Field(min_length=1, max_length=2000)
+    task_id: int | None = Field(default=None, ge=1)
+
+
+class DefectClassifyIn(BaseModel):
+    image_urls: list[str] = Field(min_length=1, max_length=6)
+    task_id: int | None = Field(default=None, ge=1)
+    remark: str | None = Field(default=None, max_length=500)
+
+
+class ShiftSummaryIn(BaseModel):
+    shift_start: str | None = Field(default=None, description="班次开始时间 ISO")
+    shift_hours: int = Field(default=8, ge=1, le=24, description="班次小时数")
+    push_to_webhook: bool = False
+
+
 class AiHelpIn(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
 

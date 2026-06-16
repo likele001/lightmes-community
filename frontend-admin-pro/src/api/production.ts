@@ -870,6 +870,17 @@ export const productionApi = {
   getReportUnit(id: number) {
     return http.request<ReportUnitDetailOut>({ url: `/admin/production/report-units/${id}`, method: 'GET' })
   },
+  getApprovalSteps() {
+    return http.request<{ steps: Array<{ step_order: number; approver_role: string; is_required: boolean; can_skip: boolean; label: string }> }>({
+      url: '/admin/production/report-units/approval-steps',
+      method: 'GET',
+    })
+  },
+  approveReportUnit(id: number, data?: { qc_attachment_ids?: string; inspection_results?: Array<{
+    template_item_id: number; result: string; measured_value?: string | null; defect_code_id?: number | null; remark?: string | null
+  }> }) {
+    return http.request<any>({ url: `/admin/production/report-units/${id}/approve`, method: 'POST', data })
+  },
   leaderApproveReportUnit(id: number) {
     return http.request<any>({ url: `/admin/production/report-units/${id}/leader-approve`, method: 'POST' })
   },

@@ -43,6 +43,8 @@ const mainChildren: RouteRecordRaw[] = [
   { path: 'ai-hub', name: 'aiHub', component: () => import('@/pages/AiHubPage.vue'), meta: { title: '智能中心' } },
   { path: 'ai-alerts', name: 'aiAlerts', component: () => import('@/pages/AiAlertsPage.vue'), meta: { title: '数据预警', permissions: ['ai.alert.view'] } },
   { path: 'ai-assistant', name: 'aiAssistant', component: () => import('@/pages/AiAssistantPage.vue'), meta: { title: '工厂助手', permissions: ['ai.use'] } },
+  { path: 'ai-employees', name: 'aiEmployees', component: () => import('@/pages/AiEmployeeListPage.vue'), meta: { title: 'AI 员工', permissions: ['ai_employee.use'] } },
+  { path: 'ai-employees/:id/chat', name: 'aiEmployeeChat', component: () => import('@/pages/AiEmployeeChatPage.vue'), meta: { title: 'AI 员工对话', permissions: ['ai_employee.use'] } },
   { path: 'customer', redirect: { name: 'customerOrder' } },
   {
     path: 'customer/order',

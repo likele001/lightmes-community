@@ -758,12 +758,138 @@ const guideData: GuideSection[] = [
       },
       {
         id: 'ch9',
-        title: '第九章 财务管理',
-        icon: 'Coin',
+        title: '第九章 AI 员工管理',
+        icon: 'MagicStick',
         children: [
           {
             id: 'ch9-1',
-            title: '9.1 客户对账单',
+            title: '9.1 创建与配置 AI 员工',
+            content: `<h3>创建与配置 AI 员工</h3>
+<p><strong>价值</strong>：AI 员工是工厂智能助手，可自动回答员工关于订单进度、生产计划、任务完成情况、设备状态、库存等问题，减少管理人员的重复沟通成本。</p>
+<p><strong>使用者</strong>：系统管理员</p>
+<p><strong>操作路径</strong>：系统 → AI 员工</p>
+<h4>创建 AI 员工</h4>
+<ol>
+<li>点击「<strong>新建 AI 员工</strong>」按钮</li>
+<li>填写以下信息：<ul>
+<li><strong>名称</strong>：AI 员工的显示名称，如"生产调度助手"</li>
+<li><strong>头像 URL</strong>：可选，AI 员工头像图片链接</li>
+<li><strong>角色描述</strong>：简短说明 AI 员工的职责，如"负责查询生产进度和订单状态"</li>
+<li><strong>系统 Prompt</strong>：核心提示词，定义 AI 的身份、行为准则和回答风格（详见下方说明）</li>
+<li><strong>欢迎消息</strong>：用户首次打开对话时显示的问候语</li>
+</ul></li>
+<li>点击「保存」</li>
+</ol>
+<h4>系统 Prompt 编写指南</h4>
+<p>系统 Prompt 是 AI 员工的核心配置，建议包含以下要素：</p>
+<table>
+<tr><th>要素</th><th>说明</th><th>示例</th></tr>
+<tr><td>身份定义</td><td>告诉 AI 它是什么角色</td><td>你是一个专业的 MES 生产调度助手</td></tr>
+<tr><td>能力范围</td><td>它能用哪些工具查什么</td><td>你可以查询订单状态、生产计划、任务进度</td></tr>
+<tr><td>回答要求</td><td>回答风格和格式</td><td>用表格或列表呈现结果，回答简洁</td></tr>
+<tr><td>边界约束</td><td>不能做什么</td><td>只回答生产相关问题，无关问题请引导回正题</td></tr>
+</table>
+<h4>配置渠道</h4>
+<p>在「绑定渠道」中勾选 AI 员工可用的对话渠道：</p>
+<ul>
+<li><strong>H5</strong>：员工在手机 H5 端「AI 员工」入口对话</li>
+<li><strong>飞书 / 企微 / 钉钉</strong>：员工在 IM 中直接给机器人发消息（需先配置好对应渠道的消息推送）</li>
+</ul>
+<h4>配置工具</h4>
+<p>在「可用工具」中勾选 AI 员工可以调用的 MES 数据查询工具：</p>
+<table>
+<tr><th>工具</th><th>功能</th></tr>
+<tr><td>query_order_status</td><td>查询订单生产进度和状态</td></tr>
+<tr><td>query_production_plan</td><td>查询生产计划详情</td></tr>
+<tr><td>query_task_progress</td><td>查询生产任务完成进度</td></tr>
+<tr><td>query_equipment_status</td><td>查询设备运行状态和保养记录</td></tr>
+<tr><td>query_stock</td><td>查询仓库库存信息</td></tr>
+<tr><td>search_knowledge</td><td>搜索知识库文档</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>AI 员工需要平台已配置 AI 网关和默认模型才能正常工作</li>
+<li>网关覆盖留空则使用平台默认模型，填写模型 code 可指定特定模型</li>
+<li>创建后记得在操作列点击「启用」使 AI 员工上线</li>
+</ul>`
+          },
+          {
+            id: 'ch9-2',
+            title: '9.2 管理 AI 员工',
+            content: `<h3>管理 AI 员工</h3>
+<p><strong>操作路径</strong>：系统 → AI 员工</p>
+<h4>编辑</h4>
+<p>点击 AI 员工行的「编辑」按钮，可修改名称、角色描述、系统 Prompt、渠道、工具等所有配置。</p>
+<h4>启用 / 暂停</h4>
+<ul>
+<li><strong>启用</strong>：AI 员工上线，员工可在各渠道发起对话</li>
+<li><strong>暂停</strong>：AI 员工下线，对话接口返回"该 AI 员工已暂停"</li>
+</ul>
+<h4>删除</h4>
+<p>点击「删除」按钮，确认后删除该 AI 员工。注意：删除会同时清除所有相关对话记录和操作日志。</p>
+<h4>查看统计数据</h4>
+<p>每个 AI 员工自动统计以下数据：</p>
+<ul>
+<li>总对话数、总消息数</li>
+<li>总 Token 消耗</li>
+<li>今日对话数、今日消息数</li>
+<li>工具调用次数</li>
+</ul>
+<h4>查看对话记录</h4>
+<p>可查看每个 AI 员工的所有历史对话和消息内容，用于审计和分析使用情况。</p>
+<h4>查看操作日志</h4>
+<p>记录 AI 员工的每次工具调用、错误、回复等操作，便于排查问题。</p>`
+          },
+          {
+            id: 'ch9-3',
+            title: '9.3 AI 网关配置',
+            content: `<h3>AI 网关配置</h3>
+<p><strong>操作路径</strong>：平台总控 → AI 模型</p>
+<p>AI 员工需要调用大语言模型，因此必须先配置 AI 网关和模型。</p>
+<h4>配置步骤</h4>
+<ol>
+<li>登录平台总控后台（<code>/platform</code>）</li>
+<li>进入「AI 模型」页面</li>
+<li>确保顶部「启用 AI」开关已打开</li>
+<li>点击「新增网关」，填写：<ul>
+<li><strong>编码</strong>：唯一标识，如 <code>deepseek</code></li>
+<li><strong>名称</strong>：显示名称，如 <code>DeepSeek</code></li>
+<li><strong>Base URL</strong>：API 地址，如 <code>https://api.deepseek.com</code></li>
+<li><strong>API Key</strong>：API 密钥</li>
+</ul></li>
+<li>在网关下「新增模型」，填写：<ul>
+<li><strong>编码</strong>：如 <code>deepseek-chat</code></li>
+<li><strong>显示名</strong>：如 <code>DeepSeek Chat</code></li>
+<li><strong>Model ID</strong>：模型标识，如 <code>deepseek-chat</code></li>
+<li>勾选「全局默认」</li>
+</ul></li>
+<li>点击「测试」按钮验证连接是否正常</li>
+</ol>
+<h4>支持的模型</h4>
+<p>支持所有 OpenAI 兼容的 API：</p>
+<ul>
+<li>DeepSeek</li>
+<li>通义千问（阿里云）</li>
+<li>Azure OpenAI</li>
+<li>OpenAI</li>
+<li>本地部署的 Ollama / vLLM 等</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>必须有一个模型设为「全局默认」，AI 员工才能工作</li>
+<li>如果 AI 员工对话返回空或报错，先检查 AI 网关测试是否通过</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'ch10',
+        title: '第十章 财务管理',
+        icon: 'Coin',
+        children: [
+          {
+            id: 'ch10-1',
+            title: '10.1 客户对账单',
             content: `<h3>客户对账单</h3>
 <p><strong>使用者</strong>：财务 / 销售客服</p>
 <p><strong>操作路径</strong>：财务 → 客户对账单</p>
@@ -785,8 +911,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch9-2',
-            title: '9.2 收支流水',
+            id: 'ch10-2',
+            title: '10.2 收支流水',
             content: `<h3>收支流水</h3>
 <p><strong>使用者</strong>：财务 / 会计</p>
 <p><strong>操作路径</strong>：财务 → 收支流水</p>
@@ -804,8 +930,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch9-3',
-            title: '9.3 成本毛利分析',
+            id: 'ch10-3',
+            title: '10.3 成本毛利分析',
             content: `<h3>成本毛利分析</h3>
 <p><strong>使用者</strong>：财务 / 运营主管</p>
 <p><strong>操作路径</strong>：财务 → 成本毛利</p>
@@ -826,13 +952,13 @@ const guideData: GuideSection[] = [
         ]
       },
       {
-        id: 'ch10',
-        title: '第十章 溯源与报表',
+        id: 'ch11',
+        title: '第十一章 溯源与报表',
         icon: 'DataBoard',
         children: [
           {
-            id: 'ch10-1',
-            title: '10.1 溯源查询',
+            id: 'ch11-1',
+            title: '11.1 溯源查询',
             content: `<h3>溯源查询</h3>
 <p><strong>使用者</strong>：质管 / 客户服务 / 工程</p>
 <p><strong>操作路径</strong>：生产 → 溯源查询</p>
@@ -857,8 +983,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch10-2',
-            title: '10.2 生产报表',
+            id: 'ch11-2',
+            title: '11.2 生产报表',
             content: `<h3>生产报表</h3>
 <p><strong>使用者</strong>：厂长 / 生产经理 / 财务</p>
 <p><strong>操作路径</strong>：报表 → 生产报表</p>
@@ -878,8 +1004,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch10-3',
-            title: '10.3 经营报表',
+            id: 'ch11-3',
+            title: '11.3 经营报表',
             content: `<h3>经营报表</h3>
 <p><strong>使用者</strong>：厂长 / 财务 / 运营</p>
 <p><strong>操作路径</strong>：报表 → 经营报表</p>
@@ -892,8 +1018,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch10-4',
-            title: '10.4 采购统计',
+            id: 'ch11-4',
+            title: '11.4 采购统计',
             content: `<h3>采购统计</h3>
 <p><strong>使用者</strong>：采购 / 财务 / 运营</p>
 <p><strong>操作路径</strong>：报表 → 采购统计</p>
@@ -907,13 +1033,13 @@ const guideData: GuideSection[] = [
         ]
       },
       {
-        id: 'ch11',
-        title: '第十一章 设备与保养',
+        id: 'ch12',
+        title: '第十二章 设备与保养',
         icon: 'Tools',
         children: [
           {
-            id: 'ch11-1',
-            title: '11.1 设备档案',
+            id: 'ch12-1',
+            title: '12.1 设备档案',
             content: `<h3>设备档案</h3>
 <p><strong>使用者</strong>：设备管理员 / 生产主管</p>
 <p><strong>操作路径</strong>：生产 → 设备管理</p>
@@ -927,8 +1053,8 @@ const guideData: GuideSection[] = [
 <p>设备状态：<strong>正常</strong>、<strong>维修中</strong>、<strong>已退役</strong></p>`
           },
           {
-            id: 'ch11-2',
-            title: '11.2 日常点检',
+            id: 'ch12-2',
+            title: '12.2 日常点检',
             content: `<h3>日常点检</h3>
 <p><strong>使用者</strong>：班组长 / 设备员</p>
 <p><strong>操作路径</strong>：设备管理 → 列表「点检」</p>
@@ -941,8 +1067,8 @@ const guideData: GuideSection[] = [
 <p>点检数据供 AI 设备健康分析参考。</p>`
           },
           {
-            id: 'ch11-3',
-            title: '11.3 保养计划',
+            id: 'ch12-3',
+            title: '12.3 保养计划',
             content: `<h3>保养计划（预防性维护）</h3>
 <p><strong>使用者</strong>：设备管理员</p>
 <p><strong>操作路径</strong>：设备管理 →「保养」→ 保养计划</p>
@@ -960,8 +1086,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch11-4',
-            title: '11.4 登记保养记录',
+            id: 'ch12-4',
+            title: '12.4 登记保养记录',
             content: `<h3>登记保养记录</h3>
 <p><strong>使用者</strong>：设备员 / 班组长</p>
 <p><strong>操作路径</strong>：保养抽屉 → 执行/登记保养</p>
@@ -975,13 +1101,13 @@ const guideData: GuideSection[] = [
         ]
       },
       {
-        id: 'ch12',
-        title: '第十二章 智能中心与 IM 推送',
+        id: 'ch13',
+        title: '第十三章 智能中心与 IM 推送',
         icon: 'ChatLineRound',
         children: [
           {
-            id: 'ch12-1',
-            title: '12.1 飞书消息推送',
+            id: 'ch13-1',
+            title: '13.1 飞书消息推送',
             content: `<h3>飞书消息推送</h3>
 <p>LightMes 通过飞书自建应用把派工、报工审核、工资、预警等事件推送到飞书群或个人。<strong>必须先在飞书开放平台创建企业自建应用</strong>，详见 <a href="https://admin.mes.cenkor.cn" target="_blank">《飞书消息推送部署指南》</a>（docs/飞书消息推送部署指南.md）。</p>
 <h4>配置入口</h4>
@@ -1020,8 +1146,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch12-2',
-            title: '12.2 钉钉消息推送',
+            id: 'ch13-2',
+            title: '13.2 钉钉消息推送',
             content: `<h3>钉钉消息推送</h3>
 <p>钉钉通道支持两种推送方式：</p>
 <ul>
@@ -1061,8 +1187,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch12-3',
-            title: '12.3 企业微信消息推送',
+            id: 'ch13-3',
+            title: '13.3 企业微信消息推送',
             content: `<h3>企业微信消息推送</h3>
 <p>企微通道以<strong>群机器人 Webhook</strong>为主，把派工、报工审核、工资、预警推到企微群。无需企业自建应用，几分钟就能配好。</p>
 <h4>配置入口</h4>
@@ -1082,8 +1208,8 @@ const guideData: GuideSection[] = [
 </ul>`
           },
           {
-            id: 'ch12-4',
-            title: '12.4 统一消息中心',
+            id: 'ch13-4',
+            title: '13.4 统一消息中心',
             content: `<h3>统一消息中心</h3>
 <p>统一管理飞书 / 企微 / 钉钉多通道推送。<strong>三个通道的群组、规则、日志</strong>在一页面对照维护，避免飞书配一遍企微又配一遍。</p>
 <h4>配置入口</h4>
@@ -1136,13 +1262,13 @@ const guideData: GuideSection[] = [
         ]
       },
       {
-        id: 'ch13',
+        id: 'ch14',
         title: '附录：常见问题与最佳实践',
         icon: 'QuestionFilled',
         children: [
           {
-            id: 'ch13-1',
-            title: '13.1 常见问题',
+            id: 'ch14-1',
+            title: '14.1 常见问题',
             content: `<h3>常见问题</h3>
 <h4>Q1：订单确认后发现产品型号错了，怎么办？</h4>
 <p>已确认的订单不能直接修改。操作：<strong>作废该订单 → 新建正确的订单</strong>，系统会记录作废原因和时间。</p>
@@ -1166,8 +1292,8 @@ const guideData: GuideSection[] = [
 <p>检查三件事：① 飞书推送总开关是否启用；② 员工 <code>feishu_open_id</code> 是否已绑（未绑会回退到站内通知）；③ 事件码规则里 <code>channels</code> 是否包含 <code>feishu</code>。</p>`
           },
           {
-            id: 'ch13-2',
-            title: '13.2 最佳实践建议',
+            id: 'ch14-2',
+            title: '14.2 最佳实践建议',
             content: `<h3>最佳实践建议</h3>
 <h4>1. 数据准确性最重要</h4>
 <ul>
@@ -2107,6 +2233,1029 @@ const guideData: GuideSection[] = [
 <tr><td>客户下单</td><td>客户端 H5 / 小程序</td></tr>
 <tr><td>员工报工 / 查工资</td><td>员工端 H5 / 小程序</td></tr>
 </table>`
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'part5',
+    title: '第五篇：2026-06 新功能操作指南（12 项）',
+    icon: 'DataBoard',
+    children: [
+      {
+        id: 'p5-ch1',
+        title: '第一章 报表导出（PC）',
+        icon: 'DataBoard',
+        children: [
+          {
+            id: 'p5-1-1',
+            title: '1.1 产量报表导出',
+            content: `<h3>产量报表导出</h3>
+<p><strong>使用者</strong>：厂长 / 生产计划员 / 财务</p>
+<p><strong>操作路径</strong>：Admin-Pro → 报表 → 产量报表 → 右上角「导出」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「产量报表」页面</li>
+<li>顶部选择统计区间（支持快捷：今日/本周/本月/本季/自定义）</li>
+<li>可选筛选：产品型号、车间、工序、操作员工</li>
+<li>点击「<strong>导出</strong>」→ 选 Excel / CSV → 「开始导出」</li>
+<li>系统提示任务已创建，到「<strong>报表 → 导出中心</strong>」查看进度</li>
+<li>状态「已完成」时点「<strong>下载</strong>」</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>导出任务默认保留 <strong>7 天</strong>，到期自动清理</li>
+<li>大数据量（>10 万行）建议选 CSV 格式</li>
+<li>「导出中心」支持按类型/时间/状态筛选</li>
+<li>处理中超 30 分钟异常请刷新，仍异常联系管理员</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>批量下载</strong>：勾选多条「已完成」→「打包下载」</li>
+<li><strong>良率 / 库存 / 对账单</strong> 报表同样流程</li>
+</ul>`
+          },
+          {
+            id: 'p5-1-2',
+            title: '1.2 良率报表导出（含缺陷 TOP10）',
+            content: `<h3>良率报表导出</h3>
+<p><strong>使用者</strong>：厂长 / 质检主管 / 生产经理</p>
+<p><strong>操作路径</strong>：Admin-Pro → 报表 → 良率报表 → 「导出」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「良率报表」</li>
+<li>选择时间区间、车间、产品型号</li>
+<li>页面默认显示合格率、不良率、缺陷码占比</li>
+<li>点击「<strong>导出</strong>」→ 选 Excel → 「开始导出」</li>
+<li>导出的 Excel 额外包含<strong>「缺陷 TOP10」明细</strong></li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>良率 = 合格数 / 总报工数</li>
+<li>勾选「对比上期」会在 Excel 中多出对比列</li>
+<li>TOP10 缺陷可作为<strong>质量改善专题</strong>的输入</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>点缺陷码 → 跳到「缺陷分析」详细页</li>
+<li>右上角「列设置」可勾选导出字段</li>
+</ul>`
+          },
+          {
+            id: 'p5-1-3',
+            title: '1.3 库存报表导出',
+            content: `<h3>库存报表导出</h3>
+<p><strong>使用者</strong>：仓库管理员 / 财务 / 采购</p>
+<p><strong>操作路径</strong>：Admin-Pro → 仓库 → 库存 → 「导出」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「库存」页</li>
+<li>筛选仓库、物料分类、库存状态（在库/安全库存以下/积压）</li>
+<li>点击「<strong>导出</strong>」→ 选「<strong>当前快照</strong>」或「<strong>带流水</strong>」</li>
+<li>带流水：包含最近 30 天出入库流水（适合月结对账）</li>
+<li>导出任务到「导出中心」下载</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>库存金额字段需先在「系统设置 → 计价方式」开启</li>
+<li>安全库存以下的物料导出时<strong>标红</strong></li>
+<li>物料编码/批次号保留前导 0</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>打印盘点表</strong>：勾选多条 → 选空白列手填</li>
+<li>物料详情 → 「库存参数」设置安全库存</li>
+</ul>`
+          },
+          {
+            id: 'p5-1-4',
+            title: '1.4 对账单导出（Excel / PDF）',
+            content: `<h3>对账单导出</h3>
+<p><strong>使用者</strong>：财务 / 销售客服</p>
+<p><strong>操作路径</strong>：Admin-Pro → 财务 → 对账单 → 「导出」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「对账单」页</li>
+<li>选客户、对账周期（如「2026-05」）</li>
+<li>系统自动汇总该周期内已交付订单金额、税额、已收/未收</li>
+<li>点击「<strong>导出</strong>」→ 选格式：<ul>
+<li><strong>对账单 Excel</strong>：标准对账模板</li>
+<li><strong>对账单 PDF</strong>：已加盖电子章，直接发客户</li>
+</ul></li>
+<li>完成后到「导出中心」下载</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>PDF 对账单需先在「系统设置 → 电子签章」上传公司印章</li>
+<li>已确认的对账单 PDF 带「<strong>已确认</strong>」水印</li>
+<li>客户邮箱发送：导出完成后点「<strong>邮件发送</strong>」</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>批量导出</strong>：勾选多份 → 打 ZIP 包</li>
+<li>对账单同步到客户 H5 → 客户在线确认/异议</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch2',
+        title: '第二章 模具/工装管理（PC + H5）',
+        icon: 'Tools',
+        children: [
+          {
+            id: 'p5-2-1',
+            title: '2.1 模具档案',
+            content: `<h3>模具档案</h3>
+<p><strong>使用者</strong>：设备管理员 / 生产主管</p>
+<p><strong>操作路径</strong>：Admin-Pro → 生产 → 模具管理 → 「+ 新建模具」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「模具管理」页</li>
+<li>点「<strong>+ 新建模具</strong>」</li>
+<li>填写：<ul>
+<li><strong>模具编码</strong>（必填，建议 <code>MOLD-</code> 前缀）</li>
+<li>名称 / 类型（注塑/冲压/压铸/工装夹具）</li>
+<li>关联产品（可选）</li>
+<li>设计寿命（次/件）、当前累计次数</li>
+<li>存放位置、责任人</li>
+</ul></li>
+<li>点「保存」</li>
+</ol>
+<h4>列表关键字段</h4>
+<table>
+<tr><th>字段</th><th>说明</th></tr>
+<tr><td>模具编码</td><td>唯一，扫描二维码即显示</td></tr>
+<tr><td>寿命进度</td><td>进度条 + 百分比；80% 黄色，100% 红色</td></tr>
+<tr><td>累计次数</td><td>随员工报工自动累加</td></tr>
+<tr><td>最近维保</td><td>上次维保日期；超期会标红</td></tr>
+<tr><td>状态</td><td>正常 / 维保中 / 待报废</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>模具编码一旦保存<strong>不可修改</strong></li>
+<li>关联产品后，该产品的报工<strong>自动累计</strong>到模具</li>
+<li>支持 Excel 批量导入</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>扫码查看</strong>：H5 扫码查模具详情/维保历史</li>
+<li><strong>打印模具卡</strong>：详情页「打印」→ A6 模具卡</li>
+</ul>`
+          },
+          {
+            id: 'p5-2-2',
+            title: '2.2 寿命预警与冻结',
+            content: `<h3>模具寿命预警</h3>
+<p><strong>使用者</strong>：设备管理员 / 班组长</p>
+<p><strong>操作路径</strong>：Admin-Pro → 生产 → 模具管理 → 顶部「寿命预警」</p>
+<h4>触发规则</h4>
+<table>
+<tr><th>进度</th><th>颜色</th><th>系统动作</th></tr>
+<tr><td>≥ 80%</td><td>🟡 黄色</td><td>列表标黄 + IM 推送设备管理员/班组长</td></tr>
+<tr><td>≥ 95%</td><td>🟠 橙色</td><td>推送升级到车间主任</td></tr>
+<tr><td>≥ 100%</td><td>🔴 红色</td><td><strong>自动冻结关联产品的报工</strong>，必须先维保</td></tr>
+</table>
+<h4>接收预警</h4>
+<ul>
+<li>飞书 / 钉钉 / 企微：设备管理员、关联车间班组长、红色时厂长</li>
+<li>站内通知：右上角「铃铛」红点</li>
+</ul>
+<h4>处理方法</h4>
+<ol>
+<li>收到预警 → 进入「模具管理」找到该模具</li>
+<li>点「<strong>登记维保</strong>」（见 2.3）</li>
+<li>维保完成后，寿命进度清零</li>
+<li>红色预警：系统冻结报工，维保提交后自动解冻</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>阈值可在「系统设置 → 模具参数」调整（默认 80/95/100）</li>
+<li>寿命进度支持<strong>手动校正</strong>（更换关键零件后），需填校正原因</li>
+<li>误报：「预警记录」页可标记「已处理 / 误报」</li>
+</ul>`
+          },
+          {
+            id: 'p5-2-3',
+            title: '2.3 维保记录登记（PC + H5）',
+            content: `<h3>维保记录登记</h3>
+<p><strong>使用者</strong>：设备员 / 班组长</p>
+<p><strong>操作路径</strong>：Admin-Pro → 生产 → 模具管理 → 详情 → 「维保记录」</p>
+<h4>操作步骤（PC）</h4>
+<ol>
+<li>找到目标模具 → 进入详情</li>
+<li>「维保记录」tab → 点「<strong>+ 新建记录</strong>」</li>
+<li>选<strong>维保类型</strong>：<ul>
+<li>日常清洁（最常用）</li>
+<li>定期保养（周/月）</li>
+<li>故障维修（非计划停机）</li>
+<li>寿命校正（更换零件后重置寿命）</li>
+</ul></li>
+<li>填写维保说明、上传现场照片（最多 9 张）</li>
+<li>「保存」</li>
+</ol>
+<h4>移动端登记（H5，车间现场推荐）</h4>
+<ol>
+<li>H5 → 「生产工具」tab → 「<strong>扫码登记维保</strong>」</li>
+<li>扫模具码 → 直接填写</li>
+<li>适合不方便开电脑的场景</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>「<strong>故障维修</strong>」必须勾选「停机时长」字段</li>
+<li>维保记录<strong>不可删除</strong>，填错可「作废」（保留痕迹）</li>
+<li>「<strong>寿命校正</strong>」：填「重置后次数」，系统自动算消耗量</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>「故障维修」可勾选「使用备件」自动扣减备件库存</li>
+<li>列表「导出」按时间段生成维保台账 Excel</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch3',
+        title: '第三章 条码打印机直连（PC）',
+        icon: 'Document',
+        children: [
+          {
+            id: 'p5-3-1',
+            title: '3.1 浏览器 / Lodop 直连',
+            content: `<h3>浏览器 / Lodop 直连</h3>
+<p><strong>使用者</strong>：仓库 / 车间文员</p>
+<p><strong>操作路径</strong>：Admin-Pro → 仓库 → 库存 / 工单 → 详情 → 「打印标签」</p>
+<h4>首次使用：安装 Lodop 插件</h4>
+<ol>
+<li>Admin-Pro → 系统管理 → 打印设置 → 「<strong>下载 Lodop 控件</strong>」</li>
+<li>安装后<strong>刷新页面</strong>（Windows 可能要重启浏览器）</li>
+<li>点「<strong>测试打印</strong>」→ 选打印机 → 打印测试页成功即可</li>
+</ol>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「库存 / 工单 / 产品型号」详情页</li>
+<li>点「<strong>打印标签</strong>」→ 选标签模板（如「产品码 50×30mm」）</li>
+<li>选打印机 → 设置打印份数 → 「<strong>打印</strong>」</li>
+<li>Lodop 弹窗显示预览 → 点「<strong>确定</strong>」出标</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li><strong>仅 Windows + Chrome / Edge / 360</strong> 浏览器支持</li>
+<li>标签模板可在「打印设置」按需添加（自定义尺寸、二维码位置、字段）</li>
+<li>打印失败排查：见「<a>常见问题 Q2</a>」</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>批量打印</strong>：列表页勾选多条 → 「批量打标」</li>
+<li>模板支持变量（产品名/编码/批次/数量），新打印时自动套用</li>
+</ul>`
+          },
+          {
+            id: 'p5-3-2',
+            title: '3.2 ZPL 网络打印（多车间多机）',
+            content: `<h3>ZPL 网络打印</h3>
+<p><strong>适用场景</strong>：Zebra / TSC 等工业条码机，机器固定 IP 接入车间网络。</p>
+<p><strong>使用者</strong>：车间 IT / 仓库主管</p>
+<p><strong>操作路径</strong>：Admin-Pro → 系统管理 → 打印设置 → 「网络打印机」</p>
+<h4>添加打印机</h4>
+<ol>
+<li>进入「网络打印机」页 → 「<strong>+ 新增打印机</strong>」</li>
+<li>填写：<ul>
+<li><strong>打印机名称</strong>（如 "车间 1 号 ZEBRA"）</li>
+<li><strong>IP 地址</strong>（如 192.168.1.100）</li>
+<li><strong>端口</strong>（默认 9100）</li>
+<li><strong>DPI / 标签尺寸</strong></li>
+</ul></li>
+<li>点「<strong>测试连接</strong>」→ 看到「测试页已发送」即成功</li>
+<li>保存</li>
+</ol>
+<h4>打印标签</h4>
+<ul>
+<li>「打印标签」时，<strong>打印机下拉里选网络打印机</strong>即可</li>
+<li>系统自动生成 ZPL 指令并发送</li>
+<li>适合<strong>多车间多打印机</strong>的场景</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>打印机与服务器<strong>必须同网段</strong>（或能互通）</li>
+<li><strong>防火墙</strong>：9100 端口需在打印机所在网络放行</li>
+<li><strong>离线缓存</strong>：网络不通时打印任务<strong>自动入队</strong>，恢复后<strong>重试 3 次</strong></li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>列表显示打印机状态（在线/离线/缺纸/忙）</li>
+<li>每台打印机可查最近 100 条<strong>打印历史</strong></li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch4',
+        title: '第四章 SPC 统计过程控制（PC）',
+        icon: 'DataBoard',
+        children: [
+          {
+            id: 'p5-4-1',
+            title: '4.1 控制图管理（Xbar-R / P / np / c / u）',
+            content: `<h3>控制图管理</h3>
+<p><strong>使用者</strong>：质管部 / 工艺工程师</p>
+<p><strong>操作路径</strong>：Admin-Pro → 生产 → SPC 控制图</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「SPC 控制图」页</li>
+<li>点「<strong>+ 新建控制图</strong>」</li>
+<li>填写：<ul>
+<li><strong>名称</strong>（如 "CNC 外径 Xbar-R"）</li>
+<li><strong>图表类型</strong>：<ul>
+<li><code>Xbar-R</code>（计量型，最常用）：均值 + 极差</li>
+<li><code>P</code>（计件不良率）</li>
+<li><code>np</code>（不良数）</li>
+<li><code>c</code>（缺陷数）</li>
+<li><code>u</code>（单位缺陷数）</li>
+</ul></li>
+<li>关联工序、关联产品（可选）</li>
+<li>样本量（默认 5）</li>
+<li>目标值 / 规格中心、UCL / LCL（控制上下限）</li>
+</ul></li>
+<li>点「保存」</li>
+</ol>
+<h4>控制图类型选择建议</h4>
+<table>
+<tr><th>数据类型</th><th>推荐图表</th><th>典型场景</th></tr>
+<tr><td>尺寸 / 重量 / 长度</td><td>Xbar-R</td><td>机加工外径、注塑件重量</td></tr>
+<tr><td>是否合格（计数）</td><td>P</td><td>焊点合格率、装配一次合格率</td></tr>
+<tr><td>缺陷数</td><td>c</td><td>表面缺陷数</td></tr>
+<tr><td>每单位缺陷</td><td>u</td><td>铸件气孔数 / 100 件</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>UCL / LCL <strong>建议先点「自动计算」</strong>，再根据经验微调</li>
+<li>同一工序不同设备可建<strong>多张</strong>图</li>
+<li>控制图可<strong>停用 / 启用</strong>，停用后不再监控但保留历史</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>复制控制图</strong>：列表「复制」快速建同类型图</li>
+<li>详情「导出 PNG」或「导出 PDF」</li>
+</ul>`
+          },
+          {
+            id: 'p5-4-2',
+            title: '4.2 样本录入与判异',
+            content: `<h3>样本录入与查看</h3>
+<p><strong>使用者</strong>：QC 质检员 / 班组长</p>
+<p><strong>操作路径</strong>：Admin-Pro → 生产 → SPC 控制图 → 详情 → 「样本录入」</p>
+<h4>手动录入</h4>
+<ol>
+<li>控制图详情页 → 「<strong>样本录入</strong>」tab</li>
+<li>选择<strong>测量批次</strong>（每批 = 一次抽样的 N 个数据）</li>
+<li>输入 N 个测量值（如 50.1, 50.2, 49.9, 50.0, 50.3）</li>
+<li>点「<strong>保存</strong>」→ 系统自动计算均值/极差/标准差</li>
+<li>数据点落到控制图上，<strong>越界点标红</strong></li>
+</ol>
+<h4>异常判定（判异规则）</h4>
+<table>
+<tr><th>规则</th><th>含义</th></tr>
+<tr><td><strong>1 点出界</strong></td><td>任一数据点 > UCL 或 < LCL</td></tr>
+<tr><td><strong>连续 9 点在中心线同侧</strong></td><td>过程均值偏移</td></tr>
+<tr><td><strong>连续 6 点递增 / 递减</strong></td><td>趋势性偏移</td></tr>
+<tr><td><strong>连续 2 点接近控制限（2σ 内）</strong></td><td>即将失控</td></tr>
+</table>
+<p>以上任一情况，<strong>系统红色提示 + IM 推送</strong>。</p>
+<h4>注意事项</h4>
+<ul>
+<li><strong>样本量必须 = 控制图设定的 N</strong></li>
+<li>录入时<strong>单位一致</strong>（mm / cm / g 不可混用）</li>
+<li>录入错误可「<strong>作废</strong>」该批次（保留痕迹）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>详情「<strong>导出 CSV</strong>」原始数据</li>
+<li>详情「<strong>打印</strong>」 → A4 横版含图 + 判异记录</li>
+</ul>`
+          },
+          {
+            id: 'p5-4-3',
+            title: '4.3 Cpk 判异标准',
+            content: `<h3>Cpk 判异标准</h3>
+<p><strong>Cpk（过程能力指数）</strong> 是衡量“工序能否稳定满足规格”的指标，<strong>越大越好</strong>。</p>
+<h4>Cpk 判读表</h4>
+<table>
+<tr><th>Cpk 值</th><th>评价</th><th>建议动作</th></tr>
+<tr><td><strong>≥ 1.67</strong></td><td>优（过剩）</td><td>可考虑放宽公差以降低成本</td></tr>
+<tr><td><strong>1.33 ~ 1.67</strong></td><td><strong>充足</strong>（行业标准）</td><td>维持现状</td></tr>
+<tr><td><strong>1.00 ~ 1.33</strong></td><td>尚可</td><td>关注 4M 变化（人 / 机 / 料 / 法）</td></tr>
+<tr><td><strong>< 1.00</strong></td><td>不足</td><td><strong>必须停线整顿</strong>，做 PFMEA</td></tr>
+</table>
+<h4>Cpk 在哪里看</h4>
+<ul>
+<li>控制图详情页 → 「<strong>能力分析</strong>」面板</li>
+<li>系统<strong>每月自动重算 Cpk</strong>，并归档历史趋势图</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>至少需要 <strong>25 个子组（≥ 125 个数据点）</strong>才统计可靠</li>
+<li>数据非正态时，Cpk 仅供参考，可看「<strong>Ppk</strong>」（整体能力）</li>
+<li>Cpk < 1 时，控制图即使“看起来正常”也<strong>不能放过</strong></li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>报表 → SPC 月报，含每张图的 Cpk 趋势 + 排名</li>
+<li>AI 助手问「某控制图 Cpk 为什么这个月下降」可获得因果分析</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch5',
+        title: '第五章 可配置审批流（PC + H5）',
+        icon: 'Edit',
+        children: [
+          {
+            id: 'p5-5-1',
+            title: '5.1 维护审批流（可视化拖拽）',
+            content: `<h3>维护审批流</h3>
+<p><strong>使用者</strong>：系统管理员 / 厂长</p>
+<p><strong>操作路径</strong>：Admin-Pro → 系统 → 审批流配置</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入「<strong>审批流配置</strong>」页</li>
+<li>点「<strong>+ 新建审批流</strong>」</li>
+<li>填写：<ul>
+<li><strong>名称</strong>（如 "生产报工 3 级审批"）</li>
+<li><strong>业务类型</strong>：<code>report</code> 报工 / <code>mold_scrap</code> 模具报废 / <code>salary_adjust</code> 工资调整</li>
+<li>是否启用</li>
+</ul></li>
+<li>进入「<strong>步骤配置</strong>」：<ul>
+<li>点「+ 添加步骤」→ 设置步骤顺序、审批角色、是否必经、触发条件</li>
+<li><strong>拖拽调整顺序</strong></li>
+</ul></li>
+<li>点「<strong>保存</strong>」 → 立即生效</li>
+</ol>
+<h4>内置审批流（参考）</h4>
+<table>
+<tr><th>业务</th><th>步骤</th></tr>
+<tr><td>报工（默认）</td><td>班组长 → 质检员 → 自动入账</td></tr>
+<tr><td>模具报废</td><td>班组长 → 设备主管 → 厂长</td></tr>
+<tr><td>工资调整</td><td>班组长 → 财务 → 厂长</td></tr>
+<tr><td>订单变更</td><td>销售 → 生产计划员 → 厂长</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>同一业务只能有 <strong>1 个「启用」流程</strong>；多个时按"优先级"取</li>
+<li>现有<strong>在途审批不受流程变更影响</strong>，新提交才用新流程</li>
+<li>角色对应的具体人员在「系统 → 角色」配置</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>列表「<strong>复制</strong>」 → 快速建新流程</li>
+<li>历史版本可查（<strong>灰度上线、随时回滚</strong>）</li>
+</ul>`
+          },
+          {
+            id: 'p5-5-2',
+            title: '5.2 审核视角（PC + H5 + IM 卡片）',
+            content: `<h3>审核视角</h3>
+<p><strong>使用者</strong>：班组长 / 质检员 / 财务 / 厂长</p>
+<p><strong>操作路径</strong>：<ul>
+<li>PC：Admin-Pro → 生产 → 报工审核 / 业务对应页 → 「待我审批」</li>
+<li>H5：手机端「<strong>消息</strong>」 → 「<strong>待我审批</strong>」卡片 / 飞书 / 钉钉卡片</li>
+</ul></p>
+<h4>PC 审核步骤</h4>
+<ol>
+<li>登录后右上角「<strong>铃铛</strong>」红点显示待审数</li>
+<li>点「<strong>报工审核</strong>」或对应业务 → 「<strong>待我审批</strong>」列表</li>
+<li>选中一条 → 看到申请人/工序/数量/照片/AI 预审结论（详见 <a>第六章 9. AI 自动审核</a>）</li>
+<li>审核动作：<ul>
+<li><strong>通过</strong>：→ 进入下一级 / 流程结束</li>
+<li><strong>驳回</strong>：填写驳回原因（<strong>必填</strong>）→ 退回申请人</li>
+<li><strong>转交</strong>：选其他审批人（<strong>仅同角色</strong>）</li>
+</ul></li>
+<li>提交后系统通知申请人</li>
+</ol>
+<h4>H5 审核（车间现场推荐）</h4>
+<ul>
+<li>班组长在车间：<strong>飞书 / 钉钉卡片</strong>直接点「<strong>通过 / 驳回</strong>」按钮，<strong>不打开网页</strong></li>
+<li>需开启「<code>card_actions_enabled</code>」，配置回调 URL <code>{域名}/api/dingtalk/card_action</code></li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li><strong>驳回原因建议结构化</strong>（如"照片不清晰 / 数量异常 / 与工艺不符"）</li>
+<li>同一报工的<strong>审核历史</strong>可点击展开查看</li>
+<li>终审通过后，<strong>该报工不能再驳回</strong>（有问题走「异常申报」流程）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>批量审核</strong>：勾选多条同类审批 → 批量通过/驳回</li>
+<li>审批超时提醒：超 4 小时未审自动 IM 催办</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch6',
+        title: '第六章 PWA 离线报工（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-6-1',
+            title: '6.1 安装与启动（添加到主屏）',
+            content: `<h3>安装与启动</h3>
+<p><strong>使用者</strong>：所有操作员工</p>
+<p><strong>操作路径</strong>：H5 → 浏览器首次访问 → 「添加到主屏幕」</p>
+<h4>安装步骤</h4>
+<ol>
+<li>用手机浏览器（<strong>Chrome / Safari / 微信内置</strong>）打开 H5 链接</li>
+<li>浏览器弹出「<strong>添加到主屏幕</strong>」提示（或手动：浏览器菜单 → 分享 → 添加到主屏幕）</li>
+<li>桌面出现「<strong>LightMes H5</strong>」图标，<strong>全屏启动</strong>，无浏览器地址栏</li>
+</ol>
+<h4>启动效果</h4>
+<ul>
+<li><strong>离线可启动</strong>：无网络时打开 App，可看历史任务和缓存数据</li>
+<li>左上角有“离线”角标：网络恢复后角标消失</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>仅 <strong>H5 端</strong>支持 PWA；Admin-Pro 后台仍需联网</li>
+<li>iOS Safari 需 <strong>iOS 11.3+</strong>；Android Chrome <strong>61+</strong></li>
+<li>首次联网时<strong>自动下载离线包</strong>（约 2 MB），第二次起<strong>秒开</strong></li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>更新提示</strong>：服务器发布新版本时，App 内顶部弹“有新版本，点击刷新”</li>
+<li>App 内「设置 → 清除缓存」（不影响服务器数据）</li>
+</ul>`
+          },
+          {
+            id: 'p5-6-2',
+            title: '6.2 离线报工与重放',
+            content: `<h3>离线报工与重放</h3>
+<p><strong>使用者</strong>：操作员工</p>
+<p><strong>操作路径</strong>：H5 主页 → 「扫码报工」 / 「我的任务」</p>
+<h4>离线报工流程</h4>
+<ol>
+<li>无网络时打开 H5</li>
+<li>进入「<strong>扫码报工</strong>」→ 扫任务二维码（或从「我的任务」选）</li>
+<li>输入合格数 / 不良数、上传照片 / 视频</li>
+<li>填备注 → 点「<strong>提交</strong>」</li>
+<li>弹窗提示「<strong>已暂存到本地，待联网后自动提交</strong>」→ 在「<strong>我的 → 离线队列</strong>」可看到</li>
+</ol>
+<h4>联网后自动重放</h4>
+<ul>
+<li>网络恢复后，App <strong>自动检测离线队列</strong> → 按时间顺序依次提交</li>
+<li>每条提交后：<ul>
+<li><strong>成功</strong>：从离线队列移除，弹“提交成功”</li>
+<li><strong>失败</strong>：保留在队列，红字提示原因（如“任务已被别人报完”），可手动「<strong>重试</strong>」或「<strong>删除</strong>」</li>
+</ul></li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>离线时可拍照，照片暂存本地；联网后与表单一起上传</li>
+<li>队列容量：<strong>最多保留 50 条</strong>，超出后<strong>最早的丢弃并提示</strong></li>
+<li>离线时<strong>不能查看</strong>最新任务（数据是缓存的），需联网刷新</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>离线队列管理</strong>：「我的 → 离线队列」可看全部、重试、删除</li>
+<li>右上角「<strong>刷新</strong>」 → 联网时主动拉取最新数据</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch7',
+        title: '第七章 拍照自动计数（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-7-1',
+            title: '7.1 拍照自动计数操作',
+            content: `<h3>拍照自动计数</h3>
+<p><strong>价值</strong>：拍一张产品照片，<strong>AI 自动数出零件数</strong>，免去手动数。</p>
+<p><strong>使用者</strong>：操作员工</p>
+<p><strong>操作路径</strong>：H5 → 报工页 → 「<strong>AI 数一下零件</strong>」按钮</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入报工页（扫码或选任务）</li>
+<li>在「<strong>合格数</strong>」输入框右侧点「<strong>AI 数一下零件</strong>」按钮</li>
+<li>弹出相机 → <strong>拍产品正面</strong>（光线好、零件不重叠）</li>
+<li>等待 1~3 秒，AI 识别完成后：<ul>
+<li><strong>自动填入合格数</strong></li>
+<li>显示<strong>置信度</strong>：高（绿色）/ 中（黄色）/ 低（红色，需人工复核）</li>
+</ul></li>
+<li>复核无误 → 继续报工</li>
+</ol>
+<h4>适用与不适用</h4>
+<table>
+<tr><th>✅ 适合</th><th>❌ 不适合</th></tr>
+<tr><td>标准件散落在桌面</td><td>重叠 / 堆叠</td></tr>
+<tr><td>颜色 / 形状一致</td><td>多种零件混放</td></tr>
+<tr><td>光线均匀</td><td>强反光 / 强阴影</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>AI 数的是「<strong>照片中能识别的数量</strong>」，不是「你今天的合格数」。<strong>两个概念不要混</strong></li>
+<li><strong>置信度低</strong>时建议人工数 + 在备注里说明</li>
+<li>支持<strong>一次提交多张照片</strong>（系统取<strong>识别最多</strong>的那张）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>「我的 → AI 识别记录」可看所有 AI 数过的图</li>
+<li>识别错误时点「<strong>纠错</strong>」→ 帮 AI 学习（需启用反馈学习）</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch8',
+        title: '第八章 语音报工（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-8-1',
+            title: '8.1 语音报工操作与话术',
+            content: `<h3>语音报工</h3>
+<p><strong>价值</strong>：边干活边说话，<strong>AI 自动解析"做了 50 个好的，2 个有划痕"</strong> → 填入表单。</p>
+<p><strong>使用者</strong>：操作员工</p>
+<p><strong>操作路径</strong>：H5 → 报工页 → 备注框旁「<strong>🎙 录音</strong>」按钮</p>
+<h4>操作步骤</h4>
+<ol>
+<li>进入报工页</li>
+<li>准备录入时，点备注框旁的「<strong>🎙 录音</strong>」按钮（首次会弹权限请求：允许使用麦克风）</li>
+<li>说出内容（参考话术见下表）</li>
+<li>说完后再次点「<strong>🎙 停止</strong>」</li>
+<li>AI 解析后：<ul>
+<li><strong>good_qty（合格数）</strong> 自动填入</li>
+<li><strong>bad_qty（不良数）</strong> 自动填入</li>
+<li><strong>defect_keywords（缺陷关键词）</strong> 自动填入备注</li>
+</ul></li>
+<li>核对 → 继续提交</li>
+</ol>
+<h4>推荐话术</h4>
+<table>
+<tr><th>场景</th><th>话术</th></tr>
+<tr><td>只报数量</td><td>"50 个好的"</td></tr>
+<tr><td>报合格+不良</td><td>"做了 50 个好的，2 个有划痕"</td></tr>
+<tr><td>报不良品</td><td>"3 个是次品，变形"</td></tr>
+<tr><td>报进度</td><td>"今天到第 80 件"</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li><strong>需要 HTTPS 环境</strong>（麦克风权限限制）</li>
+<li>单次录音<strong>最长 60 秒</strong>，超长内容分段录</li>
+<li>方言 / 噪声严重时识别率下降，建议<strong>标准普通话</strong></li>
+<li>解析后的数字<strong>仍要人工核对</strong>（特别是"一"和"七"等音近字）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li><strong>语音 + 拍照</strong>可同时使用：先 AI 数 → 再语音补充不良信息</li>
+<li>AI 解析后任何字段都可<strong>手动改</strong>，AI 不会重复触发</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch9',
+        title: '第九章 AI 自动审核（PC + H5）',
+        icon: 'Edit',
+        children: [
+          {
+            id: 'p5-9-1',
+            title: '9.1 自动通过（低风险）与人工审核（中/高风险）',
+            content: `<h3>AI 自动审核</h3>
+<p><strong>价值</strong>：低风险报工<strong>自动通过</strong>，省去班组长 50% 的审核工作。</p>
+<p>AI 从 <strong>6 个维度</strong>评估：<strong>良率、员工熟练度、照片质量、缺陷严重度、工序、时段</strong>。</p>
+<p><strong>使用者</strong>：班组长（被替代部分工作）/ 系统（自动处理）</p>
+<p><strong>操作路径</strong>：<ul>
+<li>PC：Admin-Pro → 生产 → 报工审核 → 看「<strong>AI 预审</strong>」标签</li>
+<li>H5：报工提交后立即看到 AI 提示</li>
+</ul></p>
+<h4>三级风险与体验</h4>
+<table>
+<tr><th>风险等级</th><th>评分</th><th>体验</th></tr>
+<tr><td><strong>低风险</strong></td><td>< 20</td><td>报工<strong>秒级自动通过</strong>，员工 H5 收到推送：“AI 已自动审核通过”</td></tr>
+<tr><td><strong>中风险</strong></td><td>20 ~ 59</td><td>提交给班组长<strong>正常审核</strong>，AI 给出<strong>风险点提示</strong>（如"良率比上周低 5%"）</td></tr>
+<tr><td><strong>高风险</strong></td><td>≥ 60</td><td><strong>强制人工审核</strong> + 弹窗提示，并<strong>推送给车间主任</strong></td></tr>
+</table>
+<h4>班组长审核页 AI 辅助</h4>
+<ul>
+<li>报工列表每条带「<strong>AI 预审</strong>」徽章：<ul>
+<li>🟢 <strong>低风险</strong>：可一键通过</li>
+<li>🟡 <strong>中风险</strong>：查看 AI 给出的原因</li>
+<li>🔴 <strong>高风险</strong>：必须重点看照片 / 视频，<strong>不可一键通过</strong></li>
+</ul></li>
+<li>鼠标悬停徽章，<strong>展开 6 维度雷达图</strong>（一键看懂哪里可疑）</li>
+</ul>
+<h4>6 维度评分（参考）</h4>
+<table>
+<tr><th>维度</th><th>说明</th></tr>
+<tr><td>良率</td><td>低于该员工历史均值则加分</td></tr>
+<tr><td>熟练度</td><td>新员工 / 转岗员工加分</td></tr>
+<tr><td>照片质量</td><td>模糊 / 缺照片 / 角度异常加分</td></tr>
+<tr><td>缺陷严重度</td><td>不良数 > 阈值则加分</td></tr>
+<tr><td>工序</td><td>高风险工序（如焊接）加分</td></tr>
+<tr><td>时段</td><td>深夜 / 加班时段加分</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>AI 通过<strong>不代表无错</strong>，管理员可<strong>事后抽查</strong>（建议每周抽 5%）</li>
+<li>「报工审核 → AI 审核规则」可调整风险阈值（默认 20）</li>
+<li>触发<strong>高风险</strong>会<strong>自动抄送车间主任</strong>（即使你只是班组长）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>管理员可在「<strong>系统 → AI 设置</strong>」单独关闭某个维度的评分</li>
+<li>AI 自动通过记录<strong>保留完整证据</strong>（照片 / 视频 / 各项评分），可随时审计</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch10',
+        title: '第十章 AI 缺陷分类（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-10-1',
+            title: '10.1 拍照识别缺陷 + 缺陷库',
+            content: `<h3>AI 缺陷分类</h3>
+<p><strong>价值</strong>：拍一张不良品照片，AI 自动识别<strong>是什么缺陷</strong>（划痕 / 变形 / 气泡...），自动填入备注。</p>
+<p><strong>使用者</strong>：操作员工 / 质检员</p>
+<p><strong>操作路径</strong>：H5 → 报工页（填不良数时）→ 「<strong>📷 识别缺陷</strong>」按钮</p>
+<h4>操作步骤</h4>
+<ol>
+<li>报工时填了「不良数 > 0」后，出现「<strong>📷 识别缺陷</strong>」按钮</li>
+<li>点 → 弹出相机 → <strong>拍不良品特写</strong>（对准缺陷部位、对焦清晰）</li>
+<li>等待 1~3 秒，AI 识别：<ul>
+<li><strong>缺陷代码</strong>（如 <code>SCRATCH</code> 划痕）</li>
+<li><strong>缺陷名称</strong>（中文）</li>
+<li><strong>置信度</strong>（高 / 中 / 低）</li>
+</ul></li>
+<li>自动填入备注框 → 可<strong>手动补充</strong>细节（如"在左下角"）</li>
+<li>提交报工</li>
+</ol>
+<h4>缺陷库</h4>
+<ul>
+<li>系统预置 <strong>30+ 常见缺陷</strong>（划痕、变形、气泡、杂质、缺口、错位...）</li>
+<li>管理员可在「<strong>主数据 → 缺陷代码</strong>」<strong>自定义缺陷码</strong></li>
+<li>报工后 AI 也会把新缺陷<strong>加入学习</strong>（需开启反馈学习）</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>AI 识别的缺陷会<strong>自动同步到「缺陷分析报表」</strong>，可做 TOP 10 排名</li>
+<li>置信度低时建议<strong>手动选缺陷码</strong>（从下拉列表）</li>
+<li><strong>多缺陷</strong>照片可重复识别（每次识别后追加到备注）</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>报表 → 缺陷分析 → 看某缺陷<strong>最近 30 天趋势</strong></li>
+<li>报表 → 缺陷分析 → 「按员工分组」看哪类员工高频出某缺陷</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch11',
+        title: '第十一章 智能报工建议（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-11-1',
+            title: '11.1 智能推荐任务（Top 3 + 原因）',
+            content: `<h3>智能报工建议</h3>
+<p><strong>价值</strong>：打开 H5，<strong>AI 主动告诉你"今天该报哪个"</strong>——不用自己翻任务列表。</p>
+<p><strong>使用者</strong>：操作员工</p>
+<p><strong>操作路径</strong>：H5 → 主页顶部「<strong>💡 智能推荐</strong>」紫色卡片</p>
+<h4>操作步骤</h4>
+<ol>
+<li>登录 H5 → 主页</li>
+<li>顶部出现紫色「<strong>💡 智能推荐</strong>」卡片，显示 <strong>Top 3</strong> 推荐任务</li>
+<li>每条推荐带<strong>推荐理由</strong>（可点 "?" 查看）：<ul>
+<li>「<strong>距上次报工 2 天，剩 50 件</strong>」（最紧急）</li>
+<li>「<strong>你擅长的工序</strong>」（熟练度高）</li>
+<li>「<strong>新到任务，金额 ¥120</strong>」（高单价）</li>
+</ul></li>
+<li>点某条任务 → 直接跳到报工页</li>
+<li>不感兴趣可点「<strong>换一批</strong>」 → 重新推荐</li>
+</ol>
+<h4>推荐算法综合因素</h4>
+<table>
+<tr><th>因素</th><th>权重</th><th>解释</th></tr>
+<tr><td>紧急度</td><td>高</td><td>交期 / 剩余数量</td></tr>
+<tr><td>熟练度</td><td>中</td><td>历史报工数据</td></tr>
+<tr><td>金额</td><td>中</td><td>工价 × 预计件数</td></tr>
+<tr><td>时段</td><td>低</td><td>适合当前时间的工序</td></tr>
+</table>
+<h4>注意事项</h4>
+<ul>
+<li>推荐<strong>不替代正常任务列表</strong>；不想用推荐可点「<strong>查看全部任务</strong>」</li>
+<li>报工完成后，<strong>推荐自动刷新</strong>（下次进入主页时）</li>
+<li>管理员可关闭推荐：「<strong>系统 → AI 设置</strong>」</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>「我的 → 推荐历史」可看最近 30 天的推荐 + 你点了哪些</li>
+<li>AI 助手对话可反馈“我更想看高单价的”，AI 会<strong>记住你的偏好</strong></li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch12',
+        title: '第十二章 换班交接摘要（H5）',
+        icon: 'Cellphone',
+        children: [
+          {
+            id: 'p5-12-1',
+            title: '12.1 生成换班摘要 + 示例',
+            content: `<h3>换班交接摘要</h3>
+<p><strong>价值</strong>：交接班时不用口述半天，<strong>AI 自动生成摘要</strong>：“本班做了 45 单 120 件，发现 3 次模具预警，1 个工单延期风险”。</p>
+<p><strong>使用者</strong>：班组长 / 车间主任</p>
+<p><strong>操作路径</strong>：H5 → 主页 → 「<strong>📋 交接摘要</strong>」卡片 → 「<strong>生成摘要</strong>」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>主页找到「<strong>📋 交接摘要</strong>」卡片（首页中部偏下）</li>
+<li>确认<strong>班次起止时间</strong>（默认 8 小时前到现在）</li>
+<li>点「<strong>生成摘要</strong>」按钮</li>
+<li>AI 在 5~10 秒内生成结构化摘要：<ul>
+<li><strong>产量</strong>：本班次报工单数 / 件数 / 工时</li>
+<li><strong>质量</strong>：合格数 / 不良数 / 良率</li>
+<li><strong>订单</strong>：完成 / 在制 / 延期预警</li>
+<li><strong>异常</strong>：模具预警 / 设备故障 / 物料不足</li>
+<li><strong>建议</strong>：下个班次重点关注什么</li>
+</ul></li>
+<li>摘要可：<ul>
+<li><strong>复制</strong>到剪贴板（发群 / 邮件）</li>
+<li><strong>推送</strong>到飞书 / 钉钉群</li>
+<li><strong>保存</strong>为 PDF 存档</li>
+</ul></li>
+</ol>
+<h4>摘要内容示例</h4>
+<blockquote>
+<p><strong>本班次（2026-06-15 08:00 ~ 16:00）摘要</strong></p>
+<ul>
+<li>报工：<strong>45 单 / 120 件 / 8.5 工时</strong>（达成率 95%）</li>
+<li>良率：<strong>96.5%</strong>（较上日 ↑1.2%）</li>
+<li>完成订单：<strong>3 单</strong>（D-20260612001, D-20260613005, D-20260614002）</li>
+<li>延期预警：<strong>1 单</strong>（D-20260611008 交期 6/16，需下个班次加急）</li>
+<li>模具预警：<strong>2 次</strong>（MOLD-005 寿命 92%, MOLD-007 寿命 85%）</li>
+<li>异常报警：无</li>
+<li><strong>建议</strong>：下个班次优先冲 MOLD-005 的 K005 工单，避免交期逾期。</li>
+</ul>
+</blockquote>
+<h4>注意事项</h4>
+<ul>
+<li>摘要生成<strong>需要联网</strong>（调用 AI 接口）</li>
+<li>摘要<strong>不是流水账</strong>，是<strong>重点 + 建议</strong>，适合直接发班组长群</li>
+<li>同一班次可<strong>多次生成</strong>，以最新一次为准</li>
+</ul>
+<h4>相关操作</h4>
+<ul>
+<li>可在「<strong>系统 → AI 设置</strong>」开启「<strong>交接班前 30 分钟自动生成</strong>」</li>
+<li>每天 20:00 自动生成日报并推送管理群（详见 in-app help ch12.5）</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch13',
+        title: '第十三章 AI 员工对话（H5 + IM）',
+        icon: 'ChatDotSquare',
+        children: [
+          {
+            id: 'p5-13-1',
+            title: '13.1 H5 端使用 AI 员工',
+            content: `<h3>H5 端使用 AI 员工</h3>
+<p><strong>价值</strong>：不用找班组长或管理员，直接问 AI 就能查到订单进度、生产计划、任务完成情况等信息。</p>
+<p><strong>使用者</strong>：所有员工</p>
+<p><strong>操作路径</strong>：H5 → 底部导航「AI 员工」</p>
+<h4>操作步骤</h4>
+<ol>
+<li>登录 H5 手机端</li>
+<li>底部导航栏找到「<strong>AI 员工</strong>」入口（机器人图标）</li>
+<li>进入后看到可用的 AI 员工列表，点击一个开始对话</li>
+<li>在输入框输入问题，例如：<ul>
+<li>"订单 ORD-20260601 现在做到哪了？"</li>
+<li>"今天有哪些生产计划？"</li>
+<li>"设备 #003 的状态怎么样？"</li>
+<li>"库存还有多少钢材？"</li>
+</ul></li>
+<li>AI 会调用系统工具查询数据并回复</li>
+</ol>
+<h4>对话功能</h4>
+<ul>
+<li><strong>新建对话</strong>：点击右上角菜单 → 「新对话」，清空当前对话历史</li>
+<li><strong>删除对话</strong>：点击右上角菜单 → 「删除对话」，删除当前对话记录</li>
+<li><strong>工具调用提示</strong>：当 AI 使用工具查询数据时，消息下方会显示 "Used: query_order_status" 等提示</li>
+</ul>
+<h4>注意事项</h4>
+<ul>
+<li>AI 员工只能查询数据，不能修改任何业务数据</li>
+<li>如果 AI 回答不准确，请以系统实际数据为准</li>
+<li>AI 员工需要管理员先在后台创建并启用</li>
+</ul>`
+          },
+          {
+            id: 'p5-13-2',
+            title: '13.2 在飞书/企微/钉钉中使用 AI 员工',
+            content: `<h3>在 IM 中使用 AI 员工</h3>
+<p><strong>价值</strong>：不用打开 H5，直接在飞书/企微/钉钉里给机器人发消息就能查询生产数据。</p>
+<p><strong>使用者</strong>：已绑定 IM 账号的员工</p>
+<h4>前置条件</h4>
+<ol>
+<li>管理员已在后台配置好飞书/企微/钉钉消息推送</li>
+<li>管理员已创建 AI 员工并勾选了对应渠道</li>
+<li>员工已在 H5「个人中心」绑定了 IM 账号</li>
+</ol>
+<h4>使用方式</h4>
+<ol>
+<li>打开飞书/企微/钉钉</li>
+<li>找到 LightMes 机器人应用</li>
+<li>直接发送消息，例如：<ul>
+<li>"查一下订单 D-20260601 的进度"</li>
+<li>"今天我的任务有哪些？"</li>
+<li>"设备磨床的运行状态"</li>
+</ul></li>
+<li>机器人会自动回复查询结果</li>
+</ol>
+<h4>注意事项</h4>
+<ul>
+<li>机器人回复的是 AI 生成的内容，重要数据请以系统为准</li>
+<li>如果机器人没有回复，联系管理员检查 AI 员工配置</li>
+<li>支持连续对话，AI 会记住上下文</li>
+</ul>`
+          },
+        ]
+      },
+      {
+        id: 'p5-ch15',
+        title: '附录 常见问题（Q&A）',
+        icon: 'QuestionFilled',
+        children: [
+          {
+            id: 'p5-15-1',
+            title: 'Q1~Q10 常见问题解答',
+            content: `<h3>常见问题</h3>
+<h4>Q1：报表导出任务一直"处理中"怎么办？</h4>
+<ol>
+<li>刷新「<strong>导出中心</strong>」页面看最新状态</li>
+<li>等 30 分钟仍“处理中”：联系系统管理员查 Celery worker 是否在跑</li>
+<li>提供任务 ID 让管理员查日志：<code>/tmp/lightmes-celery/worker.log</code></li>
+</ol>
+<h4>Q2：Lodop 打印没反应？</h4>
+<ol>
+<li>确认浏览器是 <strong>Chrome / Edge / 360</strong></li>
+<li>检查浏览器是否拦截 Lodop 插件</li>
+<li>重新安装 Lodop 控件，重启浏览器</li>
+<li>仍失败改用 <strong>ZPL 网络打印</strong></li>
+</ol>
+<h4>Q3：模具寿命预警频繁推送？</h4>
+<ul>
+<li>阈值设置过低（默认 80%）：调到 90%</li>
+<li>某些模具设计保守：在预警记录里「<strong>标记误报</strong>」</li>
+</ul>
+<h4>Q4：SPC 控制图全红，但 Cpk 还 1.5？</h4>
+<ul>
+<li>控制图异常 ≠ 过程能力不足。最近几批设备有调整（如换刀）</li>
+<li>检查 4M 变化（人 / 机 / 料 / 法）</li>
+<li>控制图反映“现在”，Cpk 反映“过去”</li>
+</ul>
+<h4>Q5：审批流改完之后历史报工怎么办？</h4>
+<ul>
+<li><strong>不影响</strong>，在途审批仍按老流程继续</li>
+<li>新提交才走新流程</li>
+</ul>
+<h4>Q6：PWA 离线队列一直提交失败？</h4>
+<ul>
+<li>90% 是“任务已被别人报完”：进入报工详情看状态</li>
+<li>其他：网络问题、任务已被作废</li>
+<li>「<strong>重试</strong>」3 次仍失败 → 「<strong>删除</strong>」该条并联系班组长</li>
+</ul>
+<h4>Q7：AI 数零件数和实际对不上？</h4>
+<ul>
+<li>检查照片：重叠 / 反光 / 角度异常</li>
+<li>拍照时<strong>铺平 / 散开 / 自然光</strong>最佳</li>
+<li>AI 只能数“照片里能看到的”，以你<strong>实际合格数</strong>为准</li>
+</ul>
+<h4>Q8：语音报工解析错了（"一"被识别成"七"）？</h4>
+<ul>
+<li>改用<strong>标准数字读法</strong>："一 → 幺" / "二 → 两" / "七 → 拐"</li>
+<li>解析后<strong>人工核对</strong>（必做）</li>
+<li>反复错误的字段可<strong>手填</strong>覆盖</li>
+</ul>
+<h4>Q9：AI 自动审核把我的报工"误判"高风险？</h4>
+<ul>
+<li>高风险 ≠ 错误，是更谨慎。审核员会重点看</li>
+<li>检查照片是否清晰、是否按时报工、有无不良率波动</li>
+<li>「我的 → AI 审核记录」看每次的 6 维度雷达图</li>
+</ul>
+<h4>Q10：换班摘要生成失败 / 内容不准？</h4>
+<ul>
+<li>联网问题：换班摘要需联网调 AI</li>
+<li>内容不准：摘要基于最近 N 小时报工数据，确认你的报工已提交</li>
+<li>重要决策请结合系统数据 + 现场观察</li>
+</ul>`
           },
         ]
       },

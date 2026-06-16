@@ -8,12 +8,14 @@ const auth = useAuthStore()
 
 const canAi = computed(() => auth.hasPermission('ai.use'))
 const canAiAlert = computed(() => auth.hasPermission('ai.alert.view'))
+const canAiEmployee = computed(() => auth.hasPermission('ai_employee.use'))
 
 const links = computed(() => {
   const items = [
     { title: '智能帮助', desc: '检索文档，解答操作问题', icon: '💡', path: '/help', tone: 'blue', show: true },
     { title: '工厂助手', desc: '问产量、待审报工、订单进度', icon: '🤖', path: '/ai-assistant', tone: 'violet', show: canAi.value },
     { title: '数据预警', desc: '查看 AI 扫描的异常提醒', icon: '⚠️', path: '/ai-alerts', tone: 'orange', show: canAiAlert.value },
+    { title: 'AI 员工', desc: '与配置好的 AI 员工对话', icon: '👤', path: '/ai-employees', tone: 'green', show: canAiEmployee.value },
   ]
   return items.filter((x) => x.show)
 })
@@ -47,6 +49,7 @@ function go(path: string) {
             'bg-blue-50': item.tone === 'blue',
             'bg-violet-50': item.tone === 'violet',
             'bg-orange-50': item.tone === 'orange',
+            'bg-green-50': item.tone === 'green',
           }"
         >
           {{ item.icon }}

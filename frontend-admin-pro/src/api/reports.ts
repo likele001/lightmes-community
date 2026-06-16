@@ -62,5 +62,8 @@ export const reportsApi = {
   defectPareto(params: { date_from?: string; date_to?: string; limit?: number }) {
     return http.request<DefectParetoOut>({ url: '/admin/reports/defect-pareto', method: 'GET', params })
   },
+  exportProductionExcel(params: { date_from?: string; date_to?: string }) {
+    return http.request<Blob>({ url: '/admin/reports/export/production', method: 'GET', params, responseType: 'blob' })
+  },
 }
 

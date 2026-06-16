@@ -1,5 +1,6 @@
 export default {
   common: {
+    send: "Send",
     loading: 'Loading...',
     noData: 'No data',
     confirm: 'Confirm',
@@ -158,5 +159,15 @@ export default {
       done: 'Completed',
       rejected: 'Rejected',
     },
+  },
+  aiEmployee: {
+    title: "AI Employees",
+    empty: "No AI employees available",
+    chat: "AI Employee",
+    inputPlaceholder: "Type a message...",
+    newChat: "New Chat",
+    deleteChat: "Delete Chat",
+    deleted: "Deleted",
+    error: "Failed to send, please retry",
   },
 }

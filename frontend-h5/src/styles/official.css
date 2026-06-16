@@ -445,11 +445,86 @@ body {
   margin-bottom: var(--lm-space-6);
 }
 
+.sales-hero-browser {
+  border-radius: var(--lm-radius-lg);
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 24px 48px rgba(0,0,0,0.1);
+}
+.sales-hero-browser__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--lm-space-3);
+  padding: 10px 14px;
+  background: var(--lm-bg-elevated);
+  border-bottom: 1px solid var(--lm-border);
+}
+.sales-hero-browser__dots {
+  display: flex;
+  gap: 5px;
+}
+.sales-hero-browser__dots i {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--lm-border-strong);
+}
+.sales-hero-browser__dots i:nth-child(1) { background: #ef4444; }
+.sales-hero-browser__dots i:nth-child(2) { background: #eab308; }
+.sales-hero-browser__dots i:nth-child(3) { background: #22c55e; }
+.sales-hero-browser__url {
+  font-family: var(--lm-font-mono);
+  font-size: 0.6875rem;
+  color: var(--lm-text-muted);
+}
+.sales-hero-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .official-showcase__float {
   display: flex;
   gap: var(--lm-space-4);
   justify-content: center;
   margin-top: calc(-1 * var(--lm-space-8));
+}
+
+.sales-hero-phone {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lm-space-3);
+}
+.sales-hero-phone__shell {
+  width: min(100%, 200px);
+  aspect-ratio: 9 / 19;
+  border-radius: 28px;
+  border: 2px solid var(--lm-border-strong);
+  background: var(--lm-surface);
+  padding: 10px 8px 12px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px rgba(0,0,0,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.sales-hero-phone__notch {
+  width: 64px;
+  height: 16px;
+  margin: 0 auto 6px;
+  border-radius: 0 0 12px 12px;
+  background: var(--lm-border-strong);
+}
+.sales-hero-phone__screen {
+  display: block;
+  width: 100%;
+  height: calc(100% - 22px);
+  object-fit: cover;
+  border-radius: 14px;
+}
+.sales-hero-phone figcaption {
+  font-size: 0.75rem;
+  color: var(--lm-text-muted);
 }
 
 /* ── Section ── */
@@ -1695,6 +1770,106 @@ body {
 }
 
 /* ── Final CTA ── */
+.sales-gallery-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.sales-gallery-tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--lm-text-muted);
+}
+.sales-gallery-tab:hover {
+  border-color: var(--lm-cta);
+  color: var(--lm-cta);
+}
+.sales-gallery-tab--active {
+  background: var(--lm-cta);
+  color: #fff;
+  border-color: var(--lm-cta);
+}
+.sales-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.sales-gallery-item {
+  margin: 0;
+  border-radius: var(--lm-radius-lg);
+  border: 1px solid var(--lm-border);
+  overflow: hidden;
+  background: var(--lm-surface);
+  transition: box-shadow 0.15s;
+}
+.sales-gallery-item:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.sales-gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.sales-gallery-item figcaption {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--lm-text-muted);
+  border-top: 1px solid var(--lm-border);
+}
+
+.sales-trust-grid {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 40rem) {
+  .sales-trust-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 40rem) {
+  .sales-trust-grid { grid-template-columns: 1fr; }
+}
+.sales-trust-card {
+  background: var(--lm-surface, #fff);
+  border: 1px solid var(--lm-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.sales-trust-card__tag {
+  display: inline-flex;
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: #166534;
+}
+.sales-trust-card blockquote {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--lm-text);
+  margin: 0;
+  font-style: italic;
+}
+.sales-trust-card blockquote::before { content: '\201C'; }
+.sales-trust-card blockquote::after { content: '\201D'; }
+.sales-trust-card__author {
+  font-size: 0.8125rem;
+  color: var(--lm-text-muted);
+  margin: 0;
+}
+
 .sales-final-cta {
   margin-block: var(--lm-space-12);
   background: linear-gradient(135deg, #0f172a, #1e293b 60%, #0e7490);
