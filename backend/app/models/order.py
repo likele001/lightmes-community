@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -25,6 +25,11 @@ class Order(Base):
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     confirmed_by: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
+    # 老板看板：销售额 / 订单成本 / 实际完成时间
+    amount: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False, server_default="0")
+    cost_amount: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False, server_default="0")
+    actual_completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
+
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
@@ -46,6 +51,11 @@ class OrderItem(Base):
 
     sku_id: Mapped[int] = mapped_column(Integer, ForeignKey("skus.id", ondelete="RESTRICT"), nullable=False, index=True)
     qty: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # 老板看板：单价 / 小计
+    unit_price: Mapped[float] = mapped_column(Numeric(12, 4), nullable=False, server_default="0")
+    subtotal: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False, server_default="0")
+
     remark: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
