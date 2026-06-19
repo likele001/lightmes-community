@@ -172,5 +172,15 @@ export const materialsApi = {
       method: 'GET',
     })
   },
+
+  exportSuppliers(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/suppliers/export', method: 'GET', params })
+  },
+  exportMaterials(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/materials/export', method: 'GET', params })
+  },
+  exportBoms(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/boms/export', method: 'GET', params })
+  },
 }
 

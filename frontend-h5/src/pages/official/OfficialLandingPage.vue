@@ -49,28 +49,8 @@ const painPoints = [
     desc: '客户名单、跟进记录、报价历史都在销售微信或脑子里，人一走客户就断，公海客户没人跟也发现不了。',
   },
   {
-    title: '库存多少没人说得清',
-    desc: '仓库进了多少、出了多少、还剩多少，月底盘才知道差了一截。缺料停线才发现，补料已经来不及了。',
-  },
-  {
-    title: '设备坏了才知道该保养了',
-    desc: '没有点检记录，没有保养计划，设备出故障停机了才发现该维护了，一停就是半天一天，交期全耽误。',
-  },
-  {
     title: '想上系统又被报价吓退',
     desc: '随便问一家就是十几万、几十万，实施半年起步，小厂用不起，大功能也用不上，最后回到 Excel 和微信群。',
-  },
-  {
-    title: '客户催交期，心里没底',
-    desc: '客户天天催货，但工厂到底能做到哪一步、哪些订单会延期，老板自己也说不准，只能靠经验猜或者让销售安抚。',
-  },
-  {
-    title: '员工对工资有异议，解释不清',
-    desc: '工人觉得这个月工资少了，但你拿不出每道工序的报工明细和审核记录，只能靠口头解释，解释不通就留不住人。',
-  },
-  {
-    title: '想分析数据，发现根本没有数据',
-    desc: '月底想看看哪个工序效率低、哪个产品利润高、哪个客户贡献大，发现数据全在本子和 Excel 里，想分析都没法下手。',
   },
 ]
 
@@ -141,7 +121,7 @@ const compareRows = [
 
 const whySourceCode = [
   { saas: '数据在别人服务器，心里不踏实', source: '源码部署在自己服务器，数据不出厂' },
-  { saas: '按月扣费，用久了比买源码贵', source: '年费 ¥1800 起，成本可控' },
+  { saas: '按月扣费，用久了比买源码贵', source: '年费 ¥2800 起，成本可控' },
   { saas: '停服了数据就没了', source: '源码在手，永久可用' },
   { saas: '功能改不了，等厂商排期', source: '有源码可以自己改或找人改' },
   { saas: '工厂数据外泄风险', source: '私有部署，自己管控安全' },
@@ -263,7 +243,7 @@ const plans = [
   },
   {
     name: 'Pro 商业版',
-    price: '¥1800',
+    price: '¥2800',
     suffix: '/ 年',
     desc: '全功能源码，无限制，一年更新。生产、CRM、AI、模具、外协、仓储、财务全覆盖。',
     features: ['全部 46+ 个功能模块', '无限用户 / SKU / 工序', '一年内版本更新', 'GitHub 私有仓库权限', '源码交付，私有部署'],
@@ -273,7 +253,7 @@ const plans = [
   },
   {
     name: 'Pro + 标准实施',
-    price: '¥2800',
+    price: '¥3800',
     suffix: '/ 年',
     desc: '源码 + 远程部署 + 数据导入 + 培训，确保工厂真正用起来。',
     features: ['包含 Pro 全部内容', '远程安装部署', '基础数据导入', '管理员 / 班组长培训', '试运行陪跑'],
@@ -328,6 +308,30 @@ const faqs = [
     q: '我们工厂员工不会用智能手机怎么办？',
     a: '只要会扫码、会拍照就够了，扫码报工是用大字加图标设计的。第一天发任务二维码贴在工位上，老员工带 5 分钟就会。',
   },
+  {
+    q: '小工厂用什么MES系统好？',
+    a: '小工厂（5-200人）选MES系统最看重三点：上线快（几天而不是半年）、价格低（不是十几万）、数据自己控制。辰科MES专为中小加工厂设计，源码交付年费￥2800起，扫码报工、计件工资、订单跟踪、CRM、AI助手全覆盖，私有部署数据不出厂。',
+  },
+  {
+    q: 'MES系统一般多少钱？',
+    a: '市场上MES系统价格差距很大。传统厂商报价通常在十几万到几十万，实施周期半年起步。SaaS类产品按月/按年扣费，用久了比买源码贵。辰科MES走源码交付路线，Pro版￥2800/年全功能源码，Pro+实施￥3800/年含部署培训，成本可控。',
+  },
+  {
+    q: 'MES和ERP有什么区别？',
+    a: 'ERP管的是企业经营层面（财务、采购、销售、库存），MES管的是车间执行层面（报工、排产、质检、设备）。小工厂通常先上MES解决车间报工和工资问题，辰科MES也内置了CRM、财务、仓储等轻量ERP功能，小厂一套就够用。',
+  },
+  {
+    q: '工厂还在用微信群报工怎么办？',
+    a: '微信群报工的核心问题是数据散落、无法追溯、月底对账难。辰科MES的扫码报工和微信群一样简单（扫码、填数字、拍照），但数据自动汇总到系统，审核通过自动算工资，月底不用再对账。员工 5 分钟就能学会。',
+  },
+  {
+    q: '源码交付的MES和SaaS MES哪个好？',
+    a: '源码交付的优势：数据在自己服务器、一次买断长期使用、可以自己修改功能、不依赖单一厂商。SaaS的优势：不用管服务器、开箱即用。小工厂数据敏感，建议源码交付，辰科MES Pro版￥2800/年就能拿到全部源码。',
+  },
+  {
+    q: '上线一套MES系统要多久？',
+    a: '传统厂商MES实施周期通常 3-6 个月。辰科MES因为是轻量化设计，从沟通到正式上线通常 1-2 周。流程是：聊清楚流程 → 配置基础数据 → 导入历史数据 → 培训三类角色 → 一个车间试跑 → 正式上线。',
+  },
 ]
 
 const wechatText = computed(() => salesWechat || '微信号待填写')
@@ -344,7 +348,7 @@ async function copyWechat() {
 }
 
 usePageSeo({
-  title: 'LightMes · 中小加工厂生产管理系统 | 源码交付私有部署',
+  title: '辰科MES · 中小加工厂生产管理系统 | 源码交付私有部署',
   description: '专为中小加工厂打造的轻量化MES系统。扫码报工、计件工资自动算、CRM客户管理、AI工厂助手、仓储库存、质量溯源。源码部署在自己服务器，数据不出厂。免费社区版开源下载。',
   keywords: 'MES系统,生产管理系统,扫码报工,计件工资,加工厂管理软件,私有部署,源码交付',
 })
@@ -352,16 +356,71 @@ usePageSeo({
 const jsonLdSoftwareApp = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'LightMes',
-  description: '中小加工厂生产管理系统 · 源码交付私有部署',
+  name: '辰科MES',
+  alternateName: 'Cenkor MES',
+  description: '面向中小加工厂的轻量化生产管理系统。扫码报工、计件工资自动核算、订单跟踪、CRM客户管理、AI工厂助手、质量溯源。源码交付，年费￥2800起，私有部署数据不出厂。',
   applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Manufacturing Execution System (MES)',
   operatingSystem: 'Linux, Windows',
-  url: 'https://lightmes.user.023ent.net',
+  url: 'https://mes.cenkor.cn',
   codeRepository: 'https://github.com/likele001/lightmes-community',
+  downloadUrl: 'https://github.com/likele001/lightmes-community',
+  installUrl: 'https://admin.mes.cenkor.cn/register/',
+  screenshot: 'https://mes.cenkor.cn/screenshots/dashboard.png',
+  softwareVersion: '2025.06',
+  featureList: '扫码报工, 计件工资, 甘特排产, 生产看板, 质量溯源, CRM客户管理, AI工厂助手, 模具管理, 外协管理, 仓储库存, 采购管理, 财务管理, 设备管理, SPC质量图表, 微信小程序',
+  author: {
+    '@type': 'Organization',
+    name: '辰科科技',
+    alternateName: 'Cenkor',
+    url: 'https://cenkor.cn',
+    email: 'contact@cenkor.cn',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: '辰科科技',
+    url: 'https://cenkor.cn',
+  },
   offers: [
-    { '@type': 'Offer', price: '0', priceCurrency: 'CNY', description: 'Community 社区版（开源）' },
-    { '@type': 'Offer', price: '1800', priceCurrency: 'CNY', priceUnit: 'year', description: 'Pro 商业版（年费）' },
-    { '@type': 'Offer', price: '2800', priceCurrency: 'CNY', priceUnit: 'year', description: 'Pro + 标准实施版（年费）' },
+    { '@type': 'Offer', price: '0', priceCurrency: 'CNY', description: '社区版 - 免费开源，扫码报工核心流程' },
+    { '@type': 'Offer', price: '2800', priceCurrency: 'CNY', priceValidUntil: '2027-12-31', description: 'Pro 商业版 - 46+模块源码，年费制' },
+    { '@type': 'Offer', price: '3800', priceCurrency: 'CNY', priceValidUntil: '2027-12-31', description: 'Pro + 标准实施 - 含部署培训' },
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.8',
+    ratingCount: '36',
+    bestRating: '5',
+  },
+}
+
+const jsonLdOrg = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: '辰科科技',
+  alternateName: 'Cenkor',
+  url: 'https://cenkor.cn',
+  email: 'contact@cenkor.cn',
+  description: '辰科科技专注企业级软件与AI智能化解决方案，产品覆盖企业后台、AI智能化、智能制造三大方向。旗舰产品辰科MES面向中小加工厂，源码交付私有部署。',
+  sameAs: [
+    'https://github.com/likele001/lightmes-community',
+    'https://mes.cenkor.cn',
+  ],
+}
+
+const jsonLdHowTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: '中小加工厂如何上线辰科MES生产管理系统',
+  description: '从零开始，6步上线辰科MES到你的工厂车间。',
+  totalTime: 'P2W',
+  step: [
+    { '@type': 'HowToStep', name: '聊清楚流程', text: '了解你的产品、工序、工价规则，确认上线范围。' },
+    { '@type': 'HowToStep', name: '配置基础数据', text: '产品/SKU/工序/工价/人员/权限一次性配齐。' },
+    { '@type': 'HowToStep', name: '导入历史数据', text: '订单、客户、库存、工资基础数据可批量导入。' },
+    { '@type': 'HowToStep', name: '培训三类角色', text: '管理员、班组长、一线员工分别培训，半小时学会。' },
+    { '@type': 'HowToStep', name: '一个车间试跑', text: '先选一条产线或一个车间跑一周，发现问题立即调。' },
+    { '@type': 'HowToStep', name: '正式上线扩展', text: '试跑没问题再扩到全厂，可分批接入业务模块。' },
   ],
 }
 
@@ -384,6 +443,16 @@ useHead({
     },
     {
       type: 'application/ld+json',
+      innerHTML: JSON.stringify(jsonLdOrg),
+      key: 'organization',
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(jsonLdHowTo),
+      key: 'howto',
+    },
+    {
+      type: 'application/ld+json',
       innerHTML: JSON.stringify(jsonLdFaq),
       key: 'faq',
     },
@@ -401,15 +470,15 @@ useHead({
             源码交付 · 私有部署 · 数据不出厂
           </div>
           <h1 class="official-hero__title sales-hero__title">
-            不只是扫码报工<br>是一套完整的加工厂经营系统<br>模具 · 外协 · AI 智能报工
+            小工厂的生产管理系统<br>扫码报工 · 自动算薪 · 源码交付
           </h1>
           <p class="official-hero__desc sales-hero__desc">
-            生产报工、计件工资、模具管理、外协加工、CRM、仓储库存、采购对账、AI 智能报工（照片计数/缺陷分类/语音输入）。买源码，部署在自己服务器，数据不出厂。
+            扫码报工、计件工资自动算、订单跟踪、CRM、仓储、AI 智能报工。源码部署在你自己的服务器，数据不出厂。年费 ¥2800 起，不买 SaaS 不按月扣。
           </p>
           <div class="official-hero__actions sales-hero__actions">
-            <a class="official-btn official-btn--primary" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版</a>
-            <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">获取 Pro 商业版</button>
-            <a class="official-btn official-btn--text" :href="trialUrl" target="_blank" rel="noopener">在线试用体验</a>
+            <a class="official-btn official-btn--primary" :href="trialUrl" target="_blank" rel="noopener">免费试用体验</a>
+            <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">加微信看演示</button>
+            <a class="official-btn official-btn--text" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版 →</a>
           </div>
           <div v-if="showWechatPanel" class="sales-wechat-card" role="status">
             <span>微信号</span>
@@ -428,7 +497,7 @@ useHead({
                 <span class="sales-hero-browser__dots" aria-hidden="true"><i></i><i></i><i></i></span>
                 <span class="sales-hero-browser__url">admin.mes.cenkor.cn</span>
               </div>
-              <img src="/screenshots/dashboard.png" alt="LightMes 管理后台看板" class="sales-hero-screenshot" loading="eager" />
+              <img src="/screenshots/dashboard.png" alt="辰科MES 管理后台看板" class="sales-hero-screenshot" loading="eager" />
             </div>
           </div>
           <div class="official-showcase__float">
@@ -462,7 +531,7 @@ useHead({
       <div class="sales-split-head">
         <p class="sales-eyebrow">老板的真实日常</p>
         <h2 id="pain-heading" class="official-section__title">每一条都让人头大，是不是你正在经历的？</h2>
-        <p class="official-section__desc">这些不是危言耸听，是几乎每家中小加工厂都在重复的事。LightMes 把它们一个一个解决。</p>
+        <p class="official-section__desc">这些不是危言耸听，是几乎每家小加工厂每天都在重复的事。</p>
       </div>
       <div class="sales-pain-list">
         <article v-for="(point, idx) in painPoints" :key="point.title" class="sales-pain-item">
@@ -514,7 +583,7 @@ useHead({
         <div class="sales-compare-row sales-compare-row--head" role="row">
           <div role="cell">日常场景</div>
           <div role="cell">现在的做法</div>
-          <div role="cell">LightMes 上线后</div>
+          <div role="cell">辰科MES 上线后</div>
         </div>
         <div v-for="row in compareRows" :key="row[0]" class="sales-compare-row" role="row">
           <div role="cell" class="sales-compare-row__title">{{ row[0] }}</div>
@@ -528,7 +597,7 @@ useHead({
       <div class="official-section__head">
         <p class="sales-eyebrow">真实界面</p>
         <h2 id="gallery-heading" class="official-section__title">看看系统长什么样</h2>
-        <p class="official-section__desc">不是设计稿，是 LightMes 真实运行界面截图。</p>
+        <p class="official-section__desc">不是设计稿，是 辰科MES 真实运行界面截图。</p>
       </div>
       <div class="sales-gallery-tabs" role="tablist">
         <button v-for="tab in galleryTabs" :key="tab.id" role="tab"
@@ -648,7 +717,7 @@ useHead({
       <div class="official-section__head">
         <p class="sales-eyebrow">功能清单</p>
         <h2 id="modules-heading" class="official-section__title">Pro 版覆盖加工厂全流程</h2>
-        <p class="official-section__desc">以下是 LightMes Pro 已有的功能模块，持续迭代更新中。</p>
+        <p class="official-section__desc">以下是 辰科MES Pro 已有的功能模块，持续迭代更新中。</p>
       </div>
       <div class="sales-module-grid">
         <span v-for="mod in allModules" :key="mod">{{ mod }}</span>
@@ -673,7 +742,7 @@ useHead({
     <section class="official-section official-section--bordered sales-trust" aria-labelledby="trust-heading">
       <div class="official-section__head">
         <p class="sales-eyebrow">他们已经在用</p>
-        <h2 id="trust-heading" class="official-section__title">已经有工厂在用 LightMes 管车间了</h2>
+        <h2 id="trust-heading" class="official-section__title">已经有工厂在用 辰科MES 管车间了</h2>
         <p class="official-section__desc">不是 PPT 案例，是真实在用——你也可以。</p>
       </div>
       <div class="sales-trust-grid">
@@ -700,17 +769,28 @@ useHead({
 
     <aside class="official-cta sales-final-cta">
       <p class="sales-eyebrow sales-eyebrow--light">现在就动手</p>
-      <p class="official-cta__title">先下载社区版试起来，觉得合适再升级 Pro</p>
-      <p class="official-cta__desc">社区版免费开源，跑通扫码报工和审核。Pro 版源码交付，部署在自己服务器，数据不出厂。</p>
+      <p class="official-cta__title">先用起来，觉得好再买源码</p>
+      <p class="official-cta__desc">在线试用免费，Pro 版源码 ¥2800/年，部署在自己服务器，数据不出厂。</p>
       <div class="sales-final-cta__actions">
-        <a class="official-btn official-btn--primary" :href="communityUrl" target="_blank" rel="noopener">免费下载社区版</a>
-        <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">获取 Pro 商业版</button>
+        <a class="official-btn official-btn--primary" :href="trialUrl" target="_blank" rel="noopener">免费试用体验</a>
+        <button class="official-btn official-btn--ghost" type="button" @click="toggleWechatPanel">加微信看演示</button>
       </div>
-      <p class="sales-final-cta__note">源码交付 · 私有部署 · 年费 ¥1800 起</p>
+      <p class="sales-final-cta__note">源码交付 · 私有部署 · 年费 ¥2800 起</p>
     </aside>
 
+    <!-- 浮动联系栏 -->
+    <div class="sales-float-contact">
+      <button class="sales-float-contact__btn" type="button" @click="toggleWechatPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        加微信看演示
+      </button>
+      <a class="sales-float-contact__btn sales-float-contact__btn--primary" :href="trialUrl" target="_blank" rel="noopener">
+        免费试用
+      </a>
+    </div>
+
     <footer class="official-footer">
-      <p>LightMes · 中小加工厂生产管理系统</p>
+      <p>辰科MES · 中小加工厂生产管理系统</p>
     </footer>
   </div>
 </template>

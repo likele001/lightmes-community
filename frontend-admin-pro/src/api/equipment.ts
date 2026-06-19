@@ -121,4 +121,8 @@ export const equipmentApi = {
       data,
     })
   },
+
+  exportEquipment(params?: any) {
+    return http.downloadBlob({ url: '/admin/equipment/export', method: 'GET', params })
+  },
 }

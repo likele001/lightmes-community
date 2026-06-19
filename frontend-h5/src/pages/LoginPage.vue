@@ -112,7 +112,7 @@ async function onSubmit() {
   <div class="min-h-dvh bg-zinc-50 px-4 pt-14">
     <div class="mx-auto w-full max-w-sm">
       <div class="mb-6 text-center">
-        <div class="text-2xl font-semibold text-zinc-900">LightMes</div>
+        <div class="text-2xl font-semibold text-zinc-900">辰科MES</div>
         <div class="mt-2 text-sm text-zinc-500">移动端登录</div>
         <router-link to="/site" class="mt-3 inline-block text-xs text-blue-600 underline underline-offset-2">
           了解产品与功能 →

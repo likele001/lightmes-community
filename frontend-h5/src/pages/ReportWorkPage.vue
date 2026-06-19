@@ -90,6 +90,9 @@ function removeUpload(idx: number) {
 const voiceInput = ref<VoiceInput | null>(null)
 const voiceRecording = ref(false)
 const voiceInterim = ref('')
+const showTextVoice = ref(false)
+const textVoiceContent = ref('')
+const voiceParsing = ref(false)
 
 function handleVoiceToggle() {
   if (voiceRecording.value) {
@@ -97,7 +100,9 @@ function handleVoiceToggle() {
     return
   }
   if (!isVoiceInputSupported()) {
-    showToast('当前浏览器不支持语音识别，请手动输入或使用系统输入法语音')
+    // 降级：弹出文字输入框，用系统输入法语音键或手动输入
+    textVoiceContent.value = ''
+    showTextVoice.value = true
     return
   }
   voiceInterim.value = ''
@@ -116,13 +121,31 @@ function handleVoiceToggle() {
   vi.on('onError', (_code, msg) => {
     voiceRecording.value = false
     voiceInterim.value = ''
-    showToast(msg || '语音识别失败')
+    // Web Speech API 失败（常见于国内网络），降级到文字输入
+    showTextVoice.value = true
+    showToast('语音识别服务不可用，已切换为文字输入')
   })
   vi.on('onEnd', () => {
     voiceRecording.value = false
     voiceInterim.value = ''
   })
   vi.start()
+}
+
+async function handleTextVoiceSubmit() {
+  // 优先用弹层文字，其次用备注框内容
+  const text = (textVoiceContent.value.trim() || form.remark.trim())
+  if (!text) {
+    showToast('请输入报工内容')
+    return
+  }
+  showTextVoice.value = false
+  voiceParsing.value = true
+  try {
+    await parseVoiceText(text)
+  } finally {
+    voiceParsing.value = false
+  }
 }
 
 async function parseVoiceText(text: string) {
@@ -151,7 +174,9 @@ async function parseVoiceText(text: string) {
     }
     await showDialog({
       title: '语音解析完成',
-      message: `原文：${text}\n\n解析：合格 ${res.good_qty ?? '-'} 件，不良 ${res.bad_qty ?? '-'} 件，结果：${res.result_type || '-'}${res.defect_keywords?.length ? '\n关键词: ' + res.defect_keywords.join('、') : ''}`,
+      message: res.summary
+        ? `${res.summary}\n\n原文：${text}`
+        : `原文：${text}\n\n解析：合格 ${res.good_qty ?? '-'} 件，不良 ${res.bad_qty ?? '-'} 件${res.defect_keywords?.length ? '\n关键词: ' + res.defect_keywords.join('、') : ''}`,
     })
   } catch (e: unknown) {
     closeToast()
@@ -383,15 +408,46 @@ async function handleSubmit() {
           class="!px-2"
           @click="handleVoiceToggle"
         >
-          {{ voiceRecording ? '录音中…点击停止' : '按住说话' }}
+          {{ voiceRecording ? '录音中…点击停止' : '语音输入' }}
         </van-button>
       </div>
       <textarea
         v-model="form.remark"
-        :placeholder="voiceRecording ? `正在识别: ${voiceInterim || '...'}` : '可选备注信息'"
+        :placeholder="voiceRecording ? `正在识别: ${voiceInterim || '...'}` : '可选备注信息，如：做了50个好的，2个有划痕'"
         rows="2"
         class="w-full rounded-xl border border-zinc-200 bg-white p-3 text-sm outline-none focus:border-blue-400"
       />
+      <!-- AI 解析备注按钮 -->
+      <van-button
+        v-if="form.remark.trim() && form.good_qty === 0 && form.bad_qty === 0 && !voiceParsing"
+        size="mini"
+        type="primary"
+        plain
+        class="mt-1"
+        :loading="voiceParsing"
+        @click="handleTextVoiceSubmit"
+      >
+        AI 解析备注
+      </van-button>
+
+    <!-- 文字输入语音降级弹层 -->
+    <van-overlay :show="showTextVoice" @click="showTextVoice = false" z-index="200">
+      <div class="fixed inset-x-4 top-24 rounded-2xl bg-white p-5 shadow-xl" @click.stop>
+        <div class="mb-3 text-base font-semibold text-zinc-800">语音报工（文字输入）</div>
+        <div class="mb-2 text-xs text-zinc-500">可用手机键盘的🎙语音键输入，或直接打字</div>
+        <textarea
+          v-model="textVoiceContent"
+          rows="3"
+          placeholder="例如：做了50个好的，2个有划痕"
+          class="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none focus:border-blue-400"
+          autofocus
+        />
+        <div class="mt-3 flex gap-3">
+          <van-button block type="primary" :loading="voiceParsing" @click="handleTextVoiceSubmit">AI 解析填入</van-button>
+          <van-button block @click="showTextVoice = false">取消</van-button>
+        </div>
+      </div>
+    </van-overlay>
     </div>
 
     <!-- 附件上传 -->

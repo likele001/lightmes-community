@@ -1,7 +1,7 @@
 export default {
   auth: {
     login: {
-      title: 'LightMes',
+      title: '辰科MES',
       subtitle: '경량 생산 관리 시스템',
       tenantCode: '테넌트 코드',
       account: '계정',
@@ -592,7 +592,7 @@ export default {
     },
     help: {
       title: '스마트 도움말',
-      subtitle: 'RAG 문서 검색 기반, LightMes 운영 및 배포 질문에 대한 답변.',
+      subtitle: 'RAG 문서 검색 기반, 辰科MES 운영 및 배포 질문에 대한 답변.',
       placeholder: '예: 미니프로그램 AppID를 어떻게 구성하나요? 보고 승인 흐름은?',
       ask: '질문',
       answer: '답변',
@@ -813,7 +813,7 @@ export default {
       confirmDeleteModel: '이 모델을 삭제하시겠습니까?',
     },
     login: {
-      title: 'LightMes 플랫폼 관리',
+      title: '辰科MES 플랫폼 관리',
       username: '계정',
       password: '비밀번호',
       rememberMe: '로그인 유지 (7일)',

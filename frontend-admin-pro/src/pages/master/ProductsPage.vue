@@ -3,6 +3,7 @@
     <template #actions>
       <el-input v-model="query.keyword" :placeholder="t('master.products.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="reload(true)" />
       <el-switch v-model="query.include_inactive" :active-text="t('master.products.includeDisabled')" @change="reload(true)" />
+      <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
       <el-button type="primary" @click="openCreate">{{ t('master.products.add') }}</el-button>
     </template>
 
@@ -121,7 +122,7 @@ import { useI18n } from 'vue-i18n'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import AdminDataTable from '@/components/admin/AdminDataTable.vue'
 import AdminPage from '@/components/admin/AdminPage.vue'
 import { useListPage } from '@/composables/useListPage'
@@ -130,6 +131,7 @@ import { codeForSubmit, previewNextCode } from '@/utils/code'
 
 const { t } = useI18n()
 
+const exporting = ref(false)
 const items = ref<ProductOut[]>([])
 const { loading, query, page, estimateTotal, onPageChange, runReload } = useListPage({
   keyword: '',
@@ -224,6 +226,22 @@ async function onSave() {
 async function onDisable(row: ProductOut) {
   await masterApi.disableProduct(row.id)
   await reload(false)
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await masterApi.exportProducts({})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `products_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 onMounted(() => reload(true))

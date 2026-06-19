@@ -11,7 +11,7 @@ const loginPath = computed(() => {
 })
 
 onMounted(() => {
-  document.title = '生产流程 · LightMes'
+  document.title = '生产流程 · 辰科MES'
 })
 </script>
 

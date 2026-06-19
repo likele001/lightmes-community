@@ -24,6 +24,7 @@ from app.schemas.quality import (
     TemplateIn,
     TemplateUpdateIn,
 )
+from app.tasks._sync_excel import make_excel_response
 
 router = APIRouter(dependencies=[Depends(require_permissions(["report.audit"]))])
 
@@ -128,6 +129,23 @@ def list_defect_codes_api(
             for d in items
         ]
     })
+
+
+@router.get("/defect-codes/export")
+def export_defect_codes_api(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    items = list_defect_codes(db, user.tenant_id, offset=0, limit=999999)
+    rows = []
+    for d in items:
+        rows.append([d.code, d.name, d.severity, d.description or "", "是" if d.is_active else "否"])
+    return make_excel_response(
+        headers=["缺陷代码", "名称", "严重级别", "描述", "启用"],
+        rows=rows,
+        filename="defect_codes.xlsx",
+        sheet_name="缺陷代码",
+    )
 
 
 @router.post("/defect-codes")

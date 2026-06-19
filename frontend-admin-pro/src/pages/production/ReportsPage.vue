@@ -9,6 +9,7 @@ import { useStatus } from '@/utils/status-maps'
 const { t } = useI18n()
 const { label: statusLabel, type: statusTagType } = useStatus('report')
 const loading = ref(false)
+const exporting = ref(false)
 const reports = ref<ReportOut[]>([])
 const total = ref(0)
 const dialogVisible = ref(false)
@@ -50,6 +51,22 @@ async function load() {
   } finally {
     loading.value = false
   }
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await productionApi.exportReportUnits(listQueryParams())
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `reports_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 async function viewDetail(id: number) {
@@ -114,6 +131,7 @@ onMounted(load)
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="load">{{ t('production.common.search') }}</el-button>
+          <el-button :loading="exporting" @click="exportExcel">{{ t('common.exportExcel') }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>

@@ -306,7 +306,7 @@ const guideData: GuideSection[] = [
             content: `<h3>工序工价设置</h3>
 <p><strong>使用者</strong>：财务 / 主数据管理员</p>
 <p><strong>操作路径</strong>：主数据 → 工序工价</p>
-<p>工价是 LightMes 的核心计费逻辑，按「产品型号 × 工序」设定计件单价（元/件）。</p>
+<p>工价是 辰科MES 的核心计费逻辑，按「产品型号 × 工序」设定计件单价（元/件）。</p>
 <h4>设置方法一：逐个型号设置</h4>
 <ol>
 <li>进入产品型号详情页</li>
@@ -542,7 +542,7 @@ const guideData: GuideSection[] = [
             id: 'ch6-3',
             title: '6.3 质量管理（质检模板 / 缺陷代码 / 检测记录）',
             content: `<h3>质量管理</h3>
-<p>LightMes 提供「<strong>质检模板 → 检测记录 → 缺陷分析</strong>」的完整质量管理闭环：先配置好模板（哪些工序要查什么），QC 审核报工时按模板逐项打勾，结果自动汇总到缺陷分析报表里。</p>
+<p>辰科MES 提供「<strong>质检模板 → 检测记录 → 缺陷分析</strong>」的完整质量管理闭环：先配置好模板（哪些工序要查什么），QC 审核报工时按模板逐项打勾，结果自动汇总到缺陷分析报表里。</p>
 <h4>角色与权限</h4>
 <ul>
 <li><code>report.audit</code> 权限：可管理质检模板、缺陷代码、查看检测记录</li>
@@ -1109,7 +1109,7 @@ const guideData: GuideSection[] = [
             id: 'ch13-1',
             title: '13.1 飞书消息推送',
             content: `<h3>飞书消息推送</h3>
-<p>LightMes 通过飞书自建应用把派工、报工审核、工资、预警等事件推送到飞书群或个人。<strong>必须先在飞书开放平台创建企业自建应用</strong>，详见 <a href="https://admin.mes.cenkor.cn" target="_blank">《飞书消息推送部署指南》</a>（docs/飞书消息推送部署指南.md）。</p>
+<p>辰科MES 通过飞书自建应用把派工、报工审核、工资、预警等事件推送到飞书群或个人。<strong>必须先在飞书开放平台创建企业自建应用</strong>，详见 <a href="https://admin.mes.cenkor.cn" target="_blank">《飞书消息推送部署指南》</a>（docs/飞书消息推送部署指南.md）。</p>
 <h4>配置入口</h4>
 <p>侧边栏 → <strong>系统管理 → 飞书消息推送</strong>（需 <code>setting.manage</code> 权限）。</p>
 <h4>三步开启</h4>
@@ -1158,15 +1158,15 @@ const guideData: GuideSection[] = [
 <p>侧边栏 → <strong>系统管理 → 钉钉消息推送</strong>（需 <code>setting.manage</code> 权限）。</p>
 <h4>群机器人配置</h4>
 <ol>
-<li>在钉钉群里「群设置 → 智能群助手 → 添加机器人 → 自定义」获取 <strong>Webhook URL</strong>；如启用「加签」会得到 <strong>Secret</strong>，两者都要填到 LightMes。</li>
-<li>LightMes → 钉钉消息推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook + secret → 保存。</li>
+<li>在钉钉群里「群设置 → 智能群助手 → 添加机器人 → 自定义」获取 <strong>Webhook URL</strong>；如启用「加签」会得到 <strong>Secret</strong>，两者都要填到 辰科MES。</li>
+<li>辰科MES → 钉钉消息推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook + secret → 保存。</li>
 <li>点「测试推送」验证。</li>
 </ol>
 <h4>工作通知配置</h4>
 <ol>
 <li>钉钉开放平台 → 应用开发 → 创建「企业内部应用」→ 拿到 <code>AppKey</code> / <code>AppSecret</code> / <code>AgentId</code>。</li>
 <li>应用权限开通「<strong>机器人发送消息</strong>」「<strong>工作通知</strong>」「<strong>免登</strong>」。</li>
-<li>LightMes → 钉钉消息推送 → 顶部填 AppKey / AppSecret / AgentId → 保存。</li>
+<li>辰科MES → 钉钉消息推送 → 顶部填 AppKey / AppSecret / AgentId → 保存。</li>
 </ol>
 <h4>员工钉钉账号绑定</h4>
 <p>工作通知通道依赖 <code>dingtalk_userid</code>，三种方式：</p>
@@ -1196,7 +1196,7 @@ const guideData: GuideSection[] = [
 <h4>三步开启</h4>
 <ol>
 <li>企微群里「群设置 → 群机器人 → 添加」拿到 <strong>Webhook URL</strong>。</li>
-<li>LightMes → 企微推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook → 保存。</li>
+<li>辰科MES → 企微推送 → 选群（生产群 / 管理群 / 全厂群）→ 填 webhook → 保存。</li>
 <li>点「测试推送」验证。</li>
 </ol>
 <h4>员工企微账号绑定</h4>
@@ -1239,7 +1239,7 @@ const guideData: GuideSection[] = [
             id: 'ch12-5',
             title: '12.5 AI 助手（智能对话）',
             content: `<h3>AI 助手（智能对话）</h3>
-<p>LightMes 内置 AI 助手，按角色提供问答与操作建议。需要先在 <code>.env</code> 配置 <code>AI_BASE_URL</code> / <code>AI_API_KEY</code>，并开启 <code>AI_ENABLED=true</code>。详见 <a href="https://admin.mes.cenkor.cn" target="_blank">docs/AI集成说明.md</a>。</p>
+<p>辰科MES 内置 AI 助手，按角色提供问答与操作建议。需要先在 <code>.env</code> 配置 <code>AI_BASE_URL</code> / <code>AI_API_KEY</code>，并开启 <code>AI_ENABLED=true</code>。详见 <a href="https://admin.mes.cenkor.cn" target="_blank">docs/AI集成说明.md</a>。</p>
 <h4>入口</h4>
 <p>侧边栏 → <strong>智能中心 → AI 助手</strong>（需 <code>ai.use</code> 权限）。</p>
 <h4>典型用法</h4>
@@ -1552,7 +1552,7 @@ const guideData: GuideSection[] = [
 <ol>
 <li>「我的」→「账号设置」→ 找到「飞书 / 钉钉 / 企微绑定」</li>
 <li>点「去绑定」会跳到对应 IM 授权页（需安装对应 App）</li>
-<li>授权后回跳 LightMes，自动存 <code>open_id</code> / <code>dingtalk_userid</code> / <code>wecom_userid</code></li>
+<li>授权后回跳 辰科MES，自动存 <code>open_id</code> / <code>dingtalk_userid</code> / <code>wecom_userid</code></li>
 <li>绑定后派工、报工审核、工资条会推送到对应 IM</li>
 </ol>
 <p><strong>注意</strong>：未绑定也能用站内通知（铃铛），但 IM 推送需要绑定才能收个人消息。</p>
@@ -1798,9 +1798,9 @@ const guideData: GuideSection[] = [
             id: 'wx-1-1',
             title: '1.1 什么是管理端小程序',
             content: `<h3>微信小程序管理端</h3>
-<p>LightMes 提供一个<strong>微信小程序版"轻量管理端"</strong>，面向厂长 / 班组长 / 财务 / 业务，适合<strong>出差、外勤、车间走动</strong>等不方便打开 PC 的场景。功能定位：<strong>PC 端的手机伴侣</strong>，不是替代。</p>
+<p>辰科MES 提供一个<strong>微信小程序版"轻量管理端"</strong>，面向厂长 / 班组长 / 财务 / 业务，适合<strong>出差、外勤、车间走动</strong>等不方便打开 PC 的场景。功能定位：<strong>PC 端的手机伴侣</strong>，不是替代。</p>
 <h4>入口</h4>
-<p>微信 → 搜索「LightMes」小程序（或扫码「管理端」入口）→ 选择「<strong>管理端</strong>」模式登录。</p>
+<p>微信 → 搜索「辰科MES」小程序（或扫码「管理端」入口）→ 选择「<strong>管理端</strong>」模式登录。</p>
 <h4>登录方式</h4>
 <ul>
 <li>手机号 + 验证码（默认）</li>
@@ -2197,7 +2197,7 @@ const guideData: GuideSection[] = [
             title: '13.2 数据同步',
             content: `<h3>数据同步</h3>
 <h4>Q1：手机上看到的订单状态和 PC 不一致？</h4>
-<p>下拉刷新页面。LightMes 没有走实时推送，每页进入时拉取最新。</p>
+<p>下拉刷新页面。辰科MES 没有走实时推送，每页进入时拉取最新。</p>
 <h4>Q2：上传照片失败？</h4>
 <ul>
 <li>检查微信是否授权「使用相册」</li>
@@ -2768,7 +2768,7 @@ const guideData: GuideSection[] = [
 <ol>
 <li>用手机浏览器（<strong>Chrome / Safari / 微信内置</strong>）打开 H5 链接</li>
 <li>浏览器弹出「<strong>添加到主屏幕</strong>」提示（或手动：浏览器菜单 → 分享 → 添加到主屏幕）</li>
-<li>桌面出现「<strong>LightMes H5</strong>」图标，<strong>全屏启动</strong>，无浏览器地址栏</li>
+<li>桌面出现「<strong>辰科MES H5</strong>」图标，<strong>全屏启动</strong>，无浏览器地址栏</li>
 </ol>
 <h4>启动效果</h4>
 <ul>
@@ -3171,7 +3171,7 @@ const guideData: GuideSection[] = [
 <h4>使用方式</h4>
 <ol>
 <li>打开飞书/企微/钉钉</li>
-<li>找到 LightMes 机器人应用</li>
+<li>找到 辰科MES 机器人应用</li>
 <li>直接发送消息，例如：<ul>
 <li>"查一下订单 D-20260601 的进度"</li>
 <li>"今天我的任务有哪些？"</li>

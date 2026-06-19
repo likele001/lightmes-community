@@ -480,6 +480,20 @@ export const productionApi = {
   getCustomer(id: number) {
     return http.request<CustomerOut>({ url: `/admin/production/customers/${id}`, method: 'GET' })
   },
+  printCustomer(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ html: string; customer_id: number; code: string; template_id: number }>({
+      url: `/admin/production/customers/${id}/print`,
+      method: 'GET',
+      params,
+    })
+  },
+  exportCustomerPdf(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ attachment_id: number; filename: string; url: string }>({
+      url: `/admin/production/customers/${id}/print-pdf`,
+      method: 'GET',
+      params,
+    })
+  },
   createCustomer(data: {
     code: string
     name: string
@@ -651,6 +665,20 @@ export const productionApi = {
   },
   getOrder(id: number) {
     return http.request<OrderDetailOut>({ url: `/admin/production/orders/${id}`, method: 'GET' })
+  },
+  printOrder(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ html: string; order_id: number; code: string; template_id: number }>({
+      url: `/admin/production/orders/${id}/print`,
+      method: 'GET',
+      params,
+    })
+  },
+  exportOrderPdf(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ attachment_id: number; filename: string; url: string }>({
+      url: `/admin/production/orders/${id}/print-pdf`,
+      method: 'GET',
+      params,
+    })
   },
   /** 新建订单下拉：仅需 order.manage（后端需已部署 meta/form-options） */
   getOrderFormOptions() {
@@ -1017,5 +1045,21 @@ export const productionApi = {
   // 用户（派工用）
   listUsers(params: any) {
     return http.request<ListResp<UserOut>>({ url: '/admin/system/users', method: 'GET', params })
+  },
+
+  exportCustomers(params?: any) {
+    return http.downloadBlob({ url: '/admin/production/customers/export', method: 'GET', params })
+  },
+  exportOrders(params?: any) {
+    return http.downloadBlob({ url: '/admin/production/orders/export', method: 'GET', params })
+  },
+  exportWorkOrders(params?: any) {
+    return http.downloadBlob({ url: '/admin/production/work-orders/export', method: 'GET', params })
+  },
+  exportReportUnits(params?: any) {
+    return http.downloadBlob({ url: '/admin/production/report-units/export', method: 'GET', params })
+  },
+  exportSalarySlips(params?: any) {
+    return http.downloadBlob({ url: '/admin/production/reports/salary/slips/export', method: 'GET', params })
   },
 }

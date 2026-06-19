@@ -1,5 +1,6 @@
 import { http } from '@/utils/http'
 import type { ListResp } from '@/types/api'
+import type { ExportJobOut } from '@/api/production'
 
 export type PurchaseOrderReturnItemIn = {
   item_id: number
@@ -171,9 +172,26 @@ export const purchaseApi = {
   cancelOrder(id: number) {
     return http.request<PurchaseOrderOut>({ url: `/admin/purchase/orders/${id}/cancel`, method: 'POST' })
   },
+  printOrder(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ html: string; order_id: number; code: string; template_id: number }>({
+      url: `/admin/purchase/orders/${id}/print`,
+      method: 'GET',
+      params,
+    })
+  },
+  exportOrderPdf(id: number, params?: { template_id?: number; template_code?: string }) {
+    return http.request<{ attachment_id: number; filename: string; url: string }>({
+      url: `/admin/purchase/orders/${id}/print-pdf`,
+      method: 'GET',
+      params,
+    })
+  },
 
   listStatements(params: any) {
     return http.request<ListResp<SupplierStatementOut>>({ url: '/admin/purchase/statements', method: 'GET', params })
+  },
+  exportStatementsExcel(params: { supplier_id?: number; status?: string }) {
+    return http.request<ExportJobOut>({ url: '/admin/purchase/statements/export', method: 'POST', params })
   },
   createStatement(data: SupplierStatementCreateIn) {
     return http.request<SupplierStatementOut>({ url: '/admin/purchase/statements', method: 'POST', data })
@@ -225,5 +243,8 @@ export const purchaseApi = {
   },
   listKittingPurchaseOrders(planId: number) {
     return http.request<{ items: PlanKittingPurchaseOrderOut[] }>({ url: `/admin/plans/${planId}/kitting/purchase-orders`, method: 'GET' })
+  },
+  exportOrders(params?: any) {
+    return http.downloadBlob({ url: '/admin/purchase/orders/export', method: 'GET', params })
   },
 }

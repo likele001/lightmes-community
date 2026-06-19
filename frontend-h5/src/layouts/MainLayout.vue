@@ -18,7 +18,7 @@ const title = computed(() => {
   void locale.value
   const key = route.meta?.titleKey as string | undefined
   if (key) return t(key)
-  return (route.meta?.title as string) || 'LightMes'
+  return (route.meta?.title as string) || '辰科MES'
 })
 
 const langActions = computed(() => [

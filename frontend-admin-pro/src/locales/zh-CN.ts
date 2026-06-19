@@ -961,6 +961,8 @@ skuBatch: {
       codePrefix: '编码',
       selectedSkuCount: '已选',
       orderImportTitle: '订单导入',
+      print: '打印',
+      exportPdf: '导出PDF',
     },
     workOrders: {
       title: '工单列表',
@@ -1471,6 +1473,8 @@ skuBatch: {
       createdSuccess: '创建成功',
       editSuccess: '编辑成功',
       detailTitle: '客户详情',
+      print: '打印',
+      exportPdf: '导出PDF',
       contacts: '联系人',
       salesOpps: '销售机会',
       contactList: '客户联系人列表',
@@ -2514,7 +2518,7 @@ skuBatch: {
     },
     help: {
       title: '智能帮助',
-      subtitle: '基于系统文档检索（RAG），解答 LightMes 操作与部署问题。',
+      subtitle: '基于系统文档检索（RAG），解答 辰科MES 操作与部署问题。',
       placeholder: '例如：如何配置小程序 AppID？报工审核流程是什么？',
       ask: '提问',
       answer: '回答',
@@ -2772,6 +2776,8 @@ skuBatch: {
     settle: '结算',
     items: '明细',
     noItems: '暂无明细',
+    print: '打印',
+    exportPdf: '导出PDF',
   },
   purchase: {
     orders: {
@@ -2849,6 +2855,8 @@ skuBatch: {
       statusPartialReceived: '部分入库',
       statusReceived: '已入库',
       statusCanceled: '已作废',
+      print: '打印',
+      exportPdf: '导出PDF',
     },
     statements: {
       title: '采购对账单',
@@ -3056,7 +3064,7 @@ skuBatch: {
       confirmDeleteModel: '确认删除该模型？',
     },
     login: {
-      title: 'LightMes 平台管理',
+      title: '辰科MES 平台管理',
       username: '账号',
       password: '密码',
       rememberMe: '记住登录（7 天内免登录）',

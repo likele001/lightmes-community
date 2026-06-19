@@ -30,7 +30,7 @@ async function ask() {
   <div class="p-4 space-y-4">
     <div class="rounded-xl bg-white p-4 shadow-sm">
       <div class="text-base font-semibold text-zinc-800">智能帮助</div>
-      <div class="mt-1 text-xs text-zinc-500">检索系统文档，解答 LightMes 操作问题</div>
+      <div class="mt-1 text-xs text-zinc-500">检索系统文档，解答 辰科MES 操作问题</div>
       <van-field
         v-model="question"
         type="textarea"

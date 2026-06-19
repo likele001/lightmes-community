@@ -84,7 +84,7 @@ const mainChildren: RouteRecordRaw[] = [
 ]
 
 const officialChildren: RouteRecordRaw[] = [
-  { path: '', name: 'siteHome', component: () => import('@/pages/official/OfficialLandingPage.vue'), meta: { public: true, title: 'LightMes' } },
+  { path: '', name: 'siteHome', component: () => import('@/pages/official/OfficialLandingPage.vue'), meta: { public: true, title: '辰科MES' } },
   { path: 'features', name: 'siteFeatures', component: () => import('@/pages/official/OfficialFeaturesPage.vue'), meta: { public: true, title: '功能模块' } },
   { path: 'workflow', name: 'siteWorkflow', component: () => import('@/pages/official/OfficialWorkflowPage.vue'), meta: { public: true, title: '生产流程' } },
   { path: 'about', name: 'siteAbout', component: () => import('@/pages/official/OfficialAboutPage.vue'), meta: { public: true, title: '关于' } },
@@ -92,17 +92,21 @@ const officialChildren: RouteRecordRaw[] = [
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/site',
+    path: '/',
     component: () => import('@/layouts/OfficialLayout.vue'),
     meta: { public: true },
     children: officialChildren,
+  },
+  {
+    path: '/site',
+    redirect: '/',
   },
   { path: '/login', name: 'login', component: LoginPage, meta: { public: true, title: '登录' } },
   {
     path: '/guide',
     name: 'guide',
     component: () => import('@/pages/GuidePage.vue'),
-    meta: { public: true, title: 'LightMes 使用指南' },
+    meta: { public: true, title: '辰科MES 使用指南' },
   },
   {
     path: '/trace',
@@ -122,13 +126,6 @@ const routes: RouteRecordRaw[] = [
     component: MainLayout,
     redirect: (to) => `/t/${String(to.params.tenantCode)}/home`,
     children: mainChildren,
-  },
-  {
-    path: '/',
-    redirect: () => {
-      const code = getStoredTenantCode()
-      return code ? `/t/${code}/home` : '/site'
-    },
   },
 ]
 
@@ -173,6 +170,12 @@ router.beforeEach(async (to) => {
   const token = auth.token
   const isPublic = Boolean(to.meta?.public)
 
+  // Logged-in users visiting the landing page should go to their tenant home
+  if ((to.path === '/' || to.path === '/site') && token) {
+    const code = getStoredTenantCode()
+    if (code) return { path: `/t/${code}/home`, replace: true }
+  }
+
   // 旧链接 /home、/tasks → 自动补上 /t/{租户编码}
   if (!isPublic && token && !parseTenantFromPath(to.path) && getStoredTenantCode()) {
     return { path: tenantH5Path(to.path), query: to.query, hash: to.hash, replace: true }
@@ -209,7 +212,7 @@ router.beforeEach(async (to) => {
 
   if (typeof document !== 'undefined') {
     const titleKey = to.meta?.titleKey as string | undefined
-    document.title = titleKey ? i18n.global.t(titleKey) : ((to.meta?.title as string) || 'LightMes')
+    document.title = titleKey ? i18n.global.t(titleKey) : ((to.meta?.title as string) || '辰科MES')
   }
   return true
 })

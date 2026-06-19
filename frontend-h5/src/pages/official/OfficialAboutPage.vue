@@ -26,7 +26,7 @@ const techStack = [
 ]
 
 onMounted(() => {
-  document.title = '关于 LightMes'
+  document.title = '关于 辰科MES'
 })
 </script>
 
@@ -36,7 +36,7 @@ onMounted(() => {
       <p class="official-section__eyebrow">关于我们</p>
       <h1 class="official-page-head__title">为中小型加工厂而生</h1>
       <p class="official-page-head__desc">
-        LightMes 是 KeleMes 轻量化重构版，PC 管全局、手机干现场，快速交付不折腾。
+        辰科MES 是 KeleMes 轻量化重构版，PC 管全局、手机干现场，快速交付不折腾。
       </p>
     </header>
 
@@ -120,7 +120,7 @@ onMounted(() => {
     </aside>
 
     <footer class="official-footer-bar">
-      <p>© LightMes · 轻量化生产管理系统</p>
+      <p>© 辰科MES · 轻量化生产管理系统</p>
     </footer>
   </div>
 </template>

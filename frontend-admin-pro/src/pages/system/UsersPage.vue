@@ -4,6 +4,7 @@
       <div class="flex items-center gap-2">
           <el-input v-model="query.keyword" :placeholder="t('system.users.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="reload(true)" />
           <el-switch v-model="query.include_inactive" :active-text="t('system.users.includeInactive')" @change="reload(true)" />
+          <el-button :loading="exporting" @click="exportExcel">{{ t('common.exportExcel') }}</el-button>
           <el-button type="primary" @click="openCreate">{{ t('system.users.create') }}</el-button>
         </div>
     </template>
@@ -130,12 +131,14 @@ import AdminPage from '@/components/admin/AdminPage.vue'
 import AdminDataTable from '@/components/admin/AdminDataTable.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { systemApi, type DepartmentOut, type RoleOut, type UserOut } from '@/api/system'
 
 const { t } = useI18n()
 
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<UserOut[]>([])
 const roles = ref<RoleOut[]>([])
 const departments = ref<DepartmentOut[]>([])
@@ -184,6 +187,22 @@ async function loadOptions() {
   ])
   roles.value = r.items
   departments.value = d.items
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await systemApi.exportUsers()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `users_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 async function reload(reset = false) {

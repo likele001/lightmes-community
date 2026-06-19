@@ -1,5 +1,6 @@
 import { http } from '@/utils/http'
 import type { ListResp } from '@/types/api'
+import type { ExportJobOut } from '@/api/production'
 
 export type WarehouseOut = { id: number; code: string; name: string; address: string | null }
 
@@ -41,7 +42,10 @@ export const warehouseApi = {
     const p: any = {}
     if (params.warehouse_id) p.warehouse_id = params.warehouse_id
     if (params.item_type && params.item_type !== 'all') p.item_type = params.item_type
-    return http.request<Blob>({ url: '/admin/warehouse/stocks/export', method: 'GET', params: p, responseType: 'blob' })
+    return http.request<ExportJobOut>({ url: '/admin/warehouse/stocks/export', method: 'POST', params: p })
+  },
+  exportWarehouses(params?: any) {
+    return http.downloadBlob({ url: '/admin/warehouse/warehouses/export', method: 'GET', params })
   },
   listLogs(params: { warehouse_id?: number; sku_id?: number; item_type?: 'product' | 'material' | 'all'; offset?: number; limit?: number }) {
     const p: any = { warehouse_id: params.warehouse_id, sku_id: params.sku_id, offset: params.offset, limit: params.limit }

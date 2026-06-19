@@ -17,6 +17,7 @@ from app.crud.user import (
 )
 from app.models.user import User
 from app.schemas.system_rbac import UserCreateIn, UserUpdateIn
+from app.tasks._sync_excel import make_excel_response
 
 
 router = APIRouter(dependencies=[Depends(require_permissions(["user.manage"]))])
@@ -60,6 +61,24 @@ def list_api(
 ):
     items = list_users(db, tenant_id=user.tenant_id, keyword=keyword, offset=offset, limit=limit, include_inactive=include_inactive)
     return ok({"items": [_out(x) for x in items]})
+
+
+@router.get("/export")
+def export_api(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    items = list_users(db, tenant_id=user.tenant_id, offset=0, limit=999999, include_inactive=True)
+    rows = []
+    for x in items:
+        dept_name = x.department.name if getattr(x, "department", None) else ""
+        rows.append([x.username, x.full_name or "", dept_name, "是" if x.is_active else "否", str(x.created_at) if x.created_at else ""])
+    return make_excel_response(
+        headers=["用户名", "姓名", "部门", "启用", "创建时间"],
+        rows=rows,
+        filename="users.xlsx",
+        sheet_name="用户",
+    )
 
 
 @router.post("")

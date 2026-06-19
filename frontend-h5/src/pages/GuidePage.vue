@@ -114,7 +114,7 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
     <nav class="doc-nav">
       <a class="doc-nav-logo" @click="go('/')">
         <div class="doc-nav-logo-icon">LM</div>
-        <span>LightMes</span>
+        <span>辰科MES</span>
       </a>
       <div class="doc-nav-links">
         <a @click="go('/')">首页</a>
@@ -149,8 +149,8 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
 
       <!-- CONTENT -->
       <main class="doc-content">
-        <h1>LightMes 使用指南</h1>
-        <p class="doc-subtitle">从系统配置到日常生产，分章节详细介绍 LightMes 的每一项功能。涵盖管理员PC端、员工H5端、客户端完整操作流程。</p>
+        <h1>辰科MES 使用指南</h1>
+        <p class="doc-subtitle">从系统配置到日常生产，分章节详细介绍 辰科MES 的每一项功能。涵盖管理员PC端、员工H5端、客户端完整操作流程。</p>
 
         <!-- CH1: 用户与权限 -->
         <h2 id="ch1">1. 用户与权限</h2>
@@ -703,7 +703,7 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
 
         <!-- CH28: AI 智能中心 -->
         <h2 id="ch28">28. AI 智能中心</h2>
-        <p>AI 智能中心是 LightMes 内置的智能化能力集合，基于工厂真实数据提供分析、预警、辅助操作。</p>
+        <p>AI 智能中心是 辰科MES 内置的智能化能力集合，基于工厂真实数据提供分析、预警、辅助操作。</p>
 
         <h3>28.1 数据预警</h3>
         <p><strong>操作路径</strong>：AI 智能中心 → 数据预警</p>
@@ -757,7 +757,7 @@ onUnmounted(() => window.removeEventListener('scroll', updateActive))
         <div class="doc-footer">
           <a href="#" @click.prevent="go('/')">
             <span class="label">← 返回</span>
-            <span class="title">LightMes 首页</span>
+            <span class="title">辰科MES 首页</span>
           </a>
           <a href="#ch1" @click.prevent="scrollToSection('ch1')">
             <span class="label">回到顶部</span>

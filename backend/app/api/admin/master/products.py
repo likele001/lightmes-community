@@ -8,6 +8,7 @@ from app.models.user import User
 from app.schemas.product import ProductCreateIn, ProductUpdateIn
 from app.services.code_generator import BizType, resolve_code
 from app.services.display_label import product_display_name
+from app.tasks._sync_excel import make_excel_response
 
 
 router = APIRouter(dependencies=[Depends(require_permissions(["product.manage"]))])
@@ -40,6 +41,17 @@ def list_api(
 ):
     items = list_products(db, tenant_id=user.tenant_id, keyword=keyword, offset=offset, limit=limit, include_inactive=include_inactive)
     return ok({"items": [_out(x) for x in items]})
+
+
+@router.get("/export")
+def export_products_api(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    items = list_products(db, tenant_id=user.tenant_id, keyword=None, offset=0, limit=999999, include_inactive=True)
+    headers = ["编码", "名称", "分类", "单位", "描述", "状态"]
+    rows = [[i.code, i.name, i.category or "", i.unit or "", i.description or "", "启用" if i.is_active else "停用"] for i in items]
+    return make_excel_response(headers, rows, "products.xlsx", "产品")
 
 
 @router.post("")

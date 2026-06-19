@@ -4,6 +4,7 @@
       <div class="flex items-center gap-2">
           <el-input v-model="query.keyword" :placeholder="t('master.processes.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="reload(true)" />
           <el-switch v-model="query.include_inactive" :active-text="t('master.processes.includeDisabled')" @change="reload(true)" />
+          <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
           <el-button type="primary" @click="openCreate">{{ t('master.processes.add') }}</el-button>
         </div>
     </template>
@@ -109,6 +110,7 @@ import { useI18n } from 'vue-i18n'
 import AdminPage from '@/components/admin/AdminPage.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { masterApi, type ProcessOut } from '@/api/master'
 import { systemApi } from '@/api/system'
 import { codeForSubmit, previewNextCode } from '@/utils/code'
@@ -116,6 +118,7 @@ import { codeForSubmit, previewNextCode } from '@/utils/code'
 const { t } = useI18n()
 
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<ProcessOut[]>([])
 const allSkills = ref<Array<{ id: number; name: string }>>([])
 const query = reactive({ keyword: '', offset: 0, limit: 50, include_inactive: false })
@@ -195,6 +198,22 @@ async function onSave() {
 async function onDisable(row: ProcessOut) {
   await masterApi.disableProcess(row.id)
   await reload(false)
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await masterApi.exportProcesses({})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `processes_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 onMounted(async () => {

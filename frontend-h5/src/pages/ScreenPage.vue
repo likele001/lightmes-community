@@ -87,7 +87,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-2">
         <div class="screen-logo">🏭</div>
         <div>
-          <div class="screen-title">LightMes 生产看板</div>
+          <div class="screen-title">辰科MES 生产看板</div>
           <div class="screen-subtitle">员工个人实时看板</div>
         </div>
       </div>

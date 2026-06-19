@@ -51,7 +51,7 @@ const logoUrl = computed(() => resolvedLogo.value || null)
 const displayTitle = computed(() => {
   if (props.title) return props.title
   if (props.useTenant && auth.me?.tenant_name) return auth.me.tenant_name
-  return 'LightMes'
+  return '辰科MES'
 })
 
 const markText = computed(() => {

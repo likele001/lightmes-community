@@ -10,6 +10,7 @@
             <el-option :label="t('production.workOrders.statusDone')" value="done" />
             <el-option :label="t('production.workOrders.statusCancelled')" value="cancelled" />
           </el-select>
+          <el-button :loading="exporting" @click="exportExcel">{{ t('common.exportExcel') }}</el-button>
           <el-button @click="reload(true)">{{ t('production.common.refresh') }}</el-button>
         </div>
     </template>
@@ -179,6 +180,7 @@ const detailOpen = ref(false)
 const detailLoading = ref(false)
 const detailData = ref<WorkOrderDetailOut | null>(null)
 const printingLabels = ref(false)
+const exporting = ref(false)
 
 const { label: statusLabel, type: statusTagType } = useStatus('work_order')
 
@@ -254,6 +256,22 @@ async function openDetail(id: number) {
   } finally {
     detailLoading.value = false
   }
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await productionApi.exportWorkOrders()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `work_orders_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 async function reload(reset = false) {

@@ -2,6 +2,7 @@
   <AdminPage title="t('production.orders.title')">
     <template #actions>
       <div class="flex items-center gap-2 flex-wrap">
+          <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
           <el-button type="primary" @click="openCreate">{{ t('production.orders.createOrder') }}</el-button>
           <el-button @click="router.push('/production/orders/import')">{{ t('production.orders.excelImport') }}</el-button>
           <el-input v-model="query.keyword" placeholder="t('production.orders.searchCode')" clearable style="width: 220px" @keyup.enter="reload(true)" />
@@ -415,6 +416,7 @@ const { t } = useI18n()
 const { label: statusLabel, type: statusTagType } = useStatus('order')
 const router = useRouter()
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<OrderOut[]>([])
 const confirmingId = ref<number | null>(null)
 const query = reactive({ keyword: '', customer_id: null as number | null, opportunity_id: null as number | null, status: '', offset: 0, limit: 50 })
@@ -713,6 +715,22 @@ async function submitEdit() {
   } finally {
     editDlg.saving = false
   }
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await productionApi.exportOrders({})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `orders_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 onMounted(() => reload(true))

@@ -302,6 +302,12 @@ export const systemApi = {
   setUserSkills(userId: number, skill_ids: number[]) {
     return http.request<any>({ url: `/admin/system/skills/users/${userId}/skills`, method: 'PUT', data: { skill_ids } })
   },
+  exportUsers(params?: any) {
+    return http.downloadBlob({ url: '/admin/system/users/export', method: 'GET', params })
+  },
+  exportRoles(params?: any) {
+    return http.downloadBlob({ url: '/admin/system/roles/export', method: 'GET', params })
+  },
   /** 预览下一业务编号（不占用序号） */
   nextCode(bizType: string) {
     return http.request<{ code: string; biz_type: string }>({

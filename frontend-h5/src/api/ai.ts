@@ -99,6 +99,7 @@ export type VoiceParseOut = {
   result_type: 'good' | 'bad' | 'mixed' | string
   remark?: string | null
   defect_keywords: string[]
+  summary?: string
   conversation_id?: number
   reply?: string
 }

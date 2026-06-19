@@ -16,4 +16,5 @@
 # 确保 autodiscover_tasks 能找到所有 @shared_task
 from app.tasks import ai, crm, notify, production, salary  # noqa: F401
 from app.tasks import report_exports, warehouse_exports, finance_exports  # noqa: F401
+from app.tasks import purchase_exports  # noqa: F401
 from app.tasks import mold_alerts  # noqa: F401

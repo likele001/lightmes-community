@@ -6,7 +6,7 @@
       :class="{ 'admin-sider--collapsed': collapsed }"
     >
       <div class="admin-sider__brand h-14 px-4 flex items-center border-b border-[var(--admin-sider-border)]">
-        <AdminBrand title="LightMes" :subtitle="t('layout.saasSubtitle')" :use-tenant="false" :compact="collapsed" />
+        <AdminBrand title="辰科MES" :subtitle="t('layout.saasSubtitle')" :use-tenant="false" :compact="collapsed" />
       </div>
       <el-menu
         class="admin-sider-menu border-0 flex-1 overflow-y-auto py-2"

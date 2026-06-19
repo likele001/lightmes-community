@@ -16,6 +16,7 @@ from app.crud.system_rbac import (
 )
 from app.models.user import User
 from app.schemas.system_rbac import RoleCreateIn, RoleSetPermissionsIn, RoleUpdateIn
+from app.tasks._sync_excel import make_excel_response
 
 
 router = APIRouter(dependencies=[Depends(require_permissions(["role.manage"]))])
@@ -40,6 +41,23 @@ def list_api(
 ):
     items = list_roles(db, tenant_id=user.tenant_id, offset=offset, limit=limit)
     return ok({"items": [_out(x) for x in items]})
+
+
+@router.get("/export")
+def export_api(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    items = list_roles(db, tenant_id=user.tenant_id, offset=0, limit=999999)
+    rows = []
+    for x in items:
+        rows.append([x.name, x.code, "", "是"])
+    return make_excel_response(
+        headers=["角色名称", "角色编码", "描述", "启用"],
+        rows=rows,
+        filename="roles.xlsx",
+        sheet_name="角色",
+    )
 
 
 @router.post("")

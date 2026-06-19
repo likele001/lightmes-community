@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showDialog, showToast } from 'vant'
 import { getTaskDetail, type H5Task } from '@/api/tasks'
 import { getTaskUnits, submitReportUnit, type AnomalyWarning, type ReportUnitItem, type TaskFlowContext } from '@/api/reportUnits'
 import { getReportMediaSettings, type ReportMediaSettings } from '@/api/settings'
-import { reportAiCheck, defectAiClassify, attachmentIdToUrl, type DefectClassifyOut } from '@/api/ai'
+import { reportAiCheck, defectAiClassify, photoAiCount, voiceParseReport, attachmentIdToUrl, type DefectClassifyOut } from '@/api/ai'
+import { VoiceInput, isVoiceInputSupported } from '@/utils/voice-input'
 import { tenantH5Path } from '@/utils/tenant'
 import CameraPhotoCapture from '@/components/CameraPhotoCapture.vue'
 
@@ -35,6 +36,12 @@ const form = ref({
 
 const uploads = ref<{ id: number; name: string }[]>([])
 const mediaCfg = ref<ReportMediaSettings | null>(null)
+
+// Voice reporting
+const voiceInput = ref<VoiceInput | null>(null)
+const voiceRecording = ref(false)
+const voiceInterim = ref('')
+const aiCounting = ref(false)
 
 const currentUnit = computed(() => {
   if (form.value.unit_seq) {
@@ -140,6 +147,112 @@ async function handleAiClassify() {
     showToast(e instanceof Error ? e.message : 'AI 识别失败')
   } finally {
     aiClassifying.value = false
+  }
+}
+
+// ── Voice reporting ──
+const showTextVoice = ref(false)
+const textVoiceContent = ref('')
+const voiceParsing = ref(false)
+
+function handleVoiceToggle() {
+  if (voiceRecording.value) {
+    voiceInput.value?.stop()
+    return
+  }
+  if (!isVoiceInputSupported()) {
+    textVoiceContent.value = ''
+    showTextVoice.value = true
+    return
+  }
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  voiceInterim.value = ''
+  const vi = new VoiceInput({ lang: 'zh-CN', interim: true, continuous: false })
+  vi.on('onResult', (text, isFinal) => {
+    voiceInterim.value = text
+    if (isFinal) {
+      voiceRecording.value = false
+      parseVoiceResult(text)
+    }
+  })
+  vi.on('onError', (_code, msg) => {
+    voiceRecording.value = false
+    voiceInterim.value = ''
+    showTextVoice.value = true
+    showToast('语音识别服务不可用，已切换为文字输入')
+  })
+  vi.on('onEnd', () => {
+    voiceRecording.value = false
+    voiceInterim.value = ''
+  })
+  voiceInput.value = vi
+  voiceRecording.value = true
+  vi.start()
+}
+
+async function handleTextVoiceSubmit() {
+  const text = (textVoiceContent.value.trim() || form.value.remark.trim())
+  if (!text) {
+    showToast('请输入报工内容')
+    return
+  }
+  showTextVoice.value = false
+  voiceParsing.value = true
+  try {
+    await parseVoiceResult(text)
+  } finally {
+    voiceParsing.value = false
+  }
+}
+
+async function parseVoiceResult(text: string) {
+  if (!task.value?.id || !text.trim()) return
+  try {
+    const res = await voiceParseReport({ text: text.trim(), task_id: task.value.id })
+    if (res.remark) form.value.remark = form.value.remark ? `${form.value.remark}\n${res.remark}` : res.remark
+    // 根据解析结果自动选择合格/不良
+    if (res.result_type === 'bad') form.value.result_type = 'bad'
+    else if (res.result_type === 'good') form.value.result_type = 'good'
+    await showDialog({
+      title: '语音解析完成',
+      message: res.summary || text,
+    })
+  } catch {
+    form.value.remark = form.value.remark ? `${form.value.remark}\n${text}` : text
+    showToast('语音已填入备注')
+  }
+}
+
+// ── AI photo counting ──
+async function handleAiCount() {
+  if (!task.value?.id) {
+    showToast('请先加载任务')
+    return
+  }
+  if (!uploads.value.length) {
+    showToast('请先拍摄照片')
+    return
+  }
+  aiCounting.value = true
+  try {
+    const image_urls = uploads.value.map((u) => attachmentIdToUrl(u.id, u.name))
+    const res = await photoAiCount({ image_urls, task_id: task.value.id })
+    if (res.count !== null && res.count !== undefined) {
+      if (form.value.result_type === 'good') {
+        showToast(`AI 识别到 ${res.count} 件合格品`)
+      } else {
+        showToast(`AI 识别到 ${res.count} 件`)
+      }
+    } else {
+      showToast(res.error || 'AI 无法计数')
+    }
+  } catch (e: unknown) {
+    showToast(e instanceof Error ? e.message : 'AI 计数失败')
+  } finally {
+    aiCounting.value = false
   }
 }
 
@@ -271,6 +384,11 @@ onMounted(async () => {
   if (form.value.task_code) loadTask()
 })
 
+onUnmounted(() => {
+  voiceInput.value?.destroy()
+  voiceInput.value = null
+})
+
 watch(
   () => route.query.task_code,
   (code) => {
@@ -359,7 +477,20 @@ watch(
         >
           首道工序：终审通过后将自动生成成品码 FP...
         </div>
-        <van-field v-model="form.remark" label="备注" type="textarea" rows="2" placeholder="可选" />
+        <van-field v-model="form.remark" label="备注" type="textarea" rows="2" placeholder="可选">
+          <template #button>
+            <van-button
+              size="mini"
+              :type="voiceRecording ? 'danger' : 'primary'"
+              :loading="voiceRecording"
+              icon="volume-o"
+              class="!px-2"
+              @click="handleVoiceToggle"
+            >
+              {{ voiceRecording ? '停止' : '语音' }}
+            </van-button>
+          </template>
+        </van-field>
         <div>
           <div class="text-sm text-zinc-600 mb-2">报工照片（必填，现场拍摄）</div>
           <CameraPhotoCapture
@@ -368,6 +499,18 @@ watch(
             label="拍摄照片"
           />
         </div>
+        <van-button
+          v-if="uploads.length"
+          block
+          plain
+          type="primary"
+          :loading="aiCounting"
+          icon="aim"
+          class="mb-2"
+          @click="handleAiCount"
+        >
+          AI 拍照计数
+        </van-button>
         <van-button
           v-if="form.result_type === 'bad' && uploads.length"
           block
@@ -388,5 +531,24 @@ watch(
       </div>
       <van-empty v-else-if="!loading" description="暂无待报工件次" />
     </div>
+
+    <!-- 文字输入语音降级弹层 -->
+    <van-overlay :show="showTextVoice" @click="showTextVoice = false" z-index="200">
+      <div class="fixed inset-x-4 top-24 rounded-2xl bg-white p-5 shadow-xl" @click.stop>
+        <div class="mb-3 text-base font-semibold text-zinc-800">语音报工（文字输入）</div>
+        <div class="mb-2 text-xs text-zinc-500">可用手机键盘的🎤语音键输入，或直接打字</div>
+        <textarea
+          v-model="textVoiceContent"
+          rows="3"
+          placeholder="例如：做了50个好的，2个有划痕"
+          class="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none focus:border-blue-400"
+          autofocus
+        />
+        <div class="mt-3 flex gap-3">
+          <van-button block type="primary" :loading="voiceParsing" @click="handleTextVoiceSubmit">AI 解析填入</van-button>
+          <van-button block @click="showTextVoice = false">取消</van-button>
+        </div>
+      </div>
+    </van-overlay>
   </div>
 </template>

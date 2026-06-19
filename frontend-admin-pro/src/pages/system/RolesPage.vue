@@ -2,6 +2,7 @@
   <AdminPage :title="t('system.roles.title')">
     <template #actions>
       <div class="flex items-center gap-2">
+          <el-button :loading="exporting" @click="exportExcel">{{ t('common.exportExcel') }}</el-button>
           <el-button type="primary" @click="openCreate">{{ t('system.roles.create') }}</el-button>
         </div>
     </template>
@@ -89,12 +90,14 @@
 import AdminPage from '@/components/admin/AdminPage.vue'
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { systemApi, type PermissionOut, type RoleOut } from '@/api/system'
 
 const { t } = useI18n()
 
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<RoleOut[]>([])
 const permissions = ref<PermissionOut[]>([])
 
@@ -117,6 +120,22 @@ const formRef = ref<FormInstance>()
 const rules: FormRules = {
   code: [{ required: true, message: () => t('system.roles.pleaseInputCode'), trigger: 'blur' }],
   name: [{ required: true, message: () => t('system.roles.pleaseInputName'), trigger: 'blur' }],
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await systemApi.exportRoles()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `roles_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 async function reload() {

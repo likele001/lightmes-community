@@ -14,7 +14,7 @@ const loginPath = computed(() => {
 })
 
 const navItems = [
-  { path: '/site', label: '首页' },
+  { path: '/', label: '首页' },
   { path: '/site/features', label: '功能' },
   { path: '/site/workflow', label: '流程' },
   { path: '/guide', label: '指南' },
@@ -26,7 +26,7 @@ function openRegister() {
 }
 
 const tabs = [
-  { path: '/site', label: '首页', icon: 'home' },
+  { path: '/', label: '首页', icon: 'home' },
   { path: '/site/features', label: '功能', icon: 'grid' },
   { path: '/site/workflow', label: '流程', icon: 'flow' },
   { path: '/guide', label: '指南', icon: 'book' },
@@ -34,7 +34,7 @@ const tabs = [
 ] as const
 
 function isActive(tabPath: string): boolean {
-  if (tabPath === '/site') return route.path === '/site'
+  if (tabPath === '/') return route.path === '/' || route.path === ''
   return route.path.startsWith(tabPath)
 }
 </script>
@@ -45,7 +45,7 @@ function isActive(tabPath: string): boolean {
       <router-link class="official-brand" to="/site">
         <span class="official-brand__mark">LM</span>
         <div>
-          <span class="official-brand__name">LightMes</span>
+          <span class="official-brand__name">辰科MES</span>
           <span class="official-brand__tag">MES · 生产管理</span>
         </div>
       </router-link>

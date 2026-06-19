@@ -11,6 +11,7 @@ from app.crud.process_skill import list_process_skills, replace_process_skills
 from pydantic import BaseModel, Field
 
 from app.services.display_label import process_display_name
+from app.tasks._sync_excel import make_excel_response
 
 
 class ProcessSkillsIn(BaseModel):
@@ -46,6 +47,17 @@ def list_api(
 ):
     items = list_processes(db, tenant_id=user.tenant_id, keyword=keyword, offset=offset, limit=limit, include_inactive=include_inactive)
     return ok({"items": [_out(x) for x in items]})
+
+
+@router.get("/export")
+def export_processes_api(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    items = list_processes(db, tenant_id=user.tenant_id, keyword=None, offset=0, limit=999999, include_inactive=True)
+    headers = ["编码", "名称", "车间", "标准工时(分钟)", "状态"]
+    rows = [[i.code, i.name, i.workshop or "", str(i.std_minutes or ""), "启用" if i.is_active else "停用"] for i in items]
+    return make_excel_response(headers, rows, "processes.xlsx", "工序")
 
 
 @router.post("")

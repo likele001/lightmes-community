@@ -2177,3 +2177,59 @@ body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* ── Floating contact bar ── */
+.sales-float-contact {
+  position: fixed;
+  bottom: calc(var(--lm-tabbar-h) + env(safe-area-inset-bottom, 0px) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.sales-float-contact__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface);
+  color: var(--lm-text-strong);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.sales-float-contact__btn:hover {
+  border-color: var(--lm-cta);
+  background: var(--lm-cta-soft);
+}
+
+.sales-float-contact__btn--primary {
+  background: var(--lm-cta);
+  border-color: var(--lm-cta);
+  color: #fff;
+}
+
+.sales-float-contact__btn--primary:hover {
+  background: var(--lm-cta-hover);
+  border-color: var(--lm-cta-hover);
+}
+
+@media (min-width: 64rem) {
+  .sales-float-contact {
+    bottom: 24px;
+  }
+}

@@ -249,5 +249,19 @@ export const masterApi = {
   disablePrice(id: number) {
     return http.request<void>({ url: `/admin/master/process-prices/${id}`, method: 'DELETE' })
   },
+
+  exportProducts(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/products/export', method: 'GET', params })
+  },
+  exportSkus(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/skus/export', method: 'GET', params })
+  },
+  exportProcesses(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/processes/export', method: 'GET', params })
+  },
+  exportProcessPrices(params?: any) {
+    return http.downloadBlob({ url: '/admin/master/process-prices/export', method: 'GET', params })
+  },
+
 }
 

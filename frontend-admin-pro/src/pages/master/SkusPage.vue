@@ -12,6 +12,7 @@
           <el-button type="primary" @click="openCreate">{{ t('master.skus.add') }}</el-button>
           <el-button type="success" plain @click="goBatch">{{ t('master.skus.batchAdd') }}</el-button>
           <el-button plain @click="openImport">{{ t('master.skus.importExcel') }}</el-button>
+          <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
         </div>
       </div>
 
@@ -186,6 +187,7 @@ import { codeForSubmit, previewNextCode } from '@/utils/code'
 const { t } = useI18n()
 
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<SkuOut[]>([])
 const products = ref<ProductOut[]>([])
 const query = reactive({ product_id: null as number | null, keyword: '', offset: 0, limit: 50, include_inactive: false })
@@ -357,6 +359,22 @@ async function onImportSubmit() {
   } finally {
     importDlg.uploading = false
   }
+}
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await masterApi.exportSkus({})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `skus_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
 }
 
 onMounted(async () => {

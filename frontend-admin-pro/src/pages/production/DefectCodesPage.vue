@@ -16,12 +16,29 @@ interface DefectCode {
 
 const { t } = useI18n()
 const loading = ref(false)
+const exporting = ref(false)
 const items = ref<DefectCode[]>([])
 const dialogVisible = ref(false)
 const editing = ref(false)
 const form = ref({ code: '', name: '', severity: 'minor', description: '' })
 const editId = ref<number | null>(null)
 const saving = ref(false)
+
+async function exportExcel() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await http.downloadBlob({ url: '/admin/production/quality/defect-codes/export', method: 'GET' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `defect_codes_${new Date().toISOString().slice(0, 10)}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch { /* http 已提示 */
+  } finally { exporting.value = false }
+}
 
 async function load() {
   loading.value = true
@@ -95,6 +112,7 @@ onMounted(load)
 <template>
   <AdminPage :title="t('production.defectCodes.title')">
     <template #actions>
+      <el-button :loading="exporting" @click="exportExcel">{{ t('common.exportExcel') }}</el-button>
       <el-button type="primary" @click="openCreate">{{ t('production.defectCodes.addDefect') }}</el-button>
     </template>
 

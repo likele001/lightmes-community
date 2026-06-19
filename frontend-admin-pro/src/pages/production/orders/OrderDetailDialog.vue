@@ -4,7 +4,8 @@
     :title="t('production.orders.detailTitle')"
     width="900px"
     destroy-on-close
-    @update:model-value="$emit('update:modelValue', $event)"
+    @update:model-value="emit('update:modelValue', $event)"
+    :append-to-body="true"
   >
     <div v-loading="loading">
       <el-descriptions v-if="data" :column="3" border>
@@ -70,6 +71,8 @@
       </div>
     </div>
     <template #footer>
+      <el-button v-if="data" type="primary" @click="onPrint">{{ t('production.orders.print') }}</el-button>
+      <el-button v-if="data" type="warning" @click="onExportPdf">{{ t('production.orders.exportPdf') }}</el-button>
       <el-button @click="$emit('update:modelValue', false)">{{ t('production.common.close') }}</el-button>
     </template>
   </el-dialog>
@@ -80,13 +83,15 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStatus } from '@/utils/status-maps'
 import { productionApi, type OrderDetailOut } from '@/api/production'
+import { http } from '@/utils/http'
+import { openPrintWindow } from '@/utils/print'
 
 const props = defineProps<{
   modelValue: boolean
   orderId: number | null
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
@@ -109,4 +114,26 @@ watch(
     }
   }
 )
+
+async function onPrint() {
+  if (!data.value) return
+  const resp = await productionApi.printOrder(data.value.id, { template_code: 'order_detail' })
+  const html = resp?.html || ''
+  if (!html) return
+  openPrintWindow(html, { title: `order_${data.value.id}`, autoPrint: true })
+}
+
+async function onExportPdf() {
+  if (!data.value) return
+  const res = await productionApi.exportOrderPdf(data.value.id, { template_code: 'order_detail' })
+  const blob = await http.request<Blob>({ url: `/files/${res.attachment_id}`, method: 'GET', params: { download: true }, responseType: 'blob' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = res.filename || `order_${data.value.id}.pdf`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
 </script>

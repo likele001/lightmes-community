@@ -1,4 +1,5 @@
 import { http } from '@/utils/http'
+import type { ExportJobOut } from '@/api/production'
 
 export type ProductionSummaryOut = {
   good_qty: number
@@ -63,7 +64,7 @@ export const reportsApi = {
     return http.request<DefectParetoOut>({ url: '/admin/reports/defect-pareto', method: 'GET', params })
   },
   exportProductionExcel(params: { date_from?: string; date_to?: string }) {
-    return http.request<Blob>({ url: '/admin/reports/export/production', method: 'GET', params, responseType: 'blob' })
+    return http.request<ExportJobOut>({ url: '/admin/reports/export/production', method: 'POST', params })
   },
 }
 

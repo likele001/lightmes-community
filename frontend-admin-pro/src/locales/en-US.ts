@@ -1143,6 +1143,9 @@ export default {
       createTitle: 'New Customer',
       cancel: 'Cancel',
       save: 'Save',
+      detailTitle: 'Customer Detail',
+      print: 'Print',
+      exportPdf: 'Export PDF',
     },
     assignments: {
       title: 'Dispatch Assignments',
@@ -1757,7 +1760,7 @@ export default {
     },
     help: {
       title: 'Smart Help',
-      subtitle: 'Based on RAG document retrieval, answers LightMes operation and deployment questions.',
+      subtitle: 'Based on RAG document retrieval, answers 辰科MES operation and deployment questions.',
       placeholder: 'e.g.: How to configure Mini Program AppID? What is the report audit flow?',
       ask: 'Ask',
       answer: 'Answer',
@@ -1912,6 +1915,8 @@ export default {
       statusPartialReceived: 'Partially Received',
       statusReceived: 'Received',
       statusCanceled: 'Cancelled',
+      print: 'Print',
+      exportPdf: 'Export PDF',
     },
     statements: {
       title: 'Supplier Statements',
@@ -2119,7 +2124,7 @@ export default {
       confirmDeleteModel: 'Confirm delete this model?',
     },
     login: {
-      title: 'LightMes Platform Admin',
+      title: '辰科MES Platform Admin',
       username: 'Account',
       password: 'Password',
       rememberMe: 'Remember me (7 days)',

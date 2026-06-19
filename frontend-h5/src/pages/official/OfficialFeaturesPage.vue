@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { featureModules } from '@/data/official-content'
 
 onMounted(() => {
-  document.title = '功能模块 · LightMes'
+  document.title = '功能模块 · 辰科MES'
 })
 </script>
 
