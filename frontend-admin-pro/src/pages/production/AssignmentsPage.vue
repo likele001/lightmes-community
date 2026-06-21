@@ -2,9 +2,9 @@
   <AdminPage :title="t('production.assignments.title')" description="按「员工 × 工序任务」展示；二维码对应该任务码，员工 H5 扫码报工">
     <template #actions>
       <div class="flex items-center gap-2 flex-wrap">
-          <el-input v-model="query.keyword" placeholder="t('production.assignments.searchPlaceholder')" clearable style="width: 200px" @keyup.enter="reload(true)" />
-          <el-input-number v-model="query.order_id" :min="1" :controls="false" placeholder="t('production.assignments.orderId')" style="width: 120px" />
-          <el-input-number v-model="query.user_id" :min="1" :controls="false" placeholder="t('production.assignments.userId')" style="width: 120px" />
+          <el-input v-model="query.keyword" :placeholder="t('production.assignments.searchPlaceholder')" clearable style="width: 200px" @keyup.enter="reload(true)" />
+          <el-input-number v-model="query.order_id" :min="1" :controls="false" :placeholder="t('production.assignments.orderId')" style="width: 120px" />
+          <el-input-number v-model="query.user_id" :min="1" :controls="false" :placeholder="t('production.assignments.userId')" style="width: 120px" />
           <el-button @click="reload(true)">{{ t('production.common.refresh') }}</el-button>
           <el-button type="primary" @click="router.push('/production/tasks')">{{ t('production.assignments.goToTaskList') }}</el-button>
         </div>

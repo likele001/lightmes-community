@@ -1,14 +1,14 @@
 <template>
-  <AdminPage title="t('production.orders.title')">
+  <AdminPage :title="t('production.orders.title')">
     <template #actions>
       <div class="flex items-center gap-2 flex-wrap">
           <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
           <el-button type="primary" @click="openCreate">{{ t('production.orders.createOrder') }}</el-button>
           <el-button @click="router.push('/production/orders/import')">{{ t('production.orders.excelImport') }}</el-button>
-          <el-input v-model="query.keyword" placeholder="t('production.orders.searchCode')" clearable style="width: 220px" @keyup.enter="reload(true)" />
-          <el-input-number v-model="query.customer_id" :min="1" :controls="false" placeholder="t('production.orders.customerId')" style="width: 140px" @change="reload(true)" />
+          <el-input v-model="query.keyword" :placeholder="t('production.orders.searchCode')" clearable style="width: 220px" @keyup.enter="reload(true)" />
+          <el-input-number v-model="query.customer_id" :min="1" :controls="false" :placeholder="t('production.orders.customerId')" style="width: 140px" @change="reload(true)" />
           <el-input-number v-model="query.opportunity_id" :min="1" :controls="false" placeholder="来源商机ID" style="width: 140px" @change="reload(true)" />
-          <el-select v-model="query.status" clearable placeholder="t('production.common.status')" style="width: 140px" @change="reload(true)">
+          <el-select v-model="query.status" clearable :placeholder="t('production.common.status')" style="width: 140px" @change="reload(true)">
             <el-option :label="t('production.orders.draft')" value="draft" />
             <el-option :label="t('production.orders.pendingConfirm')" value="pending_confirm" />
             <el-option :label="t('production.orders.confirmed')" value="confirmed" />
@@ -198,7 +198,7 @@
       <div v-loading="createDlg.optionsLoading">
         <el-form label-width="96px">
           <el-form-item :label="t('production.orders.customerLabel')" required>
-            <el-select v-model="createDlg.form.customer_id" filterable placeholder="t('production.orders.customerPlaceholder')" style="width: 100%">
+            <el-select v-model="createDlg.form.customer_id" filterable :placeholder="t('production.orders.customerPlaceholder')" style="width: 100%">
               <el-option
                 v-for="c in createDlg.customers"
                 :key="c.id"
@@ -210,7 +210,7 @@
           <el-form-item :label="t('production.orders.code')">
             <el-input
               v-model="createDlg.form.code"
-              placeholder="t('production.orders.orderCodePlaceholder')"
+              :placeholder="t('production.orders.orderCodePlaceholder')"
               maxlength="64"
               show-word-limit
             />
@@ -221,12 +221,12 @@
               v-model="createDlg.form.due_date"
               type="date"
               value-format="YYYY-MM-DD"
-              placeholder="t('production.orders.remarkPlaceholder')"
+              :placeholder="t('production.orders.remarkPlaceholder')"
               style="width: 100%"
             />
           </el-form-item>
           <el-form-item :label="t('production.common.remark')">
-            <el-input v-model="createDlg.form.remark" type="textarea" :rows="2" placeholder="t('production.orders.remarkPlaceholder')" />
+            <el-input v-model="createDlg.form.remark" type="textarea" :rows="2" :placeholder="t('production.orders.remarkPlaceholder')" />
           </el-form-item>
           <el-form-item :label="t('production.orders.productSku')" required>
             <div class="mb-2">
@@ -241,7 +241,7 @@
                   <el-select
                     v-model="row.sku_id"
                     filterable
-                    placeholder="t('production.orders.skuPlaceholder')"
+                    :placeholder="t('production.orders.skuPlaceholder')"
                     style="width: 100%"
                   >
                     <el-option v-for="s in createDlg.skus" :key="s.id" :label="orderSkuOptionLabel(s)" :value="s.id">
@@ -260,7 +260,7 @@
               </el-table-column>
               <el-table-column :label="t('production.orders.rowRemarkLabel')" width="120">
                 <template #default="{ row }">
-                  <el-input v-model="row.remark" placeholder="t('production.orders.remarkPlaceholder')" />
+                  <el-input v-model="row.remark" :placeholder="t('production.orders.remarkPlaceholder')" />
                 </template>
               </el-table-column>
               <el-table-column label="" width="70" fixed="right">
@@ -346,7 +346,7 @@
                   <el-select
                     v-model="row.sku_id"
                     filterable
-                    placeholder="t('production.orders.skuPlaceholder')"
+                    :placeholder="t('production.orders.skuPlaceholder')"
                     style="width: 100%"
                     :disabled="row.locked || editDlg.status !== 'draft'"
                   >
@@ -366,7 +366,7 @@
               </el-table-column>
               <el-table-column label="行备注" min-width="100">
                 <template #default="{ row }">
-                  <el-input v-model="row.remark" placeholder="t('production.orders.remarkPlaceholder')" :disabled="row.locked" />
+                  <el-input v-model="row.remark" :placeholder="t('production.orders.remarkPlaceholder')" :disabled="row.locked" />
                 </template>
               </el-table-column>
               <el-table-column label="" width="70" fixed="right">

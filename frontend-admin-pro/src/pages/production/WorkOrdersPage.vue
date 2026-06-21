@@ -2,8 +2,8 @@
   <AdminPage :title="t('production.workOrders.title')">
           <template #actions>
       <div class="flex items-center gap-2 flex-wrap">
-          <el-input-number v-model="query.order_id" :min="1" :controls="false" placeholder="t('production.workOrders.orderId')" style="width: 140px" @change="reload(true)" />
-          <el-select v-model="query.status" clearable placeholder="t('production.common.status')" style="width: 140px" @change="reload(true)">
+          <el-input-number v-model="query.order_id" :min="1" :controls="false" :placeholder="t('production.workOrders.orderId')" style="width: 140px" @change="reload(true)" />
+          <el-select v-model="query.status" clearable :placeholder="t('production.common.status')" style="width: 140px" @change="reload(true)">
             <el-option :label="t('production.common.all')" value="" />
             <el-option :label="t('production.workOrders.statusOpen')" value="open" />
             <el-option :label="t('production.workOrders.statusInProgress')" value="in_progress" />
