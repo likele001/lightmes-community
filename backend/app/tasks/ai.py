@@ -40,3 +40,41 @@ def audit_prescreen_task(tenant_id: int, unit_id: int) -> dict:
         return {"ok": False, "error": str(e)[:500]}
     finally:
         db.close()
+
+
+
+
+@shared_task(name="ai.rag.reindex")
+@db_task
+def ai_rag_reindex(db) -> dict:
+    """RAG 文档向量索引定时检查重建。"""
+    from app.services.ai.rag_indexer import scheduled_reindex
+
+    return scheduled_reindex(db)
+
+
+@shared_task(name="ai.predict.train_all")
+@db_task
+def ai_predict_train_all(db) -> dict:
+    """Train prediction models for all tenants (weekly scheduled task)."""
+    from app.models.tenant import Tenant
+    from app.services.ai.predict.equipment_predictor import train_all_equipment
+    from sqlalchemy import select
+
+    tenant_ids = [r[0] for r in db.execute(select(Tenant.id)).all()]
+    results = []
+    for tid in tenant_ids:
+        try:
+            r = train_all_equipment(db, tid)
+            results.append({"tenant_id": tid, **r})
+        except Exception as e:
+            results.append({"tenant_id": tid, "ok": False, "error": str(e)[:100]})
+    return {"total_tenants": len(tenant_ids), "results": results}
+
+
+@shared_task(name="ai.predict.train_equipment")
+@db_task
+def ai_predict_train_equipment(db, tenant_id: int, equipment_id: int) -> dict:
+    """Train prediction model for a single equipment."""
+    from app.services.ai.predict.equipment_predictor import train_equipment_model
+    return train_equipment_model(db, tenant_id, equipment_id)

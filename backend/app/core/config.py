@@ -64,6 +64,12 @@ class Settings(BaseSettings):
     AI_API_KEY: str = ""
     AI_DEFAULT_MODEL: str = ""
     AI_TIMEOUT_SECONDS: int = 120
+    # RAG 向量搜索
+    RAG_CHROMA_DIR: str = "./data/chroma_db"
+    RAG_CHUNK_SIZE: int = 1000
+    RAG_CHUNK_OVERLAP: int = 200
+    RAG_HYBRID_WEIGHT: float = 0.7
+    RAG_EMBEDDING_MODEL: str = ""
 
 
 settings = Settings()
