@@ -31,6 +31,8 @@ interface Template {
 
 const { t } = useI18n()
 const loading = ref(false)
+const industryFilter = ref('')
+const activeIndustries = ref<{code:string,name:string}[]>([])
 const items = ref<Template[]>([])
 const dialogVisible = ref(false)
 const editing = ref(false)
@@ -142,20 +144,68 @@ onMounted(load)
     </template>
 
     <div class="mt-4" v-loading="loading">
-      <el-table class="hidden lg:block w-full" :data="items" border>
-        <el-table-column prop="id" label="ID" width="70" />
-        <el-table-column prop="code" label="编码" width="140" />
-        <el-table-column prop="name" label="名称" min-width="180" />
-        <el-table-column prop="description" label="描述" min-width="200">
+      <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table class="hidden lg:block w-full" :data="items" border>
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column prop="id" label="ID" width="70" />
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column prop="code" label="编码" width="140" />
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column prop="name" label="名称" min-width="180" />
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column prop="description" label="描述" min-width="200">
           <template #default="{ row }">{{ row.description || '—' }}</template>
         </el-table-column>
-        <el-table-column label="关联工序" width="120">
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column label="关联工序" width="120">
           <template #default="{ row }">{{ row.process_id ? `#${row.process_id}` : '全局' }}</template>
         </el-table-column>
-        <el-table-column label="检查项数" width="100">
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column label="检查项数" width="100">
           <template #default="{ row }">{{ row.items?.length || 0 }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <div style="margin-bottom:15px">
+      <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px" @change="load">
+        <el-option label="全部行业" value="" />
+        <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+      </el-select>
+    </div>
+    <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="openEdit(row)">{{ t('production.inspectionTemplates.edit') }}</el-button>
             <el-popconfirm title="确认停用？" @confirm="deleteRow(row)">

@@ -114,9 +114,9 @@ async function onSubmit() {
       <div class="mb-6 text-center">
         <div class="text-2xl font-semibold text-zinc-900">辰科MES</div>
         <div class="mt-2 text-sm text-zinc-500">移动端登录</div>
-        <router-link to="/site" class="mt-3 inline-block text-xs text-blue-600 underline underline-offset-2">
+        <a href="https://mes.cenkor.cn" target="_blank" rel="noopener" class="mt-3 inline-block text-xs text-blue-600 underline underline-offset-2">
           了解产品与功能 →
-        </router-link>
+        </a>
       </div>
 
       <van-cell-group inset>

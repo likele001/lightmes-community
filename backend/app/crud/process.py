@@ -19,10 +19,13 @@ def list_processes(
     offset: int = 0,
     limit: int = 50,
     include_inactive: bool = False,
+    industry_code: str | None = None,
 ) -> list[Process]:
     stmt = select(Process).where(Process.tenant_id == tenant_id)
     if not include_inactive:
         stmt = stmt.where(Process.is_active.is_(True))
+    if industry_code:
+        stmt = stmt.where(Process.industry_code == industry_code)
     if keyword:
         kw = f"%{keyword}%"
         stmt = stmt.where(or_(Process.code.like(kw), Process.name.like(kw)))

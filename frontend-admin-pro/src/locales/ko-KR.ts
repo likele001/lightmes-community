@@ -159,6 +159,7 @@ export default {
     dictionary: '사전',
     attachments: '첨부',
     operationLogs: '작업 로그',
+    industryPacks: '업종 패키지',
     crm: 'CRM',
     crmOpportunities: '영업 기회',
     crmPipeline: '파이프라인',

@@ -112,10 +112,11 @@ def _tmpl_out(t) -> dict:
 def list_defect_codes_api(
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=200, ge=1, le=500),
+    industry_code: str | None = Query(default=None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    items = list_defect_codes(db, user.tenant_id, offset=offset, limit=limit)
+    items = list_defect_codes(db, user.tenant_id, offset=offset, limit=limit, industry_code=industry_code)
     return ok({
         "items": [
             {

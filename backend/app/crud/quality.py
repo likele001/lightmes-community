@@ -89,13 +89,12 @@ def delete_template(db: Session, tenant_id: int, template_id: int) -> bool:
 
 # ========== 缺陷代码 ==========
 
-def list_defect_codes(db: Session, tenant_id: int, *, offset: int = 0, limit: int = 200) -> list[DefectCode]:
-    return list(db.scalars(
-        select(DefectCode)
-        .where(DefectCode.tenant_id == tenant_id, DefectCode.is_active.is_(True))
-        .order_by(DefectCode.id.desc())
-        .offset(offset).limit(limit)
-    ).all())
+def list_defect_codes(db: Session, tenant_id: int, *, offset: int = 0, limit: int = 200, industry_code: str | None = None) -> list[DefectCode]:
+    stmt = select(DefectCode).where(DefectCode.tenant_id == tenant_id, DefectCode.is_active.is_(True))
+    if industry_code:
+        stmt = stmt.where(DefectCode.industry_code == industry_code)
+    stmt = stmt.order_by(DefectCode.id.desc()).offset(offset).limit(limit)
+    return list(db.scalars(stmt).all())
 
 
 def get_defect_code(db: Session, tenant_id: int, code_id: int) -> DefectCode | None:

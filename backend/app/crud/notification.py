@@ -89,6 +89,20 @@ def create_notification(
             )
         except Exception:
             pass
+        # 微信小程序订阅消息（独立通道，不依赖飞书/企微/钉钉开关）
+        try:
+            from app.services.wechat_mp.notify import emit_wechat_mp_event
+
+            emit_wechat_mp_event(
+                db,
+                tenant_id,
+                feishu_event,
+                title=title,
+                content=content,
+                user_id=user_id,
+            )
+        except Exception:
+            pass
     return obj
 
 

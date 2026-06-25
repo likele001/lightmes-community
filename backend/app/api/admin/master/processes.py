@@ -31,6 +31,7 @@ def _out(x) -> dict:
         "workshop": x.workshop,
         "std_minutes": x.std_minutes,
         "is_active": x.is_active,
+        "industry_code": x.industry_code,
         "created_at": x.created_at,
         "updated_at": x.updated_at,
     }
@@ -42,10 +43,11 @@ def list_api(
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=50, ge=1, le=200),
     include_inactive: bool = Query(default=False),
+    industry_code: str | None = Query(default=None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    items = list_processes(db, tenant_id=user.tenant_id, keyword=keyword, offset=offset, limit=limit, include_inactive=include_inactive)
+    items = list_processes(db, tenant_id=user.tenant_id, keyword=keyword, offset=offset, limit=limit, include_inactive=include_inactive, industry_code=industry_code)
     return ok({"items": [_out(x) for x in items]})
 
 

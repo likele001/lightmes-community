@@ -21,6 +21,7 @@ class InspectionTemplate(Base):
     code: Mapped[str] = mapped_column(String(64), nullable=False)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    industry_code: Mapped[str | None] = mapped_column(String(32), nullable=True, index=True)
 
     # 关联工序（可选）: 此模板适用于哪个工序
     process_id: Mapped[int | None] = mapped_column(
@@ -81,6 +82,7 @@ class DefectCode(Base):
     # critical — 致命  |  major — 主要  |  minor — 次要
     severity: Mapped[str] = mapped_column(String(16), nullable=False, server_default="minor")
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    industry_code: Mapped[str | None] = mapped_column(String(32), nullable=True, index=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="1")
 
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())

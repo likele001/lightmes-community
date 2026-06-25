@@ -3,9 +3,10 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-import redis
+import redis as redis_lib
 
 from app.core import deps
+from app.core.config import settings
 from app.core.deps import get_current_user
 from app.models.feishu_push_log import FeishuPushLog
 from app.models.wecom_push_log import WecomPushLog
@@ -13,25 +14,33 @@ from app.models.dingtalk_push_log import DingtalkPushLog
 from app.models.user import User
 
 
-router = APIRouter(prefix="/push-monitor", tags=["推送监控"])
+router = APIRouter(tags=["推送监控"])
+
+
+def _get_redis_client():
+    """获取Redis连接（统一使用配置的REDIS_URL，避免硬编码db不一致）"""
+    return redis_lib.from_url(settings.REDIS_URL, decode_responses=True)
 
 
 def _get_redis_stats():
     """获取Redis队列统计（系统级，无租户隔离）"""
-    r = redis.Redis(host='127.0.0.1', port=6379, db=0, decode_responses=True)
+    r = _get_redis_client()
 
     stats = {
         'queues': {},
         'total': 0
     }
 
-    for queue in ['celery', 'default', 'ai']:
-        try:
-            length = r.llen(queue)
-            stats['queues'][queue] = length
-            stats['total'] += length
-        except Exception:
-            stats['queues'][queue] = 0
+    try:
+        for queue in ['celery', 'default', 'ai']:
+            try:
+                length = r.llen(queue)
+                stats['queues'][queue] = length
+                stats['total'] += length
+            except Exception:
+                stats['queues'][queue] = 0
+    finally:
+        r.close()
 
     return stats
 
@@ -199,9 +208,10 @@ def clear_celery_queue(
     if not user.is_superuser:
         raise HTTPException(status_code=403, detail="仅超级管理员可清空队列")
 
-    r = redis.Redis(host='127.0.0.1', port=6379, db=0, decode_responses=True)
+    r = _get_redis_client()
     length = r.llen('celery')
     r.delete('celery')
+    r.close()
 
     return {
         "code": 200,

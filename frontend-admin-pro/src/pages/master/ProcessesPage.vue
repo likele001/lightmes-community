@@ -2,7 +2,11 @@
   <AdminPage :title="t('master.processes.title')">
           <template #actions>
       <div class="flex items-center gap-2">
-          <el-input v-model="query.keyword" :placeholder="t('master.processes.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="reload(true)" />
+          <el-select v-model="industryFilter" placeholder="全部行业" clearable style="width:140px;margin-right:10px" @change="reload(true)">
+          <el-option label="全部行业" value="" />
+          <el-option v-for="ind in activeIndustries" :key="ind.code" :label="ind.name" :value="ind.code" />
+        </el-select>
+        <el-input v-model="query.keyword" :placeholder="t('master.processes.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="reload(true)" />
           <el-switch v-model="query.include_inactive" :active-text="t('master.processes.includeDisabled')" @change="reload(true)" />
           <el-button :loading="exporting" @click="exportExcel">导出 Excel</el-button>
           <el-button type="primary" @click="openCreate">{{ t('master.processes.add') }}</el-button>
@@ -122,6 +126,8 @@ const exporting = ref(false)
 const items = ref<ProcessOut[]>([])
 const allSkills = ref<Array<{ id: number; name: string }>>([])
 const query = reactive({ keyword: '', offset: 0, limit: 50, include_inactive: false })
+const industryFilter = ref('')
+const activeIndustries = ref<{code:string,name:string}[]>([])
 
 const page = computed(() => Math.floor(query.offset / query.limit) + 1)
 const fakeTotal = computed(() => query.offset + items.value.length + (items.value.length === query.limit ? query.limit : 0))
@@ -143,7 +149,10 @@ async function reload(reset = false) {
   if (reset) query.offset = 0
   loading.value = true
   try {
-    const res = await masterApi.listProcesses({ ...query })
+    const res = await masterApi.listProcesses({
+          ...query,
+          industry_code: industryFilter.value || undefined
+        })
     items.value = res.items
   } finally {
     loading.value = false

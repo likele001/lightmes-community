@@ -12,19 +12,24 @@ COMMUNITY_REMOTE="${COMMUNITY_REMOTE:-git@github.com:likele001/lightmes-communit
 PRO_REMOTE="${PRO_REMOTE:-git@github.com:likele001/lightmes-pro.git}"
 
 DRY_RUN=0
-MSG=""
+# 存储 commit -m 参数，索引 0 为标题，1+ 为详情段落
+COMMITS=()
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
-    *) MSG="${MSG:+$MSG }$arg" ;;
+    *) COMMITS+=("$arg") ;;
   esac
 done
 
-if [[ -z "$MSG" ]]; then
-  echo "用法: bash scripts/release-all.sh \"更新说明\""
-  echo "示例: bash scripts/release-all.sh \"更新社区版与专业版：修复 H5 报工\""
-  echo "试跑: bash scripts/release-all.sh --dry-run \"更新说明\""
+if [[ ${#COMMITS[@]} -eq 0 ]]; then
+  echo "用法: bash scripts/release-all.sh [-m \"标题\"] [-m \"详情 1\"] [-m \"详情 2\" ...]"
+  echo "示例（多 -m）: bash scripts/release-all.sh \\"
+  echo "    -m \"feat(platform): 支持套餐层级、交付方式及行业包权限控制\" \\"
+  echo "    -m \"在套餐表中新增 tier、max_industries、allowed_industry_codes 和 delivery_mode 字段\" \\"
+  echo "    -m \"平台接口新增套餐层级和交付方式字段的校验和保存逻辑\""
+  echo "兼容（单 -m）: bash scripts/release-all.sh -m \"修复 H5 报工\""
+  echo "试跑: bash scripts/release-all.sh --dry-run -m \"更新说明\""
   exit 1
 fi
 
@@ -40,7 +45,7 @@ _push_repo() {
   local name="$1"
   local dir="$2"
   local remote="$3"
-  local commit_msg="$4"
+  local prefix="$4"
 
   echo ""
   echo "==> 发布 $name"
@@ -79,7 +84,21 @@ _push_repo() {
   if git diff --cached --quiet; then
     echo "    无变更，跳过提交"
   else
-    git commit -m "$commit_msg"
+    # 构造多 -m commit 参数：prefix + COMMITS[0] 作为标题，后续 COMMITS 作为详情
+    local m_args=()
+    if [[ -n "$prefix" ]]; then
+      m_args=(-m "${prefix}${COMMITS[0]}")
+      local i
+      for ((i = 1; i < ${#COMMITS[@]}; i++)); do
+        m_args+=(-m "${COMMITS[$i]}")
+      done
+    else
+      local c
+      for c in "${COMMITS[@]}"; do
+        m_args+=(-m "$c")
+      done
+    fi
+    _run git commit "${m_args[@]}"
   fi
 
   git push -u origin main
@@ -89,7 +108,7 @@ _push_repo() {
 echo "========================================"
 echo " LightMes 一键发布（社区版 + 专业版）"
 echo "========================================"
-echo "说明: $MSG"
+echo "说明: ${COMMITS[0]}$([[ ${#COMMITS[@]} -gt 1 ]] && echo " (+ $((${#COMMITS[@]}-1)) 段详情)")"
 echo "社区: $COMMUNITY_DIR"
 echo "专业: $PRO_DIR"
 
@@ -111,9 +130,9 @@ SKIP_SPLIT=1 _run bash "$ROOT/scripts/export-pro-repo.sh" "$PRO_DIR"
 echo ""
 echo "==> 4/4 推送到 GitHub"
 _push_repo "社区版 (lightmes-community)" "$COMMUNITY_DIR" "$COMMUNITY_REMOTE" \
-  "更新社区版：$MSG"
+  "更新社区版："
 _push_repo "专业版 (lightmes-pro)" "$PRO_DIR" "$PRO_REMOTE" \
-  "更新专业版：$MSG"
+  "更新专业版："
 
 echo ""
 echo "========================================"

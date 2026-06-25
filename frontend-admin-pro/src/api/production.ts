@@ -1,125 +1,12 @@
 import axios from 'axios'
 import { masterApi } from '@/api/master'
-import { http } from '@/utils/http'
-import type { ListResp } from '@/types/api'
+// ============================================================
+// CRM Domain Types (appended by patch_full.py)
+// ============================================================
 
-export type OrderSkuOption = {
-  id: number
-  code: string
-  product_id?: number
-  product_name?: string
-  sku_name?: string
-  display_label?: string
-}
-
-export type OrderFormOptions = {
-  customers: { id: number; code: string; name: string }[]
-  skus: OrderSkuOption[]
-}
-
-export type CustomerOut = {
-  id: number
-  tenant_id: number
-  user_id: number | null
-  owner_user_id?: number | null
-  owner_name?: string | null
-  login_username?: string | null
-  product_count?: number
-  code: string
-  name: string
-  contact_name: string | null
-  contact_phone: string | null
-  address: string | null
-  remark: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export type CustomerContactOut = {
-  id: number
-  tenant_id: number
-  customer_id: number
-  name: string
-  phone: string | null
-  email: string | null
-  title: string | null
-  is_primary: boolean
-  remark: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export type CustomerContactIn = {
-  name: string
-  phone?: string | null
-  email?: string | null
-  title?: string | null
-  is_primary?: boolean
-  remark?: string | null
-  is_active?: boolean
-}
-
-export type OpportunityOut = {
-  id: number
-  tenant_id: number
-  customer_id: number
-  code: string
-  title: string
-  stage: string
-  status: string
-  amount: number | null
-  probability: number | null
-  expected_close_date: string | null
-  owner_user_id: number | null
-  owner_name: string | null
-  converted_order_id?: number | null
-  converted_order_code?: string | null
-  remark: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export type OpportunityIn = {
-  code?: string | null
-  title: string
-  stage?: string
-  status?: string
-  amount?: number | null
-  probability?: number | null
-  expected_close_date?: string | null
-  owner_user_id?: number | null
-  remark?: string | null
-  is_active?: boolean
-}
-
-export type OpportunityActivityOut = {
-  id: number
-  tenant_id: number
-  opportunity_id: number
-  action_type: string
-  content: string
-  created_by: number | null
-  created_by_name: string | null
-  next_follow_up_at?: string | null
-  created_at: string
-}
-
-export type CustomerTagOut = {
-  id: number
-  tenant_id: number
-  name: string
-  color: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-// ===== CRM 类型定义 =====
 export type LeadOut = {
   id: number
+  tenant_id: number
   code: string
   contact_name: string
   company?: string
@@ -170,7 +57,25 @@ export type LeadCreateIn = {
   remark?: string
 }
 
-export type LeadUpdateIn = Partial<LeadCreateIn> & { status?: string; owner_user_id?: number | null }
+export type LeadUpdateIn = {
+  contact_name?: string
+  company?: string
+  email?: string
+  phone?: string
+  mobile?: string
+  wechat?: string
+  position?: string
+  industry?: string
+  country?: string
+  province?: string
+  city?: string
+  address?: string
+  website?: string
+  source?: string
+  status?: string
+  owner_user_id?: number | null
+  remark?: string
+}
 
 export type LeadConvertIn = {
   convert_to_customer?: boolean
@@ -290,7 +195,9 @@ export type QuotationUpdateIn = {
   items?: QuotationItemIn[]
 }
 
-export type QuotationRejectIn = { reason?: string }
+export type QuotationRejectIn = {
+  reason?: string
+}
 
 export type ContractOut = {
   id: number
@@ -364,7 +271,11 @@ export type PaymentPlanIn = {
   remark?: string
 }
 
-export type PaymentRecordIn = { actual_amount: number; actual_date?: string; invoice_no?: string }
+export type PaymentRecordIn = {
+  actual_amount: number
+  actual_date?: string
+  invoice_no?: string
+}
 
 export type WinLossReasonOut = {
   id: number
@@ -385,7 +296,14 @@ export type WinLossReasonCreateIn = {
   sort_order?: number
 }
 
-export type WinLossReasonUpdateIn = Partial<WinLossReasonCreateIn>
+export type WinLossReasonUpdateIn = {
+  type?: string
+  category?: string
+  code?: string
+  name?: string
+  description?: string
+  sort_order?: number
+}
 
 export type CampaignOut = {
   id: number
@@ -432,7 +350,10 @@ export type CampaignCreateIn = {
   remark?: string
 }
 
-export type CampaignUpdateIn = Partial<CampaignCreateIn>
+export type CampaignUpdateIn = Omit<Partial<CampaignCreateIn>, 'name' | 'type'> & {
+  name?: string
+  type?: string
+}
 
 export type SalesTargetOut = {
   id: number
@@ -490,25 +411,121 @@ export type CustomerProfileOut = {
   timeline: any[]
 }
 
-export type CustomerImportJobOut = {
+import { http } from '@/utils/http'
+import type { ListResp } from '@/types/api'
+
+export type OrderSkuOption = {
   id: number
-  job_type: string
-  file_name: string
+  code: string
+  product_id?: number
+  product_name?: string
+  sku_name?: string
+  display_label?: string
+}
+
+export type OrderFormOptions = {
+  customers: { id: number; code: string; name: string }[]
+  skus: OrderSkuOption[]
+}
+
+export type CustomerOut = {
+  id: number
+  tenant_id: number
+  user_id: number | null
+  owner_user_id?: number | null
+  owner_name?: string | null
+  login_username?: string | null
+  product_count?: number
+  code: string
+  name: string
+  contact_name: string | null
+  contact_phone: string | null
+  address: string | null
+  remark: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type CustomerContactOut = {
+  id: number
+  tenant_id: number
+  customer_id: number
+  name: string
+  phone: string | null
+  email: string | null
+  title: string | null
+  is_primary: boolean
+  remark: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type CustomerContactIn = {
+  name: string
+  phone?: string | null
+  email?: string | null
+  title?: string | null
+  is_primary?: boolean
+  remark?: string | null
+  is_active?: boolean
+}
+
+export type OpportunityOut = {
+  id: number
+  tenant_id: number
+  customer_id: number
+  code: string
+  title: string
+  stage: string
   status: string
-  total_count: number
-  success_count: number
-  failed_count: number
+  amount: number | null
+  probability: number | null
+  expected_close_date: string | null
+  owner_user_id: number | null
+  owner_name: string | null
+  converted_order_id?: number | null
+  converted_order_code?: string | null
+  remark: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type OpportunityIn = {
+  code?: string | null
+  title: string
+  stage?: string
+  status?: string
+  amount?: number | null
+  probability?: number | null
+  expected_close_date?: string | null
+  owner_user_id?: number | null
+  remark?: string | null
+  is_active?: boolean
+}
+
+export type OpportunityActivityOut = {
+  id: number
+  tenant_id: number
+  opportunity_id: number
+  action_type: string
+  content: string
+  created_by: number | null
+  created_by_name: string | null
+  next_follow_up_at?: string | null
   created_at: string
 }
 
-export type CustomerImportErrorOut = {
+export type CustomerTagOut = {
   id: number
-  row_number: number
-  error_type: string
-  field_name?: string
-  error_message: string
-  row_data?: any
+  tenant_id: number
+  name: string
+  color: string | null
+  is_active: boolean
   created_at: string
+  updated_at: string
 }
 
 export type OrderItemOut = {
@@ -1457,9 +1474,27 @@ export const productionApi = {
     return http.downloadBlob({ url: '/admin/production/reports/salary/slips/export', method: 'GET', params })
   },
 
-  // ===== CRM 线索 =====
+  // ===== 行业包管理 =====
+  listIndustries() {
+    return http.request<{ items: any[]; current: string | null }>({ url: '/admin/industry', method: 'GET' })
+  },
+  getCurrentIndustry() {
+    return http.request<{ industry_code: string | null; info: any }>({ url: '/admin/industry/current', method: 'GET' })
+  },
+  activateIndustry(data: { industry_code: string }) {
+    return http.request<{ industry_code: string; message: string }>({ url: '/admin/industry/activate', method: 'POST', data })
+  },
+  deactivateIndustry(data: { industry_code: string }) {
+    return http.request<{ industry_code: string; message: string }>({ url: '/admin/industry/deactivate', method: 'POST', data })
+  },
+  reseedIndustry(data?: { industry_code: string }) {
+    return http.request<{ seed_result: any; message: string }>({ url: '/admin/industry/reseed', method: 'POST', data })
+  },
+
+
+  // ==== CRM Leads (appended by patch_full.py) ====
   listCrmLeads(params: any) {
-    return http.request<{ items: LeadOut[]; total: number }>({ url: '/admin/production/crm/leads', method: 'GET', params })
+    return http.request<{ items: LeadOut[] }>({ url: '/admin/production/crm/leads', method: 'GET', params })
   },
   createCrmLead(data: LeadCreateIn) {
     return http.request<{ id: number; code: string }>({ url: '/admin/production/crm/leads', method: 'POST', data })
@@ -1492,9 +1527,9 @@ export const productionApi = {
     return http.request<LeadSummary>({ url: '/admin/production/crm/leads/stats/summary', method: 'GET' })
   },
 
-  // ===== CRM 报价单 =====
+  // ==== CRM Quotations (appended by patch_full.py) ====
   listCrmQuotations(params: any) {
-    return http.request<{ items: QuotationOut[]; total: number }>({ url: '/admin/production/crm/quotations', method: 'GET', params })
+    return http.request<{ items: QuotationOut[] }>({ url: '/admin/production/crm/quotations', method: 'GET', params })
   },
   createCrmQuotation(data: QuotationCreateIn) {
     return http.request<{ id: number; code: string }>({ url: '/admin/production/crm/quotations', method: 'POST', data })
@@ -1527,9 +1562,9 @@ export const productionApi = {
     })
   },
 
-  // ===== CRM 合同 =====
+  // ==== CRM Contracts (appended by patch_full.py) ====
   listCrmContracts(params: any) {
-    return http.request<{ items: ContractOut[]; total: number }>({ url: '/admin/production/crm/contracts', method: 'GET', params })
+    return http.request<{ items: ContractOut[] }>({ url: '/admin/production/crm/contracts', method: 'GET', params })
   },
   createCrmContract(data: ContractCreateIn) {
     return http.request<{ id: number; code: string }>({ url: '/admin/production/crm/contracts', method: 'POST', data })
@@ -1560,9 +1595,9 @@ export const productionApi = {
     })
   },
 
-  // ===== CRM 输赢原因 =====
+  // ==== CRM Win/Loss Reasons (appended by patch_full.py) ====
   listCrmWinLossReasons(params: any) {
-    return http.request<{ items: WinLossReasonOut[]; total: number }>({ url: '/admin/production/crm/win-loss-reasons', method: 'GET', params })
+    return http.request<{ items: WinLossReasonOut[] }>({ url: '/admin/production/crm/win-loss-reasons', method: 'GET', params })
   },
   createCrmWinLossReason(data: WinLossReasonCreateIn) {
     return http.request<{ id: number; code: string }>({ url: '/admin/production/crm/win-loss-reasons', method: 'POST', data })
@@ -1574,9 +1609,9 @@ export const productionApi = {
     return http.request<{ ok: boolean }>({ url: `/admin/production/crm/win-loss-reasons/${id}`, method: 'DELETE' })
   },
 
-  // ===== CRM 营销活动 =====
+  // ==== CRM Campaigns (appended by patch_full.py) ====
   listCrmCampaigns(params: any) {
-    return http.request<{ items: CampaignOut[]; total: number }>({ url: '/admin/production/crm/campaigns', method: 'GET', params })
+    return http.request<{ items: CampaignOut[] }>({ url: '/admin/production/crm/campaigns', method: 'GET', params })
   },
   createCrmCampaign(data: CampaignCreateIn) {
     return http.request<{ id: number; code: string }>({ url: '/admin/production/crm/campaigns', method: 'POST', data })
@@ -1606,9 +1641,9 @@ export const productionApi = {
     return http.request<any>({ url: `/admin/production/crm/campaigns/${id}/recalculate-roi`, method: 'POST' })
   },
 
-  // ===== CRM 销售目标 =====
+  // ==== CRM Sales Targets (appended by patch_full.py) ====
   listCrmSalesTargets(params: any) {
-    return http.request<{ items: SalesTargetOut[]; total: number }>({ url: '/admin/production/crm/sales-targets', method: 'GET', params })
+    return http.request<{ items: SalesTargetOut[] }>({ url: '/admin/production/crm/sales-targets', method: 'GET', params })
   },
   createCrmSalesTarget(data: SalesTargetCreateIn) {
     return http.request<{ id: number }>({ url: '/admin/production/crm/sales-targets', method: 'POST', data })
@@ -1623,7 +1658,7 @@ export const productionApi = {
     return http.request<{ ok: boolean }>({ url: `/admin/production/crm/sales-targets/${id}`, method: 'DELETE' })
   },
 
-  // ===== CRM 客户画像 =====
+  // ==== Customer Profile (appended by patch_full.py) ====
   getCustomerProfile(customerId: number) {
     return http.request<CustomerProfileOut>({ url: `/admin/production/customers/${customerId}/profile`, method: 'GET' })
   },
@@ -1637,29 +1672,23 @@ export const productionApi = {
     return http.request<{ items: QuotationOut[] }>({ url: `/admin/production/crm/customers/${customerId}/quotations`, method: 'GET' })
   },
 
-  // ===== CRM 数据导入导出 =====
-  createCrmImportJob(file: File) {
-    const form = new FormData()
-    form.append('file', file)
-    return http.request<CustomerImportJobOut>({ url: '/admin/production/crm/data-imports', method: 'POST', data: form })
+  // ==== CRM Import / Export (appended by patch_full.py) ====
+  createCrmImportJob(data: FormData) {
+    return http.request<{ id: number }>({ url: '/admin/production/crm/data-imports', method: 'POST', data, headers: { 'Content-Type': 'multipart/form-data' } })
   },
-  listCrmImportJobs(params: any) {
-    return http.request<{ items: CustomerImportJobOut[]; total: number }>({ url: '/admin/production/crm/data-imports', method: 'GET', params })
+  listCrmImportJobs(params?: any) {
+    return http.request<{ items: any[] }>({ url: '/admin/production/crm/data-imports', method: 'GET', params })
   },
   getCrmImportJob(id: number) {
-    return http.request<CustomerImportJobOut>({ url: `/admin/production/crm/data-imports/${id}`, method: 'GET' })
+    return http.request<any>({ url: `/admin/production/crm/data-imports/${id}`, method: 'GET' })
   },
-  listCrmImportErrors(id: number, params: any) {
-    return http.request<{ items: CustomerImportErrorOut[]; total: number }>({
-      url: `/admin/production/crm/data-imports/${id}/errors`,
-      method: 'GET',
-      params,
-    })
+  listCrmImportErrors(id: number, params?: any) {
+    return http.request<{ items: any[] }>({ url: `/admin/production/crm/data-imports/${id}/errors`, method: 'GET', params })
   },
-  exportCrmCustomers(params: any) {
-    return http.downloadBlob({ url: '/admin/production/customers/export', method: 'GET', params })
+  exportCrmCustomers(params?: any) {
+    return http.request<Blob>({ url: '/admin/production/customers/export', method: 'GET', params, responseType: 'blob' })
   },
-  exportCrmLeads(params: any) {
-    return http.downloadBlob({ url: '/admin/production/crm/leads/export', method: 'GET', params })
+  exportCrmLeads(params?: any) {
+    return http.request<Blob>({ url: '/admin/production/crm/leads/export', method: 'GET', params, responseType: 'blob' })
   },
 }
